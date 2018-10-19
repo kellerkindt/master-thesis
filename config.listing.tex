@@ -1,0 +1,129 @@
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{listingsutf8}
+
+\definecolor{codeBackground}{rgb}{.95,0.95,0.95}
+
+\newcommand{\coloredlstinline}[2]{\colorbox{codeBackground}{\lstinline[language=#1]|#2|}}
+
+\lstset{basicstyle=\ttfamily\footnotesize,breaklines=true}
+\definecolor{tangoSkyBlue}{RGB}{32, 74, 135}
+\definecolor{tangoOrange}{RGB}{206, 92, 0}
+\definecolor{tangoChameleon}{RGB}{78, 154, 6}
+\definecolor{tangoButter}{RGB}{196, 160, 0}
+
+\lstdefinelanguage{Rust}{
+	basicstyle=\normalsize\ttfamily,
+	keywords=[0]{let, pub, struct, enum, type, impl, fn, const, mut, extern, use, mod, continue, break, loop, while, crate, true, false, bool, char, str, u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, usize, isize, f32, f64, match, switch, if, else, return, trait, ref, unsafe, union, for, in, dyn, where, default, as, move, static},
+	keywords=[1]{|, -, !, ?, \&, *, Err, Ok, None, Some, self},
+%	keywords=[2]{println!, writeln!, print!, write!},
+	otherkeywords={!, ?, |, -, \&, *, \_},
+	morekeywords=[1]{!, ?, |, -},
+	sensitive=true,
+	morecomment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	morestring=[b]',
+	morestring=[b]",
+	morestring=[s][\color{tangoOrange}]{'}{a},
+	alsoletter={! ? | - \& * \_},
+	moredelim = [l][\color{tangoOrange}]{\#}
+}
+
+\lstdefinelanguage{help}{
+	basicstyle=\ttfamily\footnotesize,
+	keywords=[0]{default},
+	keywords=[1]{|, -, !, ?, \&, *, Err, Ok, None, Some, self},
+	%	keywords=[2]{println!, writeln!, print!, write!},
+	otherkeywords={!, ?, |, -, \&, *, \_},
+	morekeywords=[1]{!, ?, |, -},
+	sensitive=true,
+	morecomment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	morestring=[b]',
+	morestring=[b]",
+	morestring=[s][\color{tangoOrange}]{'}{a},
+	alsoletter={! ? | - \& * \_},
+	moredelim = [l][\color{tangoOrange}]{\#}
+}
+
+%\usepackage{sourcecodepro}
+%\usepackage{fontspec}
+%\setmonofont{CMU Typewriter Text}
+\lstset{
+	backgroundcolor=\color{codeBackground},
+	basicstyle=\ttfamily,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	extendedchars=true,
+	language=Rust,
+	keywordstyle=\bf,
+	showspaces=false,
+    showstringspaces=false,
+	showtabs=false,
+	tabsize=4,
+	aboveskip=5mm,
+	belowskip=5mm,
+	numbers=left,
+	numberstyle=\tiny\color{gray},
+	keywordstyle=[0]\bfseries\color{tangoSkyBlue},
+	keywordstyle=[1]\bfseries\color{tangoOrange},
+	keywordstyle=[2]\bfseries\color{tangoButter},
+	commentstyle=\color{gray},
+	stringstyle=\color{tangoChameleon},
+	extendedchars=true,
+	literate={Ã¤}{{\"{a}}}1 {Ã¶}{{\"{o}}}1 {Ã¼}{{\"{u}}}1 {Ã}{{\ss}}1,
+	columns=fixed,
+	keepspaces=true,
+	breaklines=true,
+	breakatwhitespace=true
+}
+\lstset{
+	backgroundcolor=\color{codeBackground},
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	extendedchars=true,
+	language=help,
+	keywordstyle=\bf,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	tabsize=4,
+	aboveskip=5mm,
+	belowskip=5mm,
+	numbers=left,
+	numberstyle=\tiny\color{gray},
+	keywordstyle=[0]\bfseries\color{tangoSkyBlue},
+	keywordstyle=[1]\bfseries\color{tangoOrange},
+	keywordstyle=[2]\bfseries\color{tangoButter},
+	commentstyle=\color{gray},
+	stringstyle=\color{tangoChameleon},
+	extendedchars=true,
+	literate={Ã¤}{{\"{a}}}1 {Ã¶}{{\"{o}}}1 {Ã¼}{{\"{u}}}1 {Ã}{{\ss}}1,
+	columns=fixed,
+	keepspaces=true,
+	breaklines=true,
+	breakatwhitespace=true
+}
+
+
+\newcommand{\coloredlstinlinev}[2]{\colorbox{codeBackground}{\lstinline[language=#1]|#2|}}
+\newcommand{\rustcinline}[1]{\coloredlstinline{rust}{#1}}
+\newcommand{\rustcinclude}[3]{\lstinputlisting[language=rust,caption={#2},label={#1}]{#3}}
+\newcommand{\rustcincludeml}[3]{\lstinputlisting[xleftmargin=1.2em,language=rust,caption=#2,label=#1]{#3}}
+
+\newcommand{\helpinclude}[3]{\lstinputlisting[language=help,caption={#2},label={#1}]{#3}}
+
+\newcommand{\javacinline}[1]{\coloredlstinline{java}{#1}}
+\newcommand{\javacinclude}[3]{\lstinputlisting[language=java,caption={#2},label={#1}]{#3}}
+
+\newcommand{\cscinline}[1]{\coloredlstinline{{[Sharp]C}}{#1}}
+
+\newcommand{\ccinline}[1]{\coloredlstinline{c}{#1}}
+\newcommand{\ccinclude}[3]{\lstinputlisting[language=c,caption={#2},label={#1}]{#3}}
+\newcommand{\ccincludeml}[3]{\lstinputlisting[xleftmargin=1.2em,language=c,caption=#2,label=#1]{#3}}
+
+\newcommand{\monospaceinclude}[3]{\lstinputlisting[basicstyle=\footnotesize,language=bash,caption=#2,label=#1]{#3}}
+\newcommand{\monospaceinline}[1]{\coloredlstinline{bash}{#1}}
+%\renewenvironment{rustc}{\begin{lstlisting}[language=rust]}{\end{lstlisting}}
