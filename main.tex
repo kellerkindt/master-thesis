@@ -33,12 +33,12 @@
   \end{figure}}
 \newcommand{\thecollege}{College of Engineering, Design and Physical Sciences}
 \newcommand{\thedepartment}{Distributed Computing Systems Engineering}
-\newcommand{\thecoursetitle}{Report}
+\newcommand{\thecoursetitle}{Master Thesis - Interim Report}
 \newcommand{\thestudent}{Michael Watzko}
 \newcommand{\thestudentid}{1841795}
-\newcommand{\thelabpartner}{none}
-\newcommand{\theyear}{2018}
-\newcommand{\thetitle}{EE56xx}
+\newcommand{\thesupervisor}{Kyberd}
+\newcommand{\theyear}{2019}
+\newcommand{\thetitle}{ Conception and realization of a distributed and automated computer vision pipeline}
 \newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
 
 %--------------------------------------------------------------------
@@ -101,25 +101,25 @@
 \textsc{\large 
 \thecollege \\
 \thedepartment} \\[1.5cm]
-\textsc{\Large \thecoursetitle} \\[2.0cm]
+\textsc{\Large \textbf{\thecoursetitle}} \\[1.8cm]
 
 % Project title
-\rule{\linewidth}{0.5mm} \\[0.5cm]
-{ \huge\textbf{ \thetitle } } \\
-\rule{\linewidth}{0.5mm} \\[4.5cm]
+\rule{\linewidth}{0.25mm} \\[0.5cm]
+{ \Large \thetitle } \\
+\rule{\linewidth}{0.25mm} \\[3.5cm]
 
 % Student name, student number and supervisor
 \begin{minipage}{0.4\textwidth}
 \begin{flushleft} \large
-\thestudent \\
-Student Number: \thestudentid
+\textbf{\thestudent} \\
+\thestudentid
 \end{flushleft}
 \end{minipage}
 ~
 	\begin{minipage}{0.4\textwidth}
 \begin{flushright} \large
-\emph{Lab partner:} \\
-\thelabpartner
+\emph{Supervisor:} \\
+\thesupervisor
 \end{flushright}
 \end{minipage}\\[4cm]
 
@@ -148,8 +148,9 @@ Student Number: \thestudentid
 \pagenumbering{arabic}
 
 %\input{chapter_A}
-%\include{chapters/ex1}
-%\include{chapters/ex2}
+\include{chapters/intro}
+\include{chapters/state_of_the_art}
+\include {chapters/things_to_overcome}
 %\include{chapters/ex3}
 %\include{chapters/ex4}
 %\include{chapters/deliverables}

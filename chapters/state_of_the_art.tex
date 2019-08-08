@@ -1,0 +1,38 @@
+\chapter{State of the art}
+
+\section{Existing software solutions}
+
+\subsection{Hadoop MapReduce}
+
+focus transforming a big dataset by splitting it into many jobs, distributing it onto many workers, doing a transformation on each dataset, and merging it back together (only map -> reduce)
+Distributed filesystem
+
+\subsection{Quartz}
+
+http://www.quartz-scheduler.org/
+http://www.quartz-scheduler.org/overview/
+
+\begin{itemize}
+	\item + Java
+	\item - requires integration
+	\item - aimed towards running a job at a given time or in certain intervals
+\end{itemize}
+
+\subsection{Jenkins / GitLab}
+
+Pipeline file with multiple stages
+a stage can be executed on a host
+focused on doing a job with different inputs again and again and again
+CI -> usually no user interaction
+
+\subsection{Camunda}
+
+https://camunda.com/
+
+Rich Business Process Management tool, many types of tasks, steps, transitions, triggers and endpoints.
+Focused upon moving a dataset along the matching path of the process.
+Out of the box graphical user interface for process definition and interaction.
+Allows custom external worker through queues.
+Misses capability to control which task to process on which worker through fine grained filters and how to allocate and distribute resources(?).
+
+\section{Docker}

@@ -1,0 +1,156 @@
+\chapter{Introduction}
+
+
+A research project that analyses traffic flow uses camera drones to capture
+
+aerial videos of vehicular traffic. The distribution and execution of
+
+the process to analyze and track those vehicles shall be automated. The
+
+development of the tracking and analysis process is not part of the thesis.
+
+\section{MEC-View?}
+
+\section{The Tool}
+
+describe the tool, what it is for, what it does, current workflow
+
+The current workflow consists of the following steps:
+
+- define reference points in one single frame through a user input
+
+- track stationary reference points on all other frames
+
+- estimate the camera position for each frame
+
+- detect vehicles in all frames
+
+- track detections and assign them to trajectories
+
+- perform lane detection
+
+- record a result video
+
+- export trajectories to a csv-file
+
+- create charts
+
+
+
+As listed above, at least one stage must be able to process user-input. The
+
+current progress must be observed and errors must be reported in an way, that
+
+allows one to understand the circumstances for the cause of the error.
+
+For easy and fast scalability, docker images shall be used to distribute the
+
+binaries onto the nodes.
+
+
+\section{Defining the Problem Space}
+
+what is required / what shall the implementation be capable of from the view of the "user"
+
+user interaction
+
+
+
+\section{Analyzing the Problem Space}
+
+describe scenarios the implementations must be able to handle in order to archive the requirements?
+
+resource tracking
+ - global (read-only) input resources ("big" data files)
+ - per stage evolving project files
+   - might have some kind of version control?
+ - dynamically detect within a stage whether user input is required
+ - be able to continue / redo latest stage
+ - error / warning detection / tracking!
+   ( [!a-zA-z]err[!a-zA-z])|( [!a-zA-z]error[!a-zA-z])
+ - web technology
+
+- retrieve required binaries
+- retrieve required resource files
+- archive output files and logs
+
+- persistence stage/state tracking of projects/pipelines/states
+
+Problems to solve
+
+
+
+- stages might have individual hardware requirements
+
+- multiple stages might require the same hardware at the same time
+
+- stages can depend on the result of another stage
+
+- for scalability, it shall be easy to add and remove hardware-nodes
+
+- the video files are large (4k footage), sending decoded frames (~25MB)
+
+through the network might be unreasonable
+
+- the definition of a pipeline shall be easy to understand for good
+
+maintainability
+
+- the hardware shall be used efficiently to achieve a high throughput
+
+- docker images need to contain and provide all required libraries
+
+- prevent stages from leaving other stages far behind?
+
+- storage and distribution of intermediate results
+
+- log collection
+
+
+
+
+adding a new host
+ - instantiate docker image and mount config and docker socket?
+ - encrypt communication between control and worker?
+ - possibility for decentralization
+    - makes archiving logs and results hard
+
+
+scenarios
+
+define pipeline
+ - define gpu stage
+ - define cpu stage
+ - define required input assets
+ - define assets for each stage to be accessible in the next stage
+ - stages depend on other stages
+    - do it the other way around? set next stage?
+       - next stage + "parameters" (assets to keep/transfer)
+       - allows branching
+
+upload resource file (video)
+ - ... upload <path> <name-at-remote>
+ - maybe to one common pool of resources?
+    - free disk space?
+
+start pipeline
+ - select resources required by the pipeline
+ - start
+ 
+go through stages until finished
+ - take care of cpu/gpu env requirements
+ - if no common pool of resources: concurrently copy assets to target machines
+ - archive 
+
+maybe: halt at stage because of error / required user interaction
+ - allow continuation
+ - allow download / upload of assets into this stage
+    - free disk space?
+ 
+ 
+ easy installation and binary distribution
+  - docker image per pipeline stage?
+  - map management binary into docker -> exec
+     - requires standalone binary
+     - implicitly requires compatible libc env/unix system
+     - requires administrative (docker ) privileges
