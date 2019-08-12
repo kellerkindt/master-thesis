@@ -154,3 +154,19 @@ maybe: halt at stage because of error / required user interaction
      - requires standalone binary
      - implicitly requires compatible libc env/unix system
      - requires administrative (docker ) privileges
+     
+ 
+ outputs of a stage are immutable after it has finished, stages using that data are working on a copy
+ 
+ nice to have: display progress captured from log (regex filter with multiple subjects/progresses per stage)
+ 
+ show time a stage is running
+ 
+ show estimated remaining time (based on captured progress)
+     
+     
+start
+start from a certain stage
+pause after a stage
+redo a stage
+change variables at a stage
