@@ -1,0 +1,25 @@
+\chapter{Implementation}
+
+log strategy?
+
+how to handle changes in configuration on a restart
+ - how to sync with nomad
+ - how to handle still running jobs on an now invalid configuration?
+    - keep copy of old configuration?
+
+\section{Orientation}
+
+bash -> variable substitution
+
+\section{No unexpected behavior}
+
+no null, instead use Optional
+
+lists are never null nor Optional but empty or filled instead
+
+see de.itd.tracking.winslow.config.*
+
+called defensive programming?
+  - good to be error-resilient
+  - bad in performance critical scenarios
+  
