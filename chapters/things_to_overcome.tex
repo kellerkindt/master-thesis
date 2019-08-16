@@ -19,6 +19,75 @@
 
 \section{Data Model}
 
+\section{Distributed File System}
+
+\subsection{HDFS}
+
+\subsection{dCache}
+
+used by 10 of 13 top research facilities 
+https://www.dcache.org/manuals/dcache-whitepaper-light.pdf
+
+can replicate data-pools, access through NFS (and many more) is possible
+
+used in grid computing facilities, integration with LDAP and Kerberos possible, supports tertiary storage, supports GssFtp, GsiFtp/GridFtp, HPSS, CERNs GridFileAccessLayer GFAL
+
+complex installation
+many dependencies: postgresql, configuration of inter-dependent internal service: pool, poolmanager, glzma?, zookeeper
+
+documentation is lückenhaft, outside of dcache.org only veraltet versions are found
+
+too much overhead for just having a distributed file system
+
+\subsection{OpenIO}
+
+limited to distributed file system
+
+provides docker image
+
+simple CLI, focused on managing storage containers and replicas
+
+Java SDK?
+
+Supports NFS (for Linux workers), and Samba/SMB for Windows/Linux clients
+
+NFS only through paid plan
+
+\subsection{seaweed}
+
+datacenter and rack aware in volume replication scenarios
+
+easy to setup
+
+single binary
+
+mount through FUSE
+
+
+[volumes] <-> [master] <-> [filer] <-> [clients]
+bzw filer mit master und volumes
+
+master halten die zuweisung file -> addresse
+filer machen nur ein lookup und zuweisen oder sowas
+aber der client frägt filer an
+und der muss dann zu irgendeinem master die verbinundg aufbauen und nachschlagen
+dh wollte pro physicalischen server 1 volume, 1 master, 1 filer haben
+damit einfach dezentral kommen und gehen kann
+aber problem 1: anzahl der master soll immer ungerade sein
+problem 2: du kannst nicht einfach master on-the-fly hinzufügen und musst stattdessen teilweise die neu starten mitm parameter: hey da drüben ist noch ein master
+problem 3: es läuft nicht zuverlässig
 
 \section{Winslow}
 \url{https://de.wikipedia.org/wiki/Frederick_Winslow_Taylor}
+
+coordination withing a container
+ - start nomad and join existing nomad instances
+ - start weed and join existing weed masters
+ 
+requires winslow to winslow communication
+
+might need to restart services, must ensure that happens not everywhere at the same time
+
+using distributed filesystem as configuration storage?
+ - hard for initial start / problematic if down
+ - but automatically distributes configurations + allows replications

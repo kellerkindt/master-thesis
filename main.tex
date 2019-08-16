@@ -10,6 +10,7 @@
 \usepackage{geometry}         % Customize page geometry
 \usepackage{setspace}         % To set line spacing
 \usepackage{graphicx}
+\usepackage[ngerman, english]{babel}
 
 
 \usepackage[hidelinks]{hyperref}
@@ -31,12 +32,13 @@
     \centering
     \includegraphics[width=.5\textwidth]{brunel.jpg}
   \end{figure}}
-\newcommand{\thecollege}{College of Engineering, Design and Physical Sciences}
+\newcommand{\thecollege}{College of Engineering, Design and Physical Sciences, Electronic and Computer Engineering}
 \newcommand{\thedepartment}{Distributed Computing Systems Engineering}
-\newcommand{\thecoursetitle}{Master Thesis - Interim Report}
+%\newcommand{\thecoursetitle}{Master Thesis - Interim Report}
+\newcommand{\thecoursetitle}{Interim Report}
 \newcommand{\thestudent}{Michael Watzko}
 \newcommand{\thestudentid}{1841795}
-\newcommand{\thesupervisor}{Kyberd}
+\newcommand{\thesupervisor}{Dr. Paul Kyberd}
 \newcommand{\theyear}{2019}
 \newcommand{\thetitle}{ Conception and realization of a distributed and automated computer vision pipeline}
 \newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
@@ -97,15 +99,15 @@
 \center
 
 % Name of university, college, department and degree
-\textsc{\LARGE \theuniversity} \\[1.5cm] 
+\textsc{\LARGE \theuniversity} \\[0.5cm] 
 \textsc{\large 
-\thecollege \\
+\thecollege \\ [1.0cm]
 \thedepartment} \\[1.5cm]
 \textsc{\Large \textbf{\thecoursetitle}} \\[1.8cm]
 
 % Project title
 \rule{\linewidth}{0.25mm} \\[0.5cm]
-{ \Large \thetitle } \\
+{ \Large\textbf{\thetitle} } \\
 \rule{\linewidth}{0.25mm} \\[3.5cm]
 
 % Student name, student number and supervisor
@@ -124,7 +126,7 @@
 \end{minipage}\\[4cm]
 
 % Year
-{\large Year of Submission: \theyear} \\[3cm] 
+{\large Date of Submission: {\selectlanguage{english}\today}} \\[3cm] 
 
 \vfill % Fill the rest of the page with whitespace
 \end{titlepage}
