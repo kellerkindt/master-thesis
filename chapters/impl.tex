@@ -23,3 +23,11 @@ called defensive programming?
   - good to be error-resilient
   - bad in performance critical scenarios
   
+\section{EventSystem}
+
+\subsection{Via already distributed filesystem}
+
+https://docs.oracle.com/javase/tutorial/essential/io/move.html
+
+events/ directory with files being named after a integer, being the unique next event id
+write event to tmp/, then atomically move to events/ without replacing existing ids (which would indicate an collision)

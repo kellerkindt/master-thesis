@@ -23,6 +23,11 @@
 
 \subsection{HDFS}
 
+secondary nameserver only through common centralized filesystem
+
+federation does not provide unified root
+
+
 \subsection{dCache}
 
 used by 10 of 13 top research facilities 
@@ -38,6 +43,25 @@ many dependencies: postgresql, configuration of inter-dependent internal service
 documentation is lückenhaft, outside of dcache.org only veraltet versions are found
 
 too much overhead for just having a distributed file system
+
+zookeeper
+admin
+poolmanager
+spacemanager
+pnfsmanager
+cleaner
+gplazma
+pinmanager
+billing
+httpd
+topo
+info
+nfs
+pool
+
+
+\subsection{zsync}
+http://zsync.moria.org.uk/
 
 \subsection{OpenIO}
 
@@ -76,6 +100,22 @@ damit einfach dezentral kommen und gehen kann
 aber problem 1: anzahl der master soll immer ungerade sein
 problem 2: du kannst nicht einfach master on-the-fly hinzufügen und musst stattdessen teilweise die neu starten mitm parameter: hey da drüben ist noch ein master
 problem 3: es läuft nicht zuverlässig
+
+\subsection{Alluxio}
+
+requires centralized filesystem for masters
+
+https://en.wikipedia.org/wiki/Alluxio
+
+\subsection{GlusterFS}
+
+Bought by IBM
+very minimalistic
+included in ubuntu and debian repositories
+setup easy, without a lot of configuration (none to be precise)
+node information is spread on all nodes, no master/slave
+but replication requires that a multiple of it are assigned to the volume - can be circumvented by adding peers to a volume only every second peer (if replica is 2)
+geo-replication is interesting
 
 \section{Winslow}
 \url{https://de.wikipedia.org/wiki/Frederick_Winslow_Taylor}
