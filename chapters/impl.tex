@@ -31,3 +31,17 @@ https://docs.oracle.com/javase/tutorial/essential/io/move.html
 
 events/ directory with files being named after a integer, being the unique next event id
 write event to tmp/, then atomically move to events/ without replacing existing ids (which would indicate an collision)
+
+\section{Failure recovery}
+
+what if an instance suddenly crahes/disconnects/fails
+
+heartbeats to detect, with max number of allowed skips (so no "timeout")
+
+
+
+assign pipeline to a node? (supervising node)
+  on failure, try to recover what has already been processed
+    by re-assigning pipeline and then trying to load prev-state
+    
+\subsection{paradigm: let it crash}
