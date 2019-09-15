@@ -12,18 +12,16 @@ The next step \todo{onward in this battle} for the most luxurious driving experi
 No longer shall the owner of a car steer it, but instead the car becomes his or hers personal chauffeur, driving the optimal route, the most comfortable way and being more reliable and safer than any human ever could.
 
 The reason, autonomously driving cars are not common yet, is the complexity of it.
-Compared to existing technologies like parking assistants, entertainment systems or simply more efficient engine controllers, letting a computer reliably understand a certain traffic situation requires masses input data.
-As such, the problem itself becomes massive.
-The industry has no choice than to divide it into many small pieces to be able to conquer solutions to it (\todo{ref divide and conquer?}).
+Compared to already established technologies like parking assistants, entertainment systems or more efficient engine controllers, letting a computer reliably understand a certain traffic situation requires masses of input data and complex algorithms to process.
+As such, the problem itself becomes massive which cannot be solved that easily.
+The industry has no choice than to divide this into many small pieces and conquer solutions to it step by step (\todo{ref divide and conquer?}).
 
-The MEC-View research project is such a puzzle piece.
-It explorers whether and how to include external, steady mounted sensors in the decision \todo{finding} of partly autonomous vehicles in situations, where onboard sensors are \todo{limited}.
-The decision finding process also requires one to understand traffic flows
-What might seem to be the right decision for a single car, might be disastrous for the traffic flow, such as being the cause for a \todo{Phantomstau}.
-To understand traffic flows, one needs to study and thereby watch real traffic.
+The MEC-View research project explorers one such puzzle piece: whether and how to include external, steady mounted sensors in the decisions of partially autonomous vehicles for situations where onboard sensors are insufficient.
+As additional restriction, decisions made by autonomous vehicles  are not allowed to disrupt the surrounding traffic flow otherwise phenomens like the \todo{Phantomstau} could be caused by them.
+To understand and not disrupt traffic flow, one needs to study and thereby watch real traffic.
+Automatically analyzing traffic flows from video footage requires a lot of computation power and can be further optimized by specialized hardware such as GPUs.
 
 This thesis will conceptualize and realize a distributed and automated computer vision pipeline which analyzes traffic flow within video footage.
-Such footage is captured for the above described scenario within the MEC-View research project.
 
 
 
