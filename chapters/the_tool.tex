@@ -1,0 +1,44 @@
+\chapter{The Program}
+
+This chapter will discuss the program which shall be implemented.
+To do so, first, the problem to solve must be understood.
+Furthermore, existing solutions have to be considered for being used or being used as middle-ware or as being positive or negative examples.
+
+\section{(Ideal) Workflow}
+
+To understand the problem that shall be solved, the \todo{current workflow is considered} to be able to imagine and ideal workflow.
+The program shall then enable the ideal workflow.
+
+\todo{write more like the user first does abc then wants to do def...?}
+
+A tracking project starts with a video as input.
+The video is usually taken in 4k (3840 x 2160 pixels), a \todo{8 bit RGB} color depth and with 24 frames per second.
+A raw frame is therefore least 189 MiB large.
+The camera drone is using H.264 to compress the video to about \todo{X GiB} per minute.
+The drone can fly for 25 Minutes straight.
+A single video can therefore be as large as \todo{X GiB}.
+The system must be able to reliable store and access such an video.
+The user wants to upload such an video to the system in a common and easy way.
+
+A user then wants to select a pre-defined pipeline to be executed for the uploaded video.
+In this context, a pipeline shall describe the general order of compute steps, called stages while the combination of a pipeline and a video shall be called project.
+Each stage applies an operation onto the whole video, such as detecting cars, tracking stationary reference points, estimating the camera position and assigning trajectories onto detections.
+The logic of such an stage is provided and not within the scope of the program to realize, but needs to be invoked and monitored instead.
+After selecting a pipeline, the user might want to set additionally environment variables or upload prepared files into the workspace.
+
+The user wants to be informed about the current progress of all projects, a certain pipeline or stage.
+Therefore a current state is of interest, such as running, failed or succeeded for the pipeline and each stage.
+
+Any stage might require additional user input, such as manually confirming that tracked references points are indeed reasonable.
+To do so, each stage must be able to pause the pipeline and the user must be able to access the intermediate results of a stage.
+This means, the user must able to browse, download and upload files.
+A stage might also have additional requirements or preferences for certain hardware, such as a GPU for the neuronal network.
+Which stage is executed on which execution node, is assigned by the system and not of special interest to the user. \todo{wait for node to be free?}
+
+The system also needs to provide the current console output of a stage, so that the user can pause a pipeline manually if needed.
+In contrasted to pausing, the user must also be able to resume a pipeline.
+
+The user might find the results of a stage not meeting the expectations.
+In such a scenario, the users wants to redo the stage with adjusted input parameters such as environment variables, or a differently prepared workspace.
+
+\todo{scalability, it shall be easy to add and remove hardware-nodes}
