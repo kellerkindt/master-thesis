@@ -25,7 +25,21 @@ This thesis will conceptualize and realize a distributed and automated computer 
 
 
 
-\section{MEC-View?}
+\section{MEC-View}
+
+The MECView research project - funded by the Federal Ministry for Economic Affairs and Energy - aims to supplement the field of view of automated driving cars with road-side sensor data using 5G mobile communication. The sensor information is merged into an environment model on the so-called Mobile Edge Computing (MEC) server. This server is directly attached to the radio station to ensure low latency environment model updates.
+
+The project is tested at an intersection in Ulm, Germany.
+Currently, there are 15 lidar and video sensors installed.
+Those sensors send their detections to the (MEC) server.
+A fusion-algorithm merges those detections into one environment model and sends it back to the (MEC) server and to the automated cars.
+
+Additionally, general traffic flow is analyzed to learn about movement patterns.
+To do so, 4k video data is captured by an air drone from real world cross roads.
+On each frame of such a recording, cars are detected with a neuronal network.
+Detected cars are tracked throughout the video to compute the movement speed and position in time of each car.
+In an analysis of all vehicles, hot-spots of high and low traffic flow can be determined.
+
 
 \section{The Tool}
 
