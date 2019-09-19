@@ -7,12 +7,15 @@ Also, the solution that is favored mostly at this stage, might not reflect the s
 \section{Storage}
 
 One of the main issues to solve is the storage management.
-The program needs distribute big files onto an execution node.
+The program needs to distribute big files onto an execution node.
 There are a few main principles of how to implement this.
 Simplified, either at a centralized location which is accessed by all execution nodes or a copy on each no node or evenly distributed onto all execution nodes.
 The advantages and disadvantages can depend on the specific implementation and is therefore discussed in combination of such.
 
 \subsection{Hadoop File System}
+
+\cite{hdfs:main}
+\cite{hdfs:doc}
 \todo{redudancy for evenly distributed}
 
 \subsection{NFS}

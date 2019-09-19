@@ -2,18 +2,19 @@
 
 \section{Existing software solutions}
 
-IBM InfoSpheere \url{https://www.ibm.com/support/knowledgecenter/en/SSZJPZ_9.1.0/com.ibm.swg.im.iis.ds.design.doc/topics/c_ddesref_Server_Job_Stages_.html}
+IBM InfoSpheere
+\cite{infosphere:datastage}
 
-GitLab \url{https://docs.gitlab.com/ee/ci/yaml/}
+GitLab \cite{gitlab:ci:yaml}
 
-Jenkins \url{https://jenkins.io/doc/book/pipeline/jenkinsfile/}
+Jenkins \cite{jenkins:pipeline:jenkinsfile}
 
-Quartz?? \url{http://www.quartz-scheduler.org/documentation/quartz-2.3.0/quick-start.html}
+Quartz?? \cite{quartz:quickstart}
 
-CSCS High Throughput Scheduler?? \url{https://user.cscs.ch/tools/high_throughput/}
+CSCS High Throughput Scheduler?? \cite{cscs:high_throughput}
 
 
-qsub job submission \url{https://wiki.uiowa.edu/display/hpcdocs/Basic+Job+Submission}
+qsub job submission % bad \url{https://wiki.uiowa.edu/display/hpcdocs/Basic+Job+Submission}
 
 
 
@@ -24,8 +25,8 @@ Distributed filesystem
 
 \subsection{Quartz}
 
-http://www.quartz-scheduler.org/
-http://www.quartz-scheduler.org/overview/
+\cite{quartz:main}
+\cite{quartz:overview}
 
 \begin{itemize}
 	\item + Java
@@ -42,9 +43,9 @@ CI -> usually no user interaction
 
 \subsection{Camunda}
 
-https://camunda.com/
-\url{https://docs.camunda.org/manual/7.6/user-guide/process-engine/process-engine-api/}
-\url{https://docs.camunda.org/manual/7.8/reference/rest/}
+\cite{camunda:main}
+\cite{camunda:process_engine_api}
+\cite{camunda:rest_api_reference}
 
 Rich Business Process Management tool, many types of tasks, steps, transitions, triggers and endpoints.
 Focused upon moving a dataset along the matching path of the process.
@@ -61,20 +62,23 @@ too heavy?
 \subsection{Luigi}
 
 Similar, but locked-down on python  (+machine learning)?
-https://www.datarevenue.com/en/blog/how-to-scale-your-machine-learning-pipeline
+\cite{luigi:etc:distributed_pipelines}
 
 \subsection{Celery}
 
-\url{http://www.celeryproject.org/}
+\cite{celery:main}
 
 \subsection{Nomad}
 
+\todo{that dude that did the webui}
+
+\cite{nomad:main}
 Deployment and management of containers
 rich REST API
 can handle resource requirements
 device plugins / GPU support
 
-vs kubernetes \url{https://www.nomadproject.io/intro/vs/kubernetes.html}
+vs kubernetes \cite{nomad:vs:kubernetes}
 
 ++ available through debian / ubuntu std-repositories
 
