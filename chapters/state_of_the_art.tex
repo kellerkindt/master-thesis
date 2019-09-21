@@ -1,5 +1,53 @@
 \chapter{State of the art}
 
+In this chapter, programs solving similar problems - as described before - are looked further into.
+Some might manifest as middle-ware, some might teach about proven strategies and some might show pitfalls one should avoid.
+
+\subsection{Hadoop MapReduce}
+\label{hadoop}
+\label{mapreduce}
+
+focus transforming a big dataset by splitting it into many jobs, distributing it onto many workers, doing a transformation on each dataset, and merging it back together (only map -> reduce)
+Distributed filesystem
+
+For big data transformation, Hadoop MaReduce is well known \todo{prove}.
+With MapReduce, the input data is split into blocks of data and distributed onto Mappers.
+Mappers then apply the business logic and output intermediate results in form of key/value pairs.
+After shuffling, the Reduce stage will combine values from key/value pairs with the same key.
+In the final output, each key is unique.
+
+This strategy very powerful to process large input data.
+Mappers and Reducers can work independently on their data-sets and therefore scale very well when adding further instances \todo{prove}.
+
+Using MapReduce in the computer vision pipeline could be implemented like the following:
+\begin{itemize}
+	\item Each video is split into many frames and each frame is applied to a mapper
+	\item A mapper tries to detect all vehicles on a frame and outputs the position of it
+	\item The Reduce then tries to link the detections of a vehicle for each frame
+	\item The final result would be a set of detections and therefore positions of each vehicle in the video
+\end{itemize}
+
+But at the moment, this approach seems to be unfitting due to at least two facts:
+
+\begin{enumerate}
+	\item It is not always trivial to reasonable link the detections of a vehicle.
+	For example, a vehicle can be hidden behind a tree for a few frames until visible again.
+	In addition, MapReduce requires the combination to be performed per common key.
+	Until one is trying to link the detections of multiple frames, the is no common identifier that could easily be used as key.
+	The position of a moving vehicle cannot be used as key, neither can the color or size, because of the noise of the camera, deviation in detection output and perspective distortions.
+	\item MapReduce is a great in combining many machines to solve a big computational problem.
+	But at the moment, this is neither a desired nor given condition. At the moment, there a \todo{three} very powerful workstations with special hardware (GPUs).
+	Therefore it is perfectly acceptable, when each workstation works through a complete video at a given time instead.
+\end{enumerate}
+
+\subsection{Build Pipelines}
+
+Build pipelines such as GitLab\cite{gitlab:main} and Jenkins\cite{jenkins:main} provide multi stage work distribution on multiple machines.
+In a common use-case, this is used to build binaries out of source code, after a new commit into the \todo{SCM - Source Code Management} repository was made.
+At IT-Designers GmbH both are being used for scenarios like this.
+A pipeline definition in GitLab CI/CD \cite{gitlab:ci:yaml} or in a Jenkinsfile \cite{jenkins:pipeline:jenkinsfile}
+
+
 \section{Existing software solutions}
 
 IBM InfoSpheere
@@ -18,10 +66,6 @@ qsub job submission % bad \url{https://wiki.uiowa.edu/display/hpcdocs/Basic+Job+
 
 
 
-\subsection{Hadoop MapReduce}
-
-focus transforming a big dataset by splitting it into many jobs, distributing it onto many workers, doing a transformation on each dataset, and merging it back together (only map -> reduce)
-Distributed filesystem
 
 \subsection{Quartz}
 
