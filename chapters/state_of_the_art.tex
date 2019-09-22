@@ -91,6 +91,20 @@ Others\cite{nomad:etc:gui_thesis} seem to be using Nomad to manage and deploy co
 Nonetheless, further testing and prototyping will be required for a final decision.
 
 
+\subsection{dCache}
+
+\enquote{The goal of this project is to provide a system for storing and retrieving huge amounts of data, distributed among a large number of heterogenous server nodes, under a single virtual filesystem tree with a variety of standard access methods}\cite{dcache:main}.
+dCache seems to be able to solve the storage access and distribution for the stages and sever nodes.
+When using dCache, once could store the global resources distributed on the server nodes.
+Built-in replication would prevent access loss on a node or network failure and export through NFS\footnote{Network File System} allows easy access on Linux based systems\cite{dcache:overview:whitepaper}.
+
+But the installation is complex and requires many services to be setup correctly, such as postgresql and many internal services such as zookeeper, admin, poolmanager, spacemanager, pnfsmanager, cleaner, gplazma, pinmanager, topo, info and nfs.
+The documentation is also rather outdated and incomplete which meant, early tests with a prototype setup took days to setup and behaved rather unstable (probably due to a wrong configuration).
+It is to be seen, whether such an complex and heavy system is actually required or if there are feasible alternatives.
+
+
+
+
 \subsection{Further mentions}
 
 The following list shall acknowledge programs that behave similar to the previously three mentioned strategies.
@@ -98,22 +112,36 @@ Programs there are listed here, were looked into, but not in-depth because while
 
 \begin{itemize}
 	\item \textbf{Quartz}\cite{quartz:main} is a Java based program to schedule jobs. Instead of doing so by using input, Quartz executes programs through a timetable and in certain intervals.
-%	\cite{quartz:overview} 	\cite{quartz:quickstart}
+	%	\cite{quartz:overview} 	\cite{quartz:quickstart}
 	\item \textbf{Luigi}\cite{luigi:etc:distributed_pipelines} also executes pipelines with stages and is written in python. The advertised advantage is to define the pipeline directly in python code. But, this is at the same time the only way to define pipelines which contradictions with the existing Java TrackerApplication implementation.
 	\item \textbf{Calery}\cite{celery:main} is focused on task execution through message passing and is written in Python. Intermediate results are expected to be transmitted through messages. Because is no storage strategy and python adapter-code would have been required, Calery was dismissed.
 	\item \textbf{IBM InfoSphere}\cite{infosphere:datastage} provides similar to Camunda a rich graphical user interface but for data transfer. Dismissed due to commercial nature.
 	\item \textbf{qsub}\cite{qsub:etc:wiki}\cite{qsub:etc:uiowa} CLI\footnote{Command Line Interface} using in HPC to submit jobs onto a cluster or grid. Dismissed due to an expected high setup overhead, non-required multi-user nature and the fact, that it only provides a solution for the job submission.
 	\item \textbf{CSCS}\cite{cscs:high_throughput} High Throughput Scheduler (GREASY). Dismissed for similar reasons as qsub, although it is more light weighty and hardware agnostic (it can consider CUDA/GPU requirements).
+	\item \textbf{zsync}\cite{zsync:main}, similar to rsync, is a file transfer program. Zsync allows to only transfer new parts when a file that shall be copied already exists in an older version on the target. This tool might be useful for a complete custom resource distribution strategy.
+	\item \textbf{OpenIO}\cite{openio:main} provides a distributed file system, is already provided as Docker image and provides a simple to use CLI. Because the NFS export is only available through a paid subscription plan, it was dismissed from further investigation.
+	\item \textbf{SeaweedFS}\cite{seeweedfs:main} provides a scalable and distributed file system. The most interesting aspects are that it is rack-aware as well as naively supports external storage such as Amazon S3. When adding server nodes from the cloud this could allow all nodes to access the same file system while using rack-aware replication to reduce used bandwidth and latency. A local test also proved that it is easy to setup, but because it cannot hot-swap nodes and was not able to recover when the seeweed master node became unreachable.
+%	master halten die zuweisung file -> addresse
+%	filer machen nur ein lookup und zuweisen oder sowas
+%	aber der client frägt filer an
+%	und der muss dann zu irgendeinem master die verbinundg aufbauen und nachschlagen
+%	dh wollte pro physicalischen server 1 volume, 1 master, 1 filer haben
+%	damit einfach dezentral kommen und gehen kann
+%	aber problem 1: anzahl der master soll immer ungerade sein
+%	problem 2: du kannst nicht einfach master on-the-fly hinzufügen und musst stattdessen teilweise die neu starten  mitm parameter: hey da drüben ist noch ein master
+%	problem 3: es läuft nicht zuverlässig
+	\item \textbf{Alluxio}\cite{alluxio:main} provides a distributed file system but was dismissed because it itself requires a centralized file system for the master and its fallback instances.
+	\item \textbf{GlusterFS}\cite{glusterfs:main} is another tool to provide a distributed file system with replication. It was bought by IBM but is nonetheless available through the software repository of many Linux distributions such as Debian. A local test show that the setup is very easy without any configuration files required to be setup. The replication mechanism however, requires that an even multiple of nodes of the replica value are assigned to the file system. This makes GlusterFS hard to use in a scenario, where adding and removing nodes are expected to happen frequently, and therefore it was dismissed.
 \end{itemize}
 
 \section{Docker Integration}
 
-As describe before (see \autoref{workflow}), for easy deployment, the implementation of the management shall be executed from a Docker image \cite{docker:main}, as well as the stages.
+As describe before (see \autoref{workflow}), for easy deployment, the implementation as well as the stages shall be executed inside Docker\cite{docker:main} containers.
 This allows easier isolation of the stages and workspaces from each other and other host programs.
 Because one needs to communicate with the Docker daemon, this increases the complexity for the implementation.
 But thanks to third party libraries, the increase in complexity can be limited.
 
 
-
+\todo{explain docker?}
 
 
