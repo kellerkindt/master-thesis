@@ -35,7 +35,7 @@ But at the moment, this approach seems to be unfitting due to at least two facts
 	In addition, MapReduce requires the combination to be performed per common key.
 	Until one is trying to link the detections of multiple frames, the is no common identifier that could easily be used as key.
 	The position of a moving vehicle cannot be used as key, neither can the color or size, because of the noise of the camera, deviation in detection output and perspective distortions.
-	\item MapReduce is a great in combining many machines to solve a big computational problem.
+	\item MapReduce is great in combining many machines to solve a big computational problem.
 	But at the moment, this is neither a desired nor given condition. At the moment, there a \todo{three} very powerful workstations with special hardware (GPUs).
 	Therefore it is perfectly acceptable, when each workstation works through a complete video at a given time instead.
 \end{enumerate}
@@ -45,7 +45,20 @@ But at the moment, this approach seems to be unfitting due to at least two facts
 Build pipelines such as GitLab\cite{gitlab:main} and Jenkins\cite{jenkins:main} provide multi stage work distribution on multiple machines.
 In a common use-case, this is used to build binaries out of source code, after a new commit into the \todo{SCM - Source Code Management} repository was made.
 At IT-Designers GmbH both are being used for scenarios like this.
-A pipeline definition in GitLab CI/CD \cite{gitlab:ci:yaml} or in a Jenkinsfile \cite{jenkins:pipeline:jenkinsfile}
+A pipeline definition in GitLab CI/CD \cite{gitlab:ci:yaml} or a Jenkinsfile \cite{jenkins:pipeline:jenkinsfile} describe stages to be executed.
+Each stage can be hosted on another node and be executed sequential or in parallel.
+Although this seems to be quite fitting for the desired workflow, there are two issues.
+First of all, such a pipeline does not involve any user input besides an optional manual start command.
+The result is then determined based on the input repository.
+Second, such an pipeline is designed to determine the output (usually compile) whereas each run ins independent from the previous.
+Usually a new run is caused by an change of the input data.
+However, the desired workflow differs in this aspect.
+A redo of a stage can depend on the result of the previous run (if the results are poor).
+For a project here, the input (video file), does not change for each run, but is tightly coupled with all stages of the pipeline.
+Intermediate results need to influence further stages, even if repeated.
+
+\subsection{Docker Integration}
+
 
 
 \section{Existing software solutions}
