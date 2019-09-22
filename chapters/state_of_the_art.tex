@@ -63,76 +63,57 @@ Also, intermediate results need to influence further stages, even if repeated.
 
 \subsection{Camunda}
 
-\todo{.}
+Camunda\cite{camunda:main} calls itself a \enquote{Rich Business Process Management tool} and allows the user to easily create new pipelines by combining existing tasks with many triggers and custom transitions. % , many types of tasks, steps, transitions, triggers and endpoints.
+Camunda is focused upon visualizing the flow and tracking the data through a pipeline. %moving a dataset along the matching path of the process.
+The Camundas Process Engine\cite{camunda:process_engine_api} also allows user intervention between tasks.
 
-\cite{camunda:main}
-
-
-
-Camunda calls itself a \enquote{Rich Business Process Management tool} and allows the user to easily create new pipelines by combining existing tasks with many triggers and custom transitions. % , many types of tasks, steps, transitions, triggers and endpoints.
-Camunda is focused upon visualizing the flow of data throughout the pipeline and therefore the system. %moving a dataset along the matching path of the process.
-Camundas Process Engine\cite{camunda:process_engine_api} also allows user intervention between tasks.
-One of the main \todo{positive gründe} for it is the out of the box rich graphical user interface for process definition and interaction.
-Through its API\cite{camunda:rest_api_reference}, Camunda also allows custom external workers to execute custom tasks.
-But it misses the capability to control which task shall be processed on which worker node as desired \ref{workflow}.
+One of the main supporting reason for it Camunda is the out of the box rich graphical user interface for process definition and interaction.
+Through its API\cite{camunda:rest_api_reference}, Camunda also allows custom external workers to execute a task.
+But it misses the capability to control which task shall be processed on which worker node which is required by the desired workflow.
 It does also not provide any concept on how to allocate and distribute resources.
-The User-Interface while being rich overall, is quite rudimentary when it is about configuring tasks and would therefore require custom plugins to be developed for more advanced user interactions.
-Camunda itself is not designed to handle task parameters through its User-Interface.
-Instead, the user itself is considered more as a worker, that gets some input data (for Camunda that is often a PDF file or otherwise textual information) and provides some output data with a decision that roughly boils down to accepting or denied a request.
-There is also no overview of task executors, there is no centralized log accumulation and no file up or download for project global resources.
+The user interface - while being rich overall - is quite rudimentary when it is about configuring tasks and would therefore require custom plugins to be developed for more advanced user interactions.
+
+Camunda is also not designed to reorder stages or insert user interactions at seemingly random fashion.
+Also, the user itself is considered more as a worker, that gets some request, \enquote{executes} this externally and finally marks the request as accepted or declined.
+Mapping this to the desired workflow does not feel intuitive.
+Finally, There is also no overview of task executors, no centralized log accumulation and no file up or download for project global resources.
+
+
+\subsection{Nomad}
+
+Nomad\cite{nomad:main} by HashiCorp is a tool to deploy, manage and monitor containers, whereas each job is executed in its own container.
+It provides a rich REST API and can consider hardware constraints on job submissions.
+Compared to Kubernetes\cite{nomad:vs:kubernetes}, which is similar but more focused on scaling containers to an externally applied load, it is very lightweight.
+It is also available in many Linux software repositories - such as for Debian - which makes the installation very easy.
+
+Because there were no grave disadvantages found (depending on a third party library can be a disadvantage in flexibility, error-pronous and limit functionality) Nomad is being considered as a middle-ware to manage and deploy stages.
+Others\cite{nomad:etc:gui_thesis} seem to be using Nomad to manage and deploy containers for similar reasons.
+Nonetheless, further testing and prototyping will be required for a final decision.
+
 
 \subsection{Further mentions}
 
+The following list shall acknowledge programs that behave similar to the previously three mentioned strategies.
+Programs there are listed here, were looked into, but not in-depth because while looking into them, miss-fits were detected early on. Listed in no specific order.
 
-IBM InfoSpheere \cite{infosphere:datastage}
-
-%GitLab \cite{gitlab:ci:yaml}
-
-%Jenkins \cite{jenkins:pipeline:jenkinsfile}
-
-Quartz?? 
-\cite{quartz:main}
-\cite{quartz:overview}
-\cite{quartz:quickstart}
 \begin{itemize}
-	\item + Java
-	\item - requires integration
-	\item - aimed towards running a job at a given time or in certain intervals
+	\item \textbf{Quartz}\cite{quartz:main} is a Java based program to schedule jobs. Instead of doing so by using input, Quartz executes programs through a timetable and in certain intervals.
+%	\cite{quartz:overview} 	\cite{quartz:quickstart}
+	\item \textbf{Luigi}\cite{luigi:etc:distributed_pipelines} also executes pipelines with stages and is written in python. The advertised advantage is to define the pipeline directly in python code. But, this is at the same time the only way to define pipelines which contradictions with the existing Java TrackerApplication implementation.
+	\item \textbf{Calery}\cite{celery:main} is focused on task execution through message passing and is written in Python. Intermediate results are expected to be transmitted through messages. Because is no storage strategy and python adapter-code would have been required, Calery was dismissed.
+	\item \textbf{IBM InfoSphere}\cite{infosphere:datastage} provides similar to Camunda a rich graphical user interface but for data transfer. Dismissed due to commercial nature.
+	\item \textbf{qsub}\cite{qsub:etc:wiki}\cite{qsub:etc:uiowa} CLI\footnote{Command Line Interface} using in HPC to submit jobs onto a cluster or grid. Dismissed due to an expected high setup overhead, non-required multi-user nature and the fact, that it only provides a solution for the job submission.
+	\item \textbf{CSCS}\cite{cscs:high_throughput} High Throughput Scheduler (GREASY). Dismissed for similar reasons as qsub, although it is more light weighty and hardware agnostic (it can consider CUDA/GPU requirements).
 \end{itemize}
-
-CSCS High Throughput Scheduler?? \cite{cscs:high_throughput}
-Cubernetes? too heavy?
-
-qsub job submission % bad \url{https://wiki.uiowa.edu/display/hpcdocs/Basic+Job+Submission}
-
-
-Luigi: Similar, but locked-down on python  (+machine learning)? \cite{luigi:etc:distributed_pipelines}
-
-Celery: \cite{celery:main}
 
 \section{Docker Integration}
 
-As describe before (\ref{workflow}, for easy deployment, the implementation of the management shall be executed from a Docker image \cite{docker:main}, as well as the stages.
+As describe before (see \autoref{workflow}), for easy deployment, the implementation of the management shall be executed from a Docker image \cite{docker:main}, as well as the stages.
 This allows easier isolation of the stages and workspaces from each other and other host programs.
 Because one needs to communicate with the Docker daemon, this increases the complexity for the implementation.
 But thanks to third party libraries, the increase in complexity can be limited.
 
 
-
-\subsection{Nomad}
-
-\todo{that dude that did the webui}
-\cite{nomad:etc:gui_thesis}
-
-\cite{nomad:main}
-Deployment and management of containers
-rich REST API
-can handle resource requirements
-device plugins / GPU support
-
-vs kubernetes \cite{nomad:vs:kubernetes}
-
-++ available through debian / ubuntu std-repositories
 
 
 
