@@ -1,46 +1,72 @@
 \chapter{The Program}
 
 This chapter will discuss the program which shall be implemented.
-To do so, first, the problem to solve must be understood.
-Furthermore, existing solutions have to be considered for being used or being used as middle-ware or as being positive or negative examples.
+To do so, the problem to solve must be understood.
+To gather requirements and understand the technical hurdles to overcome, this chapter is split into two sections.
+First, a rough glance over the current workflow is given, which is followed by a more detailed description for the desired workflow.
 
-\section{(Ideal) Workflow}
+\todo{it is called TrackerApplication}
 
-To understand the problem that shall be solved, the \todo{current workflow is considered} to be able to imagine and ideal workflow.
-The program shall then enable the ideal workflow.
+\section{Current Workflow}
 
-\todo{write more like the user first does abc then wants to do def...?}
+Currently, to analyze a video for the trajectories of the recorded vehicles, the following steps are executed manually:
+\begin{enumerate}
+	\item Upload the input video to a new directory on the GPU server
+	\item \label{cw:ex} Execute a shell script with the video as input file and let it run (hours to days) until completed. The shell script invokes a Java Program with parameters on what to do with the input file and additional parameters.
+	\item The intermediate result with raw detection results is downloaded to the local machine and opened for inspection. If the detection error is too high, the camera tracking has a drift or other disruptions are visible, redo the previous step with adjusted parameters.
+	\item \label{cw:st} Upload the video and intermediate result to a generic computing server and run data cleanup and analysis. This is again done with the same Java Program as in step \ref{cw:ex}, but with different stage environment parameters.
+	\item \label{cw:st_dl} Download the results, recheck for consistency or obvious abnormalities. Depending on the result, redo step \ref{cw:ex} or \ref{cw:st} with adjusted parameters again.
+	\item Depending on the assignment, steps \ref{cw:st} and \ref{cw:st_dl} are repeated to incrementally accumulate all output data (such as statistics, diagrams and so on).
+\end{enumerate}
 
-A tracking project starts with a video as input.
-The video is usually taken in 4k (3840 x 2160 pixels), a \todo{8 bit RGB} color depth and with 24 frames per second.
-A raw frame is therefore least 189 MiB large.
-The camera drone is using H.264 to compress the video to about \todo{X GiB} per minute.
-The drone can fly for 25 Minutes straight.
-A single video can therefore be as large as \todo{X GiB}.
-The system must be able to reliable store and access such an video.
-The user wants to upload such an video to the system in a common and easy way.
+Because all those steps are done manually, the user needs to check for errors by oneself.
+Also, if a execution is finished or failed early, there could be hours wasted if the regular check interval are too far apart.
 
-A user then wants to select a pre-defined pipeline to be executed for the uploaded video.
-In this context, a pipeline shall describe the general order of compute steps, called stages while the combination of a pipeline and a video shall be called project.
-Each stage applies an operation onto the whole video, such as detecting cars, tracking stationary reference points, estimating the camera position and assigning trajectories onto detections.
-The logic of such an stage is provided and not within the scope of the program to realize, but needs to be invoked and monitored instead.
-After selecting a pipeline, the user might want to set additionally environment variables or upload prepared files into the workspace.
+\section{Desired Workflow}
+\label{workflow}
 
-The user wants to be informed about the current progress of all projects, a certain pipeline or stage.
-Therefore a current state is of interest, such as running, failed or succeeded for the pipeline and each stage.
+The desired workflow shall be supported through a rich user interface.
+This user interface shall provide an overview of all active projects and their current state, such as running computation, awaiting user input, failed or succeeded.
 
-Any stage might require additional user input, such as manually confirming that tracked references points are indeed reasonable.
-To do so, each stage must be able to pause the pipeline and the user must be able to access the intermediate results of a stage.
-This means, the user must able to browse, download and upload files.
-A stage might also have additional requirements or preferences for certain hardware, such as a GPU for the neuronal network.
-Which stage is executed on which execution node, is assigned by the system and not of special interest to the user. \todo{wait for node to be free?}
+To create a new project, a predefined pipeline definition shall be selected as well as a name chosen.
+Because only a handful of different pipeline definitions are expected, the creation of such does not need to happen through the user interface.
+Instead, it is acceptable to have to manually edit a configuration file in such rare circumstances.
 
-The system also needs to provide the current console output of a stage, so that the user can pause a pipeline manually if needed.
-In contrasted to pausing, the user must also be able to resume a pipeline.
+Once a project is created, the user wants to select the path to the input video.
+This file has to be uploaded to a global resource pool at this point.
+The upload and download of files shall therefore also be possible through the user interface.
+Because a video is usually recorded in 4k (3840 x 2160 pixels), encoded with H.264 and up to 20 minutes long, the upload must be capable of handling files which are tens of gigabytes large.
 
-The user might find the results of a stage not meeting the expectations.
-In such a scenario, the users wants to redo the stage with adjusted input parameters such as environment variables, or a differently prepared workspace.
+Once a pipeline is started, it shall execute the stages on the most fitting server node until finished, failed or a user input is required.
+Throughout, the logs of the current and previous stage shall be accessible as well as uploading or downloading files from the current or previous stages workspace.
+In addition to the pipeline pausing itself for user input, the user shall be able to request the pipeline to pause after the current stage at any moment.
+When resuming the pipeline, the user wants to overwrite the starting point to, for example, redo the latest stage.
 
-\todo{scalability, it shall be easy to add and remove hardware-nodes}
+Mechanisms for fault tolerance shall detect unexpected program errors or failures of server nodes.
+Server nodes shall be easily installed and added to the existing network of server nodes.
+Each server node might provide additional hardware (such as GPUs), which shall be detected and provided.
 
-\todo{docker}
+For the ease of installation and binary distribution, Docker Images shall be used for running the Java Program for analyzing the videos as well the to be implemented management software.
+
+\todo{describe: project/pipeline -> stage?}
+
+
+
+\section{Requirements}
+
+From the desired workflow, the following requirements can be extracted (shortened and incomplete due to early project stage):
+
+\begin{itemize}
+	\item Rich user interface
+	\item Storage management for global resource files as well as stage based workspaces
+	\item Pipeline definition through configuration files
+	\item Handling of multiple projects with independent progress and environment
+	\item Reflecting the correct project state (running, failed, succeeded, paused)
+	\item Log accumulation and archiving
+	\item Accepting user input to update environment variables, resuming and pausing projects as well as uploading and downloading files into or from the global resource pool or a stages workspace.
+	\item Assigning to be started stages to the most fitting server node
+	\item Detecting program errors (in a stage execution)
+	\item Cope with server node failures
+	\item Docker Image creation for the Java Binary as well as the program implementation, preferred in an automated fashion.
+	
+\end{itemize}

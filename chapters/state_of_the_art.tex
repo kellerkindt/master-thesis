@@ -1,133 +1,128 @@
 \chapter{State of the art}
 
-In this chapter, programs solving similar problems - as described before - are looked further into.
-Some might manifest as middle-ware, some might teach about proven strategies and some might show pitfalls one should avoid.
+In this chapter, programs solving similar problems, as described in the desired workflow, or dealing with a subset of the problem are looked into.
+The reason for this is to use well established or suitable programs as middle-ware to reduce implementation overhead.
+Where this is not possible, one might be able to gather ideas and learn about proven strategies to use or pitfalls to avoid while implementing custom solutions.
+
+\section{Similar solutions}
+
+This sections focuses on programs trying to provide somewhat similar workflows.
 
 \subsection{Hadoop MapReduce}
 \label{hadoop}
 \label{mapreduce}
 
-focus transforming a big dataset by splitting it into many jobs, distributing it onto many workers, doing a transformation on each dataset, and merging it back together (only map -> reduce)
-Distributed filesystem
-
-For big data transformation, Hadoop MaReduce is well known \todo{prove}.
+For big data transformation, Hadoop MapReduce\cite{hdfs:main} is well known.
 With MapReduce, the input data is split into blocks of data and distributed onto Mappers.
 Mappers then apply the business logic and output intermediate results in form of key/value pairs.
 After shuffling, the Reduce stage will combine values from key/value pairs with the same key.
-In the final output, each key is unique.
+In the final output, each key is unique accompanied with a value.
 
-This strategy very powerful to process large input data.
-Mappers and Reducers can work independently on their data-sets and therefore scale very well when adding further instances \todo{prove}.
+This strategy has proven to be very powerful to process large amount input data because Mappers and Reducers can work independently on their data-sets and therefore scale very well when adding further instances.
 
-Using MapReduce in the computer vision pipeline could be implemented like the following:
+If the implementation were to be based on Hadoop MapReduce to achieve the desired workflow, it could be done like the following:
 \begin{itemize}
-	\item Each video is split into many frames and each frame is applied to a mapper
-	\item A mapper tries to detect all vehicles on a frame and outputs the position of it
-	\item The Reduce then tries to link the detections of a vehicle for each frame
-	\item The final result would be a set of detections and therefore positions of each vehicle in the video
+	\item Each video is split into many frames and each frame is applied to a Mapper
+	\item A Mapper tries to detect all vehicles on a frame and outputs their position, orientation, size and so on
+	\item The Reducer then tries to link the detections of a vehicle through multiple frames
+	\item The final result would be a set of detections and therefore all positions for each vehicle in the video
 \end{itemize}
 
-But at the moment, this approach seems to be unfitting due to at least two facts:
+But at the moment, this approach seems to be unfitting due to at least the following reasons:
 
 \begin{enumerate}
 	\item It is not always trivial to reasonable link the detections of a vehicle.
 	For example, a vehicle can be hidden behind a tree for a few frames until visible again.
 	In addition, MapReduce requires the combination to be performed per common key.
-	Until one is trying to link the detections of multiple frames, the is no common identifier that could easily be used as key.
+	Until one is trying to link the detections of multiple frames, there is no common identifier that could easily be used as key.
 	The position of a moving vehicle cannot be used as key, neither can the color or size, because of the noise of the camera, deviation in detection output and perspective distortions.
+	The current implementation of the TrackerApplication is archiving this by finding similarities between detections, but for the Mapper this would required to be expressed as a deterministic key.
 	\item MapReduce is great in combining many machines to solve a big computational problem.
-	But at the moment, this is neither a desired nor given condition. At the moment, there a \todo{three} very powerful workstations with special hardware (GPUs).
-	Therefore it is perfectly acceptable, when each workstation works through a complete video at a given time instead.
+	But at the moment, this is neither a desired nor given condition. At the moment, there a handful of very powerful workstations with specialized hardware.
+	Therefore it is perfectly acceptable and sometimes required, when each workstation works through a complete video at a given time instead.
 \end{enumerate}
 
 \subsection{Build Pipelines}
 
-Build pipelines such as GitLab\cite{gitlab:main} and Jenkins\cite{jenkins:main} provide multi stage work distribution on multiple machines.
-In a common use-case, this is used to build binaries out of source code, after a new commit into the \todo{SCM - Source Code Management} repository was made.
-At IT-Designers GmbH both are being used for scenarios like this.
-A pipeline definition in GitLab CI/CD \cite{gitlab:ci:yaml} or a Jenkinsfile \cite{jenkins:pipeline:jenkinsfile} describe stages to be executed.
-Each stage can be hosted on another node and be executed sequential or in parallel.
+Build pipelines such as GitLab\cite{gitlab:main} and Jenkins\cite{jenkins:main} can also distribute the execution of a stage onto another server node.
+In a common use-case, such build pipelines are used to build binaries out of source code, after a new commit into a SCM\footnote{Source Code Management} repository was made.
+At IT-Designers GmbH GitLab as well as Jenkins are commonly used for scenarios exactly like this.
+A pipeline definition in GitLab CI/CD \cite{gitlab:ci:yaml} or in a Jenkinsfile \cite{jenkins:pipeline:jenkinsfile} describe stages and commands to execute.
+Each stage can be hosted on another node and be executed sequential or in parallel to each other.
+
 Although this seems to be quite fitting for the desired workflow, there are two issues.
 First of all, such a pipeline does not involve any user input besides an optional manual start command.
-The result is then determined based on the input repository.
-Second, such an pipeline is designed to determine the output (usually compile) whereas each run ins independent from the previous.
-Usually a new run is caused by an change of the input data.
-However, the desired workflow differs in this aspect.
-A redo of a stage can depend on the result of the previous run (if the results are poor).
-For a project here, the input (video file), does not change for each run, but is tightly coupled with all stages of the pipeline.
-Intermediate results need to influence further stages, even if repeated.
-
-\subsection{Docker Integration}
+The result is then determined based on the state of the input repository.
+Second, such an pipeline is designed to determine the output (usually by compiling) whereas each run ins independent from the previous and a repeated run shall provide the same result as the previous.
+Usually, a new run is only caused by an change of the input data.
+However, the desired workflow differs in this aspects.
+A redo of a stage can depend on the result of the previous stage, for example if the results are poor or the the stage failed.
+Instead of having multiple complete pipeline runs per project, the desired workflow uses a pipeline definition as base for which the order can be influenced.
+Also, intermediate results need to influence further stages, even if repeated.
 
 
+\subsection{Camunda}
 
-\section{Existing software solutions}
+\todo{.}
 
-IBM InfoSpheere
-\cite{infosphere:datastage}
-
-GitLab \cite{gitlab:ci:yaml}
-
-Jenkins \cite{jenkins:pipeline:jenkinsfile}
-
-Quartz?? \cite{quartz:quickstart}
-
-CSCS High Throughput Scheduler?? \cite{cscs:high_throughput}
-
-
-qsub job submission % bad \url{https://wiki.uiowa.edu/display/hpcdocs/Basic+Job+Submission}
+\cite{camunda:main}
 
 
 
+Camunda calls itself a \enquote{Rich Business Process Management tool} and allows the user to easily create new pipelines by combining existing tasks with many triggers and custom transitions. % , many types of tasks, steps, transitions, triggers and endpoints.
+Camunda is focused upon visualizing the flow of data throughout the pipeline and therefore the system. %moving a dataset along the matching path of the process.
+Camundas Process Engine\cite{camunda:process_engine_api} also allows user intervention between tasks.
+One of the main \todo{positive gründe} for it is the out of the box rich graphical user interface for process definition and interaction.
+Through its API\cite{camunda:rest_api_reference}, Camunda also allows custom external workers to execute custom tasks.
+But it misses the capability to control which task shall be processed on which worker node as desired \ref{workflow}.
+It does also not provide any concept on how to allocate and distribute resources.
+The User-Interface while being rich overall, is quite rudimentary when it is about configuring tasks and would therefore require custom plugins to be developed for more advanced user interactions.
+Camunda itself is not designed to handle task parameters through its User-Interface.
+Instead, the user itself is considered more as a worker, that gets some input data (for Camunda that is often a PDF file or otherwise textual information) and provides some output data with a decision that roughly boils down to accepting or denied a request.
+There is also no overview of task executors, there is no centralized log accumulation and no file up or download for project global resources.
 
-\subsection{Quartz}
+\subsection{Further mentions}
 
+
+IBM InfoSpheere \cite{infosphere:datastage}
+
+%GitLab \cite{gitlab:ci:yaml}
+
+%Jenkins \cite{jenkins:pipeline:jenkinsfile}
+
+Quartz?? 
 \cite{quartz:main}
 \cite{quartz:overview}
-
+\cite{quartz:quickstart}
 \begin{itemize}
 	\item + Java
 	\item - requires integration
 	\item - aimed towards running a job at a given time or in certain intervals
 \end{itemize}
 
-\subsection{Pipeline examples: Jenkins / GitLab}
+CSCS High Throughput Scheduler?? \cite{cscs:high_throughput}
+Cubernetes? too heavy?
 
-Pipeline file with multiple stages
-a stage can be executed on a host
-focused on doing a job with different inputs again and again and again
-CI -> usually no user interaction
+qsub job submission % bad \url{https://wiki.uiowa.edu/display/hpcdocs/Basic+Job+Submission}
 
-\subsection{Camunda}
 
-\cite{camunda:main}
-\cite{camunda:process_engine_api}
-\cite{camunda:rest_api_reference}
+Luigi: Similar, but locked-down on python  (+machine learning)? \cite{luigi:etc:distributed_pipelines}
 
-Rich Business Process Management tool, many types of tasks, steps, transitions, triggers and endpoints.
-Focused upon moving a dataset along the matching path of the process.
-Out of the box graphical user interface for process definition and interaction.
-Allows custom external worker through queues.
-Misses capability to control which task to process on which worker through fine grained filters and how to allocate and distribute resources(?).
-Requires custom plugins for more advanced user forms, not designed for that.
-Not designed provide an overview on the docker machines, cluster state nor logs, file up and download
+Celery: \cite{celery:main}
 
-\subsection{Cubernetes}
+\section{Docker Integration}
 
-too heavy?
+As describe before (\ref{workflow}, for easy deployment, the implementation of the management shall be executed from a Docker image \cite{docker:main}, as well as the stages.
+This allows easier isolation of the stages and workspaces from each other and other host programs.
+Because one needs to communicate with the Docker daemon, this increases the complexity for the implementation.
+But thanks to third party libraries, the increase in complexity can be limited.
 
-\subsection{Luigi}
 
-Similar, but locked-down on python  (+machine learning)?
-\cite{luigi:etc:distributed_pipelines}
-
-\subsection{Celery}
-
-\cite{celery:main}
 
 \subsection{Nomad}
 
 \todo{that dude that did the webui}
+\cite{nomad:etc:gui_thesis}
 
 \cite{nomad:main}
 Deployment and management of containers
@@ -139,4 +134,5 @@ vs kubernetes \cite{nomad:vs:kubernetes}
 
 ++ available through debian / ubuntu std-repositories
 
-\section{Docker}
+
+
