@@ -1,0 +1,85 @@
+\chapter{Schedule}
+
+The following figure shows schedule for further and past work:
+
+\newganttlinktype{f-m}{
+	\ganttsetstartanchor{on right=1}
+	\ganttsetendanchor{on left=0}
+	\draw[/pgfgantt/link]
+	([xshift=-.2pt]\xLeft, \yUpper) -- % xshift to fit arrow
+	node[pos=.5, /pgfgantt/link label node] {\ganttlinklabel}
+	(\xRight, \yLower);
+}
+
+\setganttlinklabel{f-m}{}
+
+\begin{figure}[H]
+	\centering
+	\begin{ganttchart}[hgrid,vgrid,x unit = 0.4cm,y unit chart = 0.35cm,title label font=\footnotesize,group label font=\tiny,milestone label font=\tiny,bar label font=\tiny]{1}{29}
+		\gantttitle{2019}{16}
+		\gantttitle{2020}{13} \\
+		\gantttitle{Sep}{4}
+		\gantttitle{Oct}{4}
+		\gantttitle{Nov}{4}
+		\gantttitle{Dec}{4}
+		\gantttitle{Jan}{4}
+		\gantttitle{Feb}{4}
+		\gantttitle{Mar}{4}
+		\gantttitle{}{1} \\
+		
+		\ganttgroup{Interim Report}{1}{4} \\
+		\ganttbar{Analyze and Understand}{1}{2} \\
+		\ganttbar{Research}{1}{14} \\
+		\ganttbar{Writing}{2}{4} \\
+		\ganttmilestone{Submission}{4} \\ \\
+		
+		\ganttgroup{Master's Thesis}{5}{28} \\ \\
+		\ganttgroup{Implementation}{5}{26} \\
+		\ganttbar{Prototyping}{5}{16} \\
+		
+		\ganttbar{Decide: Architecture}{6}{8} \\
+		\ganttbar{Decide: Storage Strategy}{9}{13} \\
+		\ganttbar{Decide: Coordination Strategy}{14}{17} \\
+		
+		\ganttbar{Implement: Adapter Code}{9}{13} \\
+		\ganttbar{Implement: Storage}{14}{17} \\
+		\ganttbar{Implement: Coordination}{18}{22} \\
+		
+		
+		\ganttbar{Setup CI Pipeline}{7}{8} \\
+		\ganttbar{Setup Binary Distribution}{9}{12} \\
+		
+		\ganttbar{Implement: Corresponding UI}{10}{23} \\
+		\ganttbar{Testing \& Fixing}{10}{26} \\
+		
+		\\
+		\ganttgroup{Documentation}{9}{28} \\
+		\ganttbar{Write: Architecture \& Techn.}{9}{13} \\
+		\ganttbar{Write: Storage Strategy \& UI}{14}{17} \\
+		\ganttbar{Write: Coordination}{18}{22} \\
+		\ganttbar{Write: Conclusion}{23}{25} \\
+		\ganttbar{Final corrections}{26}{28} \\
+		
+		\ganttmilestone{Printing \& Submission}{28} \\
+		
+		\ganttbar{Poster Creation}{18}{23} \\
+		\ganttmilestone{Poster Presentation}{23} \\
+		
+		\ganttlink{elem3}{elem4}
+		\ganttlink{elem8}{elem9} \ganttlink{elem8}{elem11}
+		\ganttlink{elem9}{elem10}
+		\ganttlink{elem11}{elem12}
+		\ganttlink{elem12}{elem13}
+		
+		\ganttlink{elem14}{elem15}
+		
+		\ganttlink{elem19}{elem20}
+		\ganttlink{elem20}{elem21}
+		\ganttlink{elem21}{elem22}
+		\ganttlink{elem22}{elem23}
+		\ganttlink{elem23}{elem24}
+	
+		\ganttlink{elem25}{elem26}
+	\end{ganttchart}
+	\caption{Time schedule}
+\end{figure}
