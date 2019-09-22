@@ -5,14 +5,13 @@ To do so, the problem to solve must be understood.
 To gather requirements and understand the technical hurdles to overcome, this chapter is split into two sections.
 First, a rough glance over the current workflow is given, which is followed by a more detailed description for the desired workflow.
 
-\todo{it is called TrackerApplication}
 
 \section{Current Workflow}
 
 Currently, to analyze a video for the trajectories of the recorded vehicles, the following steps are executed manually:
 \begin{enumerate}
 	\item Upload the input video to a new directory on the GPU server
-	\item \label{cw:ex} Execute a shell script with the video as input file and let it run (hours to days) until completed. The shell script invokes a Java Program with parameters on what to do with the input file and additional parameters.
+	\item \label{cw:ex} Execute a shell script with the video as input file and let it run (hours to days) until completed. The shell script invokes a Java Program - called TrackerApplication - with parameters on what to do with the input file and additional parameters.
 	\item The intermediate result with raw detection results is downloaded to the local machine and opened for inspection. If the detection error is too high, the camera tracking has a drift or other disruptions are visible, redo the previous step with adjusted parameters.
 	\item \label{cw:st} Upload the video and intermediate result to a generic computing server and run data cleanup and analysis. This is again done with the same Java Program as in step \ref{cw:ex}, but with different stage environment parameters.
 	\item \label{cw:st_dl} Download the results, recheck for consistency or obvious abnormalities. Depending on the result, redo step \ref{cw:ex} or \ref{cw:st} with adjusted parameters again.
@@ -48,7 +47,7 @@ Each server node might provide additional hardware (such as GPUs), which shall b
 
 For the ease of installation and binary distribution, Docker Images shall be used for running the Java Program for analyzing the videos as well the to be implemented management software.
 
-\todo{describe: project/pipeline -> stage?}
+%\todo{describe: project/pipeline -> stage?}
 
 
 
