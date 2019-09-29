@@ -37,28 +37,28 @@ But at the moment, this approach seems to be unfitting due to at least the follo
 	In addition, MapReduce requires the combination to be performed per common key.
 	Until one is trying to link the detections of multiple frames, there is no common identifier that could easily be used as key.
 	The position of a moving vehicle cannot be used as key, neither can the color or size, because of the noise of the camera, deviation in detection output and perspective distortions.
-	The current implementation of the TrackerApplication is archiving this by finding similarities between detections, but for the Mapper this would required to be expressed as a deterministic key.
+	The current implementation of the TrackerApplication is archiving this by finding similarities between detections, but for the Mapper it would be required to express this as a deterministic key.
 	\item MapReduce is great in combining many machines to solve a big computational problem.
-	But at the moment, this is neither a desired nor given condition. At the moment, there a handful of very powerful workstations with specialized hardware.
+	But at the moment, this is neither a desired nor given condition. At the moment, there are a handful of very powerful workstations with specialized hardware.
 	Therefore it is perfectly acceptable and sometimes required, when each workstation works through a complete video at a given time instead.
 \end{enumerate}
 
 \subsection{Build Pipelines}
 
-Build pipelines such as GitLab\cite{gitlab:main} and Jenkins\cite{jenkins:main} can also distribute the execution of a stage onto another server node.
+Build pipelines such as GitLab\cite{gitlab:main} and Jenkins\cite{jenkins:main} can also distribute the execution of stages onto other server nodes.
 In a common use-case, such build pipelines are used to build binaries out of source code, after a new commit into a SCM\footnote{Source Code Management} repository was made.
 At IT-Designers GmbH GitLab as well as Jenkins are commonly used for scenarios exactly like this.
 A pipeline definition in GitLab CI/CD \cite{gitlab:ci:yaml} or in a Jenkinsfile \cite{jenkins:pipeline:jenkinsfile} describe stages and commands to execute.
 Each stage can be hosted on another node and be executed sequential or in parallel to each other.
 
 Although this seems to be quite fitting for the desired workflow, there are two issues.
-First of all, such a pipeline does not involve any user input besides an optional manual start command.
+First of all, such a pipeline does not involve any user input besides an optional manual start invocation.
 The result is then determined based on the state of the input repository.
-Second, such an pipeline is designed to determine the output (usually by compiling) whereas each run ins independent from the previous and a repeated run shall provide the same result as the previous.
-Usually, a new run is only caused by an change of the input data.
+Second, such a pipeline is designed to determine the output (usually by compiling) whereas each run is independent from the previous and a repeated run shall provide the same result as the previous did.
+Usually, a new run is only caused by a change of the input data.
 However, the desired workflow differs in this aspects.
-A redo of a stage can depend on the result of the previous stage, for example if the results are poor or the the stage failed.
-Instead of having multiple complete pipeline runs per project, the desired workflow uses a pipeline definition as base for which the order can be influenced.
+A redo of a stage can depend on the result of the previous stage, for example, if the results are poor or the the stage failed.
+Instead of having multiple complete pipeline runs per project, the desired workflow uses a pipeline definition as base for which the order can be changed.
 Also, intermediate results need to influence further stages, even if repeated.
 
 
@@ -75,9 +75,9 @@ It does also not provide any concept on how to allocate and distribute resources
 The user interface - while being rich overall - is quite rudimentary when it is about configuring tasks and would therefore require custom plugins to be developed for more advanced user interactions.
 
 Camunda is also not designed to reorder stages or insert user interactions at seemingly random fashion.
-Also, the user itself is considered more as a worker, that gets some request, \enquote{executes} this externally and finally marks the request as accepted or declined.
+The user itself is considered more as a worker that gets some request, \enquote{executes} this externally and finally marks the request as accepted or declined.
 Mapping this to the desired workflow does not feel intuitive.
-Finally, There is also no overview of task executors, no centralized log accumulation and no file up or download for project global resources.
+Finally, there is also no overview of task executors, no centralized log accumulation and no file up- or download for global project resources.
 
 
 \subsection{Nomad}
@@ -87,7 +87,7 @@ It provides a rich REST API and can consider hardware constraints on job submiss
 Compared to Kubernetes\cite{nomad:vs:kubernetes}, which is similar but more focused on scaling containers to an externally applied load, it is very lightweight.
 It is also available in many Linux software repositories - such as for Debian - which makes the installation very easy.
 
-Because there were no grave disadvantages found (depending on a third party library can be a disadvantage in flexibility, error-pronous and limit functionality) Nomad is being considered as a middle-ware to manage and deploy stages.
+Because there were no grave disadvantages found (depending on a third party library can always be considered be a disadvantage for flexibility, error-pronous and limit functionality) Nomad is being considered as a middle-ware to manage and deploy stages.
 Others\cite{nomad:etc:gui_thesis} seem to be using Nomad to manage and deploy containers for similar reasons.
 Nonetheless, further testing and prototyping will be required for a final decision.
 
@@ -95,9 +95,9 @@ Nonetheless, further testing and prototyping will be required for a final decisi
 \subsection{dCache}
 
 \enquote{The goal of this project is to provide a system for storing and retrieving huge amounts of data, distributed among a large number of heterogenous server nodes, under a single virtual filesystem tree with a variety of standard access methods}\cite{dcache:main}.
-dCache seems to be able to solve the storage access and distribution for the stages and sever nodes.
-When using dCache, once could store the global resources distributed on the server nodes.
-Built-in replication would prevent access loss on a node or network failure and export through NFS\footnote{Network File System} allows easy access on Linux based systems\cite{dcache:overview:whitepaper}.
+dCache seems to be able to solve the storage access and distribution concern for the stages and sever nodes.
+When using dCache, one could store the global resources distributed between the server nodes.
+Built-in replication would prevent access loss on a node or network failure and an export through NFS\footnote{Network File System} allows easy access for Linux based systems\cite{dcache:overview:whitepaper}.
 
 But the installation is complex and requires many services to be setup correctly, such as postgresql and many internal services such as zookeeper, admin, poolmanager, spacemanager, pnfsmanager, cleaner, gplazma, pinmanager, topo, info and nfs.
 The documentation is also rather outdated and incomplete which meant, early tests with a prototype setup took days to setup and behaved rather unstable (probably due to a wrong configuration).
@@ -108,20 +108,20 @@ It is to be seen, whether such an complex and heavy system is actually required 
 
 \subsection{Further mentions}
 
-The following list shall acknowledge programs that behave similar to the previously three mentioned strategies.
-Programs there are listed here, were looked into, but not in-depth because while looking into them, miss-fits were detected early on. Listed in no specific order.
+The following list shall acknowledge programs that behave similar to the previously mentioned strategies.
+Programs that are listed here, were looked into, but not in-depth because miss-fits were detected early on (listed in no specific order):
 
 \begin{itemize}
 	\item \textbf{Quartz}\cite{quartz:main} is a Java based program to schedule jobs. Instead of doing so by using input, Quartz executes programs through a timetable and in certain intervals.
 	%	\cite{quartz:overview} 	\cite{quartz:quickstart}
 	\item \textbf{Luigi}\cite{luigi:etc:distributed_pipelines} also executes pipelines with stages and is written in python. The advertised advantage is to define the pipeline directly in python code. But, this is at the same time the only way to define pipelines which contradictions with the existing Java TrackerApplication implementation.
-	\item \textbf{Calery}\cite{celery:main} is focused on task execution through message passing and is written in Python. Intermediate results are expected to be transmitted through messages. Because is no storage strategy and python adapter-code would have been required, Calery was dismissed.
+	\item \textbf{Calery}\cite{celery:main} is focused on task execution through message passing and is written in Python. Intermediate results are expected to be transmitted through messages. Because there is no storage strategy and python adapter-code would have been required, Calery was dismissed.
 	\item \textbf{IBM InfoSphere}\cite{infosphere:datastage} provides similar to Camunda a rich graphical user interface but for data transfer. Dismissed due to commercial nature.
-	\item \textbf{qsub}\cite{qsub:etc:wiki}\cite{qsub:etc:uiowa} CLI\footnote{Command Line Interface} using in HPC to submit jobs onto a cluster or grid. Dismissed due to an expected high setup overhead, non-required multi-user nature and the fact, that it only provides a solution for the job submission.
-	\item \textbf{CSCS}\cite{cscs:high_throughput} High Throughput Scheduler (GREASY). Dismissed for similar reasons as qsub, although it is more light weighty and hardware agnostic (it can consider CUDA/GPU requirements).
-	\item \textbf{zsync}\cite{zsync:main}, similar to rsync, is a file transfer program. Zsync allows to only transfer new parts when a file that shall be copied already exists in an older version on the target. This tool might be useful for a complete custom resource distribution strategy.
+	\item \textbf{qsub}\cite{qsub:etc:wiki}\cite{qsub:etc:uiowa} is a CLI\footnote{Command Line Interface} used in HPC to submit jobs onto a cluster or grid. Dismissed due to an expected high setup overhead, non-required multi-user nature and the fact, that it only provides a way to submit jobs.
+	\item \textbf{CSCS}\cite{cscs:high_throughput} High Throughput Scheduler (GREASY). Dismissed for similar reasons as qsub, although it is more light weight and hardware agnostic (it can consider CUDA/GPU requirements).
+	\item \textbf{zsync}\cite{zsync:main}, similar to rsync, is a file transfer program. Zsync allows to only transfer new parts when a file that shall be copied already exists in an older version on the target. This tool might be useful when implementing a custom resource distribution strategy is required.
 	\item \textbf{OpenIO}\cite{openio:main} provides a distributed file system, is already provided as Docker image and provides a simple to use CLI. Because the NFS export is only available through a paid subscription plan, it was dismissed from further investigation.
-	\item \textbf{SeaweedFS}\cite{seeweedfs:main} provides a scalable and distributed file system. The most interesting aspects are that it is rack-aware as well as naively supports external storage such as Amazon S3. When adding server nodes from the cloud this could allow all nodes to access the same file system while using rack-aware replication to reduce used bandwidth and latency. A local test also proved that it is easy to setup, but because it cannot hot-swap nodes and was not able to recover when the seeweed master node became unreachable.
+	\item \textbf{SeaweedFS}\cite{seeweedfs:main} provides a scalable and distributed file system. The most interesting aspects are that it is rack-aware as well as natively supports external storage such as Amazon S3. When adding server nodes from the cloud this could allow all nodes to access the same file system while using rack-aware replication to reduce bandwidth usage and latency. A local test also proved that it is easy to setup, but because it cannot hot-swap nodes and was not able to recover when the seeweed master node became unreachable it was dismissed.
 %	master halten die zuweisung file -> addresse
 %	filer machen nur ein lookup und zuweisen oder sowas
 %	aber der client frägt filer an
@@ -131,8 +131,8 @@ Programs there are listed here, were looked into, but not in-depth because while
 %	aber problem 1: anzahl der master soll immer ungerade sein
 %	problem 2: du kannst nicht einfach master on-the-fly hinzufügen und musst stattdessen teilweise die neu starten  mitm parameter: hey da drüben ist noch ein master
 %	problem 3: es läuft nicht zuverlässig
-	\item \textbf{Alluxio}\cite{alluxio:main} provides a distributed file system but was dismissed because it itself requires a centralized file system for the master and its fallback instances.
-	\item \textbf{GlusterFS}\cite{glusterfs:main} is another tool to provide a distributed file system with replication. It was bought by IBM but is nonetheless available through the software repository of many Linux distributions such as Debian. A local test show that the setup is very easy without any configuration files required to be setup. The replication mechanism however, requires that an even multiple of nodes of the replica value are assigned to the file system. This makes GlusterFS hard to use in a scenario, where adding and removing nodes are expected to happen frequently, and therefore it was dismissed.
+	\item \textbf{Alluxio}\cite{alluxio:main} provides a distributed file system but was dismissed because it itself requires a centralized file system for the master and its fallback instances
+	\item \textbf{GlusterFS}\cite{glusterfs:main} is another tool to provide a distributed file system with replication. It was bought by IBM but is nonetheless available through the software repository of many Linux distributions such as Debian. A local test showed that the setup is very easy and no adjustments of configuration files are required. However, the replication mechanism requires that an integer multiple of nodes of the replica value are assigned to the file system. This makes GlusterFS hard to use in a scenario, where adding and removing nodes are expected to happen frequently. It was therefore dismissed.
 \end{itemize}
 
 \section{Docker Integration}
@@ -140,7 +140,7 @@ Programs there are listed here, were looked into, but not in-depth because while
 As describe before (see \autoref{workflow}), for easy deployment, the implementation as well as the stages shall be executed inside Docker\cite{docker:main} containers.
 This allows easier isolation of the stages and workspaces from each other and other host programs.
 Because one needs to communicate with the Docker daemon, this increases the complexity for the implementation.
-But thanks to third party libraries, the increase in complexity can be limited.
+But by using third party libraries, the increase in complexity can be limited.
 
 
 %\todo{explain docker here already or only in the thesis?}

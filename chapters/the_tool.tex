@@ -12,14 +12,14 @@ Currently, to analyze a video for the trajectories of the recorded vehicles, the
 \begin{enumerate}
 	\item Upload the input video to a new directory on the GPU server
 	\item \label{cw:ex} Execute a shell script with the video as input file and let it run (hours to days) until completed. The shell script invokes a Java Program - called TrackerApplication - with parameters on what to do with the input file and additional parameters.
-	\item The intermediate result with raw detection results is downloaded to the local machine and opened for inspection. If the detection error is too high, the camera tracking has a drift or other disruptions are visible, redo the previous step with adjusted parameters.
-	\item \label{cw:st} Upload the video and intermediate result to a generic computing server and run data cleanup and analysis. This is again done with the same Java Program as in step \ref{cw:ex}, but with different stage environment parameters.
+	\item The intermediate result with raw detection results is downloaded to the local machine and opened for inspection. If the detection error is too high, the camera tracking has a drift or other disruptions are visible, the previous step is redone with adjusted parameters.
+	\item \label{cw:st} Upload the video and intermediate result to a generic computing server and run data cleanup and analysis. This is achieved with the same Java Program as in step \ref{cw:ex}, but with different stage environment parameters.
 	\item \label{cw:st_dl} Download the results, recheck for consistency or obvious abnormalities. Depending on the result, redo step \ref{cw:ex} or \ref{cw:st} with adjusted parameters again.
 	\item Depending on the assignment, steps \ref{cw:st} and \ref{cw:st_dl} are repeated to incrementally accumulate all output data (such as statistics, diagrams and so on).
 \end{enumerate}
 
 Because all those steps are done manually, the user needs to check for errors by oneself.
-Also, if a execution is finished or failed early, there could be hours wasted if the regular check interval are too far apart.
+Also, if a execution is finished or failed early, there could be hours wasted if the regular check intervals are too far apart, such as during nights.
 
 \section{Desired Workflow}
 \label{workflow}
@@ -32,14 +32,14 @@ Because only a handful of different pipeline definitions are expected, the creat
 Instead, it is acceptable to have to manually edit a configuration file in such rare circumstances.
 
 Once a project is created, the user wants to select the path to the input video.
-This file has to be uploaded to a global resource pool at this point.
+This file has to be been uploaded to a global resource pool at this point.
 The upload and download of files shall therefore also be possible through the user interface.
 Because a video is usually recorded in 4k (3840 x 2160 pixels), encoded with H.264 and up to 20 minutes long, the upload must be capable of handling files which are tens of gigabytes large.
 
 Once a pipeline is started, it shall execute the stages on the most fitting server node until finished, failed or a user input is required.
 Throughout, the logs of the current and previous stage shall be accessible as well as uploading or downloading files from the current or previous stages workspace.
 In addition to the pipeline pausing itself for user input, the user shall be able to request the pipeline to pause after the current stage at any moment.
-When resuming the pipeline, the user wants to overwrite the starting point to, for example, redo the latest stage.
+When resuming the pipeline, the user might want to overwrite the starting point to, for example, redo the latest stage.
 
 Mechanisms for fault tolerance shall detect unexpected program errors or failures of server nodes.
 Server nodes shall be easily installed and added to the existing network of server nodes.
@@ -63,7 +63,7 @@ From the desired workflow, the following requirements can be extracted (shortene
 	\item Reflecting the correct project state (running, failed, succeeded, paused)
 	\item Log accumulation and archiving
 	\item Accepting user input to update environment variables, resuming and pausing projects as well as uploading and downloading files into or from the global resource pool or a stages workspace.
-	\item Assigning to be started stages to the most fitting server node
+	\item Assigning starting stages to the most fitting server node
 	\item Detecting program errors (in a stage execution)
 	\item Cope with server node failures
 	\item Docker Image creation for the Java Binary as well as the program implementation, preferred in an automated fashion.
