@@ -22,12 +22,17 @@ To not disrupt traffic flow with non-human behavior, one needs to study and ther
 Automatically analyzing traffic from video footage requires a lot of computation power and can be further optimized by specialized hardware such as GPUs.
 
 This thesis will conceptualize and realize a distributed and automated computer vision pipeline which can be used to analyzes traffic flow within video footage.
+Compared to an existing but highly manual workflow, the new system shall help to utilize the available hardware more efficiently by reducing idle times.
+Stage transitions and basic scheduling shall be automated to allow a user to plan and execute multiple projects ahead of time and in parallel.
+%The current, highly manual workflow, can lead to a lot of idle time inbetween user intervention.
+
+%The available hardware resources shall be utilized more efficiently, as well as time that is required by humans to monitor the system.
 
 
 
 \section{MEC-View}
 
-The MECView research project\cite{mecview:main} - funded by the Federal Ministry for Economic Affairs and Energy - aims to supplement the field of view of automated driving cars with road-side sensor data using 5G mobile communication. The sensor information is merged into an environment model on the so-called Mobile Edge Computing (MEC) server. This server is directly attached to the radio station to ensure low latency environment model updates.
+The MEC-View research project\cite{mecview:main} - funded by the German Federal Ministry for Economic Affairs and Energy - aims to supplement the field of view of automated driving cars with road-side sensor data using 5G mobile communication. The sensor information is merged into an environment model on the so-called Mobile Edge Computing (MEC) server. This server is directly attached to the radio station to ensure low latency environment model updates.
 
 The project is tested at an intersection in Ulm, Germany.
 Currently, there are 15 lidar and video sensors installed.
