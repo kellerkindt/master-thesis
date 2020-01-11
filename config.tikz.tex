@@ -1,0 +1,19 @@
+\usepackage{tikz-uml}
+
+% strange bug with arrows.meta
+% You can't use `\unskip' in vertical mode.
+% https://tex.stackexchange.com/questions/298904/strange-tikz-problem-memoir-vs-xcolor-vs-tikz/299001
+\newbox\tempbox
+\newif\ifdebug
+\debugtrue
+\makeatletter
+\def\pgfmathsetlength #1#2{\expandafter \pgfmath@onquick #2\pgfmath@
+        {\ifdebug\typeout{HERE\detokenize{#1}\detokenize{#2}}\fi
+                \setbox\tempbox\hbox{\pgfmath@selectfont#1#2\relax\expandafter}\expandafter#1\the #1\relax
+                \ifdebug\typeout{#1=\the#1}\fi}%
+        {\pgfmathparse {#2}\ifpgfmathmathunitsdeclared #1\pgfmathresult mu\relax
+                \else #1\pgfmathresult pt\relax \fi }\ignorespaces }
+\makeatother
+
+
+\usetikzlibrary{backgrounds,scopes,arrows, arrows.meta, positioning, shadows}

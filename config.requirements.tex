@@ -1,0 +1,34 @@
+\makeatletter
+
+
+
+
+% #1 label
+% #2 Requirement Number
+% #3 Name
+% #4 Description
+\newcommand{\requirement}[4]{%
+	\expandafter\edef\csname{}req_number_#1\endcsname{#2}
+	\expandafter\edef\csname{}req_name_#1\endcsname{#3}
+	\expandafter\edef\csname{}req_desc_#1\endcsname{#4}%
+}
+
+
+
+\newcommand{\reqNumber}[1]{\csname{}req_number_#1\endcsname}
+\newcommand{\reqName}[1]{\csname{}req_name_#1\endcsname}
+\newcommand{\reqDesc}[1]{\csname{}req_desc_#1\endcsname}
+
+\newcommand{\captionsource}[1]{\caption*{\footnotesize{Quelle: #1}}}
+
+\newcommand{\reqLabel}[1]{\label{req:#1}}
+\newcommand{\reqRef}[1]{[R\hyperref[req:#1]{\reqNumber{#1}}]}
+\newcommand{\reqHeader}[1]{Requirement \reqNumber{#1}: \reqName{#1}}
+\newcommand{\reqNameRef}[1]{\reqName{#1} \reqRef{#1}}
+
+
+\newcommand{\reqItem}[1]{\item \textbf{\reqHeader{#1}}\\\reqDesc{#1}}
+\newcommand{\reqItemL}[1]{\item \reqLabel{#1} \textbf{\reqHeader{#1}}\\\reqDesc{#1}}
+
+
+\makeatother

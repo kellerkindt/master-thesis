@@ -1,0 +1,151 @@
+\chapter{Requirements}
+
+This chapter works out the desired capabilities of the software and then lists the resulting requirements.
+Requirements help to keep track of whether the software covers all customer needs and wishes.
+They also help during development to keep track of the progress and estimate the time required to implement the remaining requirements.
+
+
+\requirement{mgmt:create:pipeline}{1110}{Define a new Pipeline}{
+}
+\requirement{mgmt:update:pipeline}{1120}{Update an existing Pipeline}{
+}
+\requirement{mgmt:delete:pipeline}{1130}{Delete an existing Pipeline}{
+}
+
+\requirement{mgmt:create:project}{1210}{Create a new Project}{
+}
+\requirement{mgmt:update:project:pipeline}{1220}{Update the Pipeline of a Project}{
+}
+\requirement{mgmt:update:project:name}{1230}{Update the Name of a Project}{
+}
+\requirement{mgmt:update:project:labels}{1240}{Updating Labels of a Project}{
+}
+\requirement{mgmt:delete:project}{1250}{Delete an existing Project}{
+}
+
+\section{Use Case Diagrams}
+
+Finding all requirements can be challenging.
+Drawing Use Case Diagrams can help to discover requirements while being very easy to understand.
+This helps in understanding the customers needs \cite{Rosenberg2007} while the customer receives an impression on what will be reflected in the final product.
+
+Listing all use cases in a single diagram negates the desired effect of it being easily understandable because of the number of interaction possibilities.
+Instead, the interactions are grouped in categories and displayed in separate diagrams.
+\autoref{use_case:overview} shows high-level use cases of all categories that are relevant to a user of the system.
+
+\begin{figure}[H]
+	\scalebox{.65}{
+		\begin{tikzpicture}[node distance=5]
+		\begin{umlsystem}{Winslow - Interaction Categories}
+			\umlusecase[y=0,name=u1]{Manage Pipelines and Projects [\autoref{use_case:mgmt}]}
+			\umlusecase[y=-1,name=u2]{Manage Resources and Workspaces [\autoref{use_case:files}]}
+			\umlusecase[y=-2,name=u3]{Manage and Monitor Execution [\autoref{use_case:execution}]}
+			\umlusecase[y=-3,name=u4]{Monitor Nodes [\autoref{use_case:monitor}]}
+		\end{umlsystem}
+		\umlactor[x=-9.5,y=-1.5]{User}
+		\umlassoc{User}{u1}
+		\umlassoc{User}{u2}
+		\umlassoc{User}{u3}
+		\umlassoc{User}{u4}
+		\end{tikzpicture}
+	}
+	\centering
+	\caption{Use Case Diagram showing the top level interaction categories}
+	\label{use_case:overview}
+\end{figure}
+
+\subsection{Managing Pipelines and Projects}
+\label{use_case:mgmt}
+
+
+
+\begin{figure}[H]
+	\scalebox{.65}{
+		\begin{tikzpicture}[node distance=5]
+			\begin{umlsystem}{Winslow - Manage Pipelines and Projects}
+				\umlusecase[y=0,name=u110]{\reqNameRef{mgmt:create:pipeline}}
+				\umlusecase[y=-1,name=u120]{\reqNameRef{mgmt:update:pipeline}}
+				\umlusecase[y=-2,name=u120]{\reqNameRef{mgmt:delete:pipeline}}
+				
+				\umlusecase[y=-4,name=u210]{\reqNameRef{mgmt:create:project}}
+				\umlusecase[y=-5,name=u220]{\reqNameRef{mgmt:update:project:pipeline}}
+				\umlusecase[y=-6,name=u230]{\reqNameRef{mgmt:update:project:name}}
+				\umlusecase[y=-7,name=u240]{\reqNameRef{mgmt:update:project:labels}}
+				\umlusecase[y=-8,name=u250]{\reqNameRef{mgmt:delete:project}}
+				
+				
+				
+				%\umlusecase[y=-12,name=u2]{List Projects}
+				%\umlusecase[y=-14,name=u3]{Upload a File}
+				%\umlusecase[y=-15,name=u4]{Download a File}
+				%\umlusecase[y=-16,name=u5]{List Files}
+				%\umlusecase[y=-18,name=u6]{Start a Stage}
+				%\umlusecase[y=-19,name=u7]{Pause a Pipeline}
+				%\umlusecase[y=-110,name=u8]{Resume a Pipeline}
+				%\umlusecase[y=-111,name=u9]{Cancel a running Stage}
+				%\umlusecase[y=-112,name=u10]{Inspect logs of a Stage}
+				%\umlusecase[y=-113,name=u11]{Monitor a running Stage}
+			\end{umlsystem}
+			\umlactor[x=-9.5,y=-2]{User}
+			\umlassoc{User}{u110}
+		\end{tikzpicture}
+	}
+	\centering
+	\caption{Use Case Diagram showing the general management interactions}
+\end{figure}
+
+\subsection{System Administration}
+
+Furthermore to the interactions with a user, the system must provide further capabilities that are \todo{of} concern to the administrator.
+
+
+\begin{figure}[H]
+	\scalebox{.65}{
+		\begin{tikzpicture}[node distance=5]
+		\begin{umlsystem}{Winslow - Administration}
+			\umlusecase[y=0,name=u1]{Start and Add a new Node}
+			\umlusecase[y=-2,name=u2]{Stop and Remove a Node}
+			\umlusecase[y=-4,name=u3]{Debug behavior of a Node}
+			\end{umlsystem}
+			\umlactor[x=-9.5,y=-2]{Admin}
+			\umlassoc{Admin}{u1}
+			\umlassoc{Admin}{u2}
+			\umlassoc{Admin}{u3}
+		\end{tikzpicture}
+	}
+	\centering
+	\caption{Use Case Diagram showing administrative interactions}
+	\label{use_case:admin}
+\end{figure}
+
+\section{Requirements}
+
+\subsection{Managing Pipelines and Projects}
+\begin{itemize}
+	\reqItemL{mgmt:create:pipeline}
+	\reqItemL{mgmt:update:pipeline}
+	\reqItemL{mgmt:delete:pipeline}
+	\reqItemL{mgmt:create:project}
+	\reqItemL{mgmt:update:project:pipeline}
+	\reqItemL{mgmt:update:project:name}
+	\reqItemL{mgmt:update:project:labels}
+	\reqItemL{mgmt:delete:project}
+\end{itemize}
+
+\subsection{Derived Requirements}
+Requirements that are derived by looking at other requirements.
+
+\section{Systemanalyses}
+System Umwelt Diagram
+
+\section{Listing}
+
+\reqRef{mgmt:create:project}
+
+\begin{itemize}
+	\reqItemL{mgmt:create:project}
+\end{itemize}
+
+
+
+

@@ -16,7 +16,6 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{graphicx, xcolor}
 
-\usepackage{tikz}
 \usepackage{pgfplots}
 \usepackage{pdflscape}
 
@@ -24,6 +23,10 @@
 \usepackage{float}
 
 \input{config.listing}
+\input{config.tikz}
+\input{config.requirements}
+
+\newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
 
 
 %--------------------------------------------------------------------
@@ -44,7 +47,6 @@
 \newcommand{\thesupervisor}{Dr. Paul Kyberd}
 \newcommand{\theyear}{2019}
 \newcommand{\thetitle}{ Conception and realization of a distributed and automated computer vision pipeline}
-\newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
 
 %--------------------------------------------------------------------
 %--- Global page geometry and layout
@@ -141,6 +143,8 @@
 \pagenumbering{roman}
 
 \input{frontmatter}
+\include{chapters/declaration}
+\include{chapters/abstrct}
 
 \tableofcontents
 \newpage
@@ -156,6 +160,10 @@
 \include{chapters/state_of_the_art}
 \include{chapters/topics}
 \include{chapters/schedule}
+\include{chapters/name}
+\include{chapters/requirements}
+\include{chapters/architecture}
+\include{chapters/decisions}
 
 %\include {chapters/things_to_overcome}
 %\include{chapters/impl}
