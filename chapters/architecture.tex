@@ -20,4 +20,28 @@ voting/election by capabilities and 'will' of a node to run a stage
 
 \section{REST for UI}
 
+
+
 \section{Event Bus}
+
+requires common a way to exchange messages
+
+all messages - called events - are published to all nodes
+
+using file system as bus
+
+clear and globally same order of events
+
+events consist of a action, subject, timestamp, optional duration and \todo{.}
+
+events might have a duration
+
+unspoken requirement: all nodes share the same clock - or one with very little drift
+
+\subsection{Atomicy of (Unix) Filesystems}
+
+\subsubsection{NFS in particular}
+
+\subsection{Using as lock backend}
+
+\subsection{Using as election backend}
