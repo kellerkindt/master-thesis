@@ -1,0 +1,56 @@
+\chapter{Fundamentals}
+
+This chapter will explain and discuss fundamental knowledge required for the then following chapters.
+
+\section{Docker}
+
+\begin{wrapfigure}{r}{0.45\textwidth}
+	\centering
+	\includegraphics[width=.2\textwidth]{res/docker-Moby-logo.png}
+	\label{docker:logo}
+	\caption{Official Docker \enquote{Moby} Logo\cite{docker:logo}}
+\end{wrapfigure}
+
+Docker is the name of a software that combines isolation technologies (\autoref{docker:technology}) and a rich ecosystem (\autoref{docker:ecosystem}) to provide and execute third party software in virtual environments.
+Docker aims to increase security and to simplify installation and maintenance of applications.
+
+
+\subsection{Technology}
+\label{docker:technology}
+
+Docker uses so called images to package and transport binaries with all their required libraries and configuration files as a read-only archive to the destination host.
+\todo{layers? base image, less download, diffs}
+To spawn a new process for a binary within an image, a new virtual environment - the so called container - needs to be setup first.
+Changes to files within containers are stored in separate differentials, which allows the image to be used by multiple containers at once.
+Privileges, resource limitations and storage configurations are also part of a container definition.
+Processes inside containers are unable to see  other processes or files that are not part of or assigned to the their container\footnote{This is the default behavior. It is possible to manually lift or modify many boundaries Docker enforces for containers on default.}.
+
+In contrary to a hypervisor, docker is archiving this without running additional virtual machines for each container.
+Instead of running on virtualized operating systems, container processes share the host kernel.
+In order to do so, the host operating system needs to support additional isolation mechanisms.
+At the time of writing this, only the Linux Kernel is capable to separate processes, network interfaces, interprocess communications, filesystem mounts and the timesharing systems by namespaces.
+By configuring these namespaces, Docker is capable to isolate containers into virtual environments.
+Furthermore, control groups can be used to limit and constraint access to hardware resources.
+\cite{docker:overview}
+
+These approaches allow containers to run with very little overhead in comparison to running the application directly on the host.
+Containerization increases security by limiting what an application sees and is able to interact with, decreases maintenance overhead because of no additional operation systems to maintain and allows to run multiple instances of the same application besides each other with independent configurations and environments.
+
+\subsection{Architecture and Ecosystem}
+\label{docker:ecosystem}
+
+\subsection{Self hosted registry}
+
+\subsection{Deployment}
+
+Dockerffile: creating a docker image
+
+\subsection{Something something ref cloud }
+
+docker is so popular that even microsoft is trying to support it, although most images require a Linux kernel - therefore microsoft introduced (WSL)
+
+Paravirtualisation?
+
+https://www.monkeyvault.net/docker-vs-virtualization/
+
+Instead it uses built-in Linux Kernel containment features like CGroups, Namespaces, UnionFS, chroot (more on these later) to run applications in virtual environments. Those virtual environments - called Docker containers, have separate user lists, file systems or network devices.
