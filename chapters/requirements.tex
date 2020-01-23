@@ -1,4 +1,4 @@
-\chapter{Requirements}
+\chapter{\todo{Aims and Objectives}}
 
 This chapter works out the desired capabilities of the software and then lists the resulting requirements.
 Requirements help to keep track of whether the software covers all customer needs and wishes.
@@ -87,173 +87,8 @@ They also help during development to keep track of the progress and estimate the
 }
 
 
-\section{Use Case Diagrams}
 
-Finding all requirements can be challenging.
-Drawing Use Case Diagrams can help to discover requirements while being very easy to understand.
-This helps in understanding the customers needs \cite{Rosenberg2007} while the customer receives an impression on what will be reflected in the final product.
-
-Listing all use cases in a single diagram negates the desired effect of it being easily understandable because of the number of interaction possibilities.
-Instead, the interactions are grouped in categories and displayed in separate diagrams.
-\autoref{use_case:overview} shows high-level use cases of all categories that are relevant to a user of the system.
-
-\begin{figure}[H]
-	\scalebox{.65}{
-		\begin{tikzpicture}[node distance=5]
-		\begin{umlsystem}{Winslow - Interaction Categories}
-			\umlusecase[y=0,name=u1]{Manage Pipelines and Projects [\autoref{use_case:mgmt}]}
-			\umlusecase[y=-1,name=u2]{Manage Resources and Workspaces [\autoref{use_case:files}]}
-			\umlusecase[y=-2,name=u3]{Manage and Monitor Execution [\autoref{use_case:execution}]}
-			\umlusecase[y=-3,name=u4]{Monitor Nodes [\autoref{use_case:monitor}]}
-		\end{umlsystem}
-		\umlactor[x=-9.5,y=-1.5]{User}
-		\umlassoc{User}{u1}
-		\umlassoc{User}{u2}
-		\umlassoc{User}{u3}
-		\umlassoc{User}{u4}
-		\end{tikzpicture}
-	}
-	\centering
-	\caption{Use Case Diagram showing the top level interaction categories}
-	\label{use_case:overview}
-\end{figure}
-
-\subsection{Managing Pipelines and Projects}
-\label{use_case:mgmt}
-
-\todo{.}
-
-\begin{figure}[H]
-	\scalebox{.65}{
-		\begin{tikzpicture}[node distance=5]
-			\begin{umlsystem}{Winslow - Manage Pipelines and Projects}
-				\umlusecase[y=0,name=u110]{\reqNameRef{mgmt:create:pipeline}}
-				\umlusecase[y=-1,name=u120]{\reqNameRef{mgmt:update:pipeline}}
-				\umlusecase[y=-2,name=u130]{\reqNameRef{mgmt:delete:pipeline}}
-				\umlusecase[y=-3,name=u140]{\reqNameRef{mgmt:list:pipeline}}
-				
-				\umlusecase[y=-5,name=u210]{\reqNameRef{mgmt:create:project}}
-				\umlusecase[y=-6,name=u220]{\reqNameRef{mgmt:update:project:pipeline}}
-				\umlusecase[y=-7,name=u230]{\reqNameRef{mgmt:update:project:name}}
-				\umlusecase[y=-8,name=u240]{\reqNameRef{mgmt:update:project:labels}}
-				\umlusecase[y=-9,name=u250]{\reqNameRef{mgmt:delete:project}}
-				\umlusecase[y=-10,name=u260]{\reqNameRef{mgmt:list:project}}
-			\end{umlsystem}
-			\umlactor[x=-9.5,y=-4]{User}
-			\umlassoc{User}{u110}
-			\umlassoc{User}{u120}
-			\umlassoc{User}{u130}
-			\umlassoc{User}{u140}
-			\umlassoc{User}{u210}
-			\umlassoc{User}{u220}
-			\umlassoc{User}{u230}
-			\umlassoc{User}{u240}
-			\umlassoc{User}{u250}
-			\umlassoc{User}{u260}
-		\end{tikzpicture}
-	}
-	\centering
-	\caption{Use Case Diagram showing the general management interactions}
-\end{figure}
-
-
-\subsection{Managing Resources and Workspaces}
-\label{use_case:files}
-
-\todo{.}
-
-\begin{figure}[H]
-	\scalebox{.65}{
-		\begin{tikzpicture}[node distance=5]
-			\begin{umlsystem}{Winslow - Manage Resources and Workspaces}
-				\umlusecase[y=0,name=u110]{\reqNameRef{files:upload}}
-				\umlusecase[y=-1,name=u120]{\reqNameRef{files:download}}
-				\umlusecase[y=-2,name=u130]{\reqNameRef{files:list}}
-			\end{umlsystem}
-			\umlactor[x=-9.5,y=-1]{User}
-			\umlassoc{User}{u110}
-			\umlassoc{User}{u120}
-			\umlassoc{User}{u130}
-		\end{tikzpicture}
-	}
-	\centering
-	\caption{Use Case Diagram showing the general management interactions}
-\end{figure}
-
-\subsection{Managing and Monitoring Executions}
-\label{use_case:execution}
-
-\todo{.}
-
-\begin{figure}[H]
-	\scalebox{.65}{
-		\begin{tikzpicture}[node distance=5]
-			\begin{umlsystem}{Winslow - Manage and Monitor Executions}
-				\umlusecase[y=0,name=u110]{\reqNameRef{exec:start:stage}}
-				\umlusecase[y=-1,name=u120]{\reqNameRef{exec:pause:stage}}
-				\umlusecase[y=-2,name=u130]{\reqNameRef{exec:resume:stage}}
-				\umlusecase[y=-3,name=u140]{\reqNameRef{exec:abort:stage}}
-				\umlusecase[y=-5,name=u150]{\reqNameRef{exec:inspect:logs}}
-				\umlusecase[y=-6,name=u160]{\reqNameRef{exec:inspect:state}}
-			\end{umlsystem}
-			\umlactor[x=-9.5,y=-3]{User}
-			\umlassoc{User}{u110}
-			\umlassoc{User}{u120}
-			\umlassoc{User}{u130}
-			\umlassoc{User}{u140}
-			\umlassoc{User}{u150}
-			\umlassoc{User}{u160}
-		\end{tikzpicture}
-	}
-	\centering
-	\caption{Use Case Diagram showing the general management interactions}
-\end{figure}
-
-\subsection{Monitoring Nodes}
-\label{use_case:monitor}
-\todo{.}
-\begin{figure}[H]
-	\scalebox{.65}{
-		\begin{tikzpicture}[node distance=5]
-			\begin{umlsystem}{Winslow - Monitor Nodes}
-				\umlusecase[y=0,name=u110]{\reqNameRef{node:monitor:cpu}}
-				\umlusecase[y=-1,name=u120]{\reqNameRef{node:monitor:ram}}
-				\umlusecase[y=-2,name=u130]{\reqNameRef{node:monitor:netio}}
-			\end{umlsystem}
-			\umlactor[x=-9.5,y=-1]{User}
-			\umlassoc{User}{u110}
-			\umlassoc{User}{u120}
-			\umlassoc{User}{u130}
-		\end{tikzpicture}
-	}
-	\centering
-	\caption{Use Case Diagram showing the general management interactions}
-\end{figure}
-
-
-\subsection{System Administration}
-
-Furthermore to the interactions with a user, the system must provide further capabilities that are \todo{of} concern to the administrator.
-
-
-\begin{figure}[H]
-	\scalebox{.65}{
-		\begin{tikzpicture}[node distance=5]
-		\begin{umlsystem}{Winslow - Administration}
-			\umlusecase[y=0,name=u1]{Start and Add a new Node}
-			\umlusecase[y=-2,name=u2]{Stop and Remove a Node}
-			\umlusecase[y=-4,name=u3]{Debug behavior of a Node}
-			\end{umlsystem}
-			\umlactor[x=-9.5,y=-2]{Admin}
-			\umlassoc{Admin}{u1}
-			\umlassoc{Admin}{u2}
-			\umlassoc{Admin}{u3}
-		\end{tikzpicture}
-	}
-	\centering
-	\caption{Use Case Diagram showing administrative interactions}
-	\label{use_case:admin}
-\end{figure}
+\section{Top Level Requirements}
 
 \section{Requirements}
 
@@ -298,8 +133,13 @@ Furthermore to the interactions with a user, the system must provide further cap
 \subsection{Derived Requirements}
 Requirements that are derived by looking at other requirements.
 
-\section{Systemanalyses}
-System Umwelt Diagram
 
-System Interacts with the User and other instances of itself
+\todo{functional vs nonfunctional}
+
+Die hier gelisteten funktionalen Anforderungen beschreiben das gewünschte Verhalten des
+Systems \cite[155]{goll2012methoden}.
+
+Nichtfunktionale Anforderungen zeigen im Gegensatz zu funktionalen Anforderungen Rah-
+menbedingungen bei der Umsetzung des Systems auf \cite[155]{goll2012methoden}.
+
 
