@@ -1,5 +1,83 @@
 \chapter{System design}
 
+\todo{divide and conquer?}
+
+Designing a system requires deep understanding of the \todo{problem space/use cases/task definition} to then create a solution.
+The better the knowledge of existing system is, the more easier it is to take advantage of established solutions and evade known pitfalls.
+This chapter will concentrate on the big \todo{headaches} by analyzing and comparing them to existing or similar solutions and develop a solution with the help of the gathered knowledge.
+
+\section{Execution Management}
+
+\subsection{Remote Execution}
+
+In this approach, the job is executed on a remote machine and not on the same node which has the responsibility in managing the execution.
+Continuous Integration (CI) platform Jenkins\cite{jenkins:main} as well as GitLab\cite{gitlab:main} do offer this approach.
+The so called slave node (Jenkins) or runner (GitLab) is accessed by the CI through a common interface (SSH in these cases) to start the job execution.
+Jenkins and GitLab even copy a custom binary onto the slave node, that is then managing the execution on the remote machine locally.
+This is due to the complexity in executing the job for a given configuration as well as being able to continue the execution on disconnects or maintenance reboots of the master machine.
+
+In this scenario, the CI instance requires and stores login credentials for every remote machine to be able to login whenever needed.
+The system administrator therefore has to create a new user account on the remote machine, install required programs and environments (bot Jenkins and GitLab require an JRE\footnote{Java Runtime Environment}).
+In case of an security breach on the CI instance, the attacker is also able to login on all remote nodes and execute arbitrary programs as well \todo{there is probably a great article about an issue like this!?}.
+
+\todo{WRONG, on GitLab YOU need to intall/setup the runner}
+
+GitLab follows another approach, the system administrator has to manually install the GitLab Runner\footnote{\todo{cite}} on a slave node and is then able to add this runner to a Project.
+The security risk is somewhat similar to Jenkins: once an attacker has access to the CI instance, arbitrary code can be uploaded and executed on the remote machines. \todo{but no ssh login .... until first binary uploaded}
+
+\todo{winslow is more secure because of docker and therefore limited access to the system, no network..?}
+
+\subsection{Local Execution}
+
+Executing a job locally means running the job on the same machine as the program that is watching and managing the execution.
+This has the advantage of having all libraries, tools and resources already present.
+But in the case of Jenkins and GitLab, this is means, each CI instance is separate from the others.
+There is no integration between those instance in this configuration.
+What is missing Jenkins and GitLab here is the capability to decentralize their core task of managing projects, resources and executions.
+
+
+\subsection{Decision for Winslow}
+
+
+
+
+\section{Decentralized Execution - how?}
+
+\todo{refer to kyberd presentations?}
+
+\subsection{Every node has a connection to every other node}
+
+\subsection{Centralized broker}
+
+\subsection{Tree hierarchy}
+
+\subsection{outcome}
+
+
+
+
+\section{Communication and Node Management}
+
+The system that shall be developed, is supposed to spread jobs onto execution nodes as available.
+There are two main approaches in nod management and job assignment.
+
+
+
+\subsection{Centralized Management, Remote Execution}
+
+In the central management approach, there is always exactly one leader at any given moment in time.
+It is the responsibility of this leader to decide what to execute and where to execute it.
+
+\subsection{Decentralized Management, Local Execution}
+
+\subsection{Combinations worth noting}
+
+stupid:
+ - centralized management, local execution
+ - decentralized management, remote execution
+ 
+combination, decentralized + some remote slaves
+
 \section{Architecture}
 
 
