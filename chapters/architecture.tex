@@ -43,16 +43,49 @@ What is missing Jenkins and GitLab here is the capability to decentralize their 
 
 \subsection{Stage storage}
 
+
+Thinking about the storage organisation for the pipeline and its stages, a few expectations and concerns arise.
+First of all, to redo a stage, one needs to be able to access the files that were the result of one, two or multiple stages before the current.
+Sometimes a stage wants to access intermediate data produces by multiple previous stages.
+Next, the input video footage needs to be accessed by multiple stages throughout the pipeline execution.
+Finally, some stage results are not intermediate but final results.
+\todo{examples}
+
+The first and second concern can be solved by providing a workspace directory for each stage, that is copied from the logically previous stage.
+Once the computation of a stage is completed, the workspace is considered immutable and only used to source new workspaces from.
+This works fine for small intermediate results, but it does not work very well for large files - like the video footage.
+Starting a new stage will take as long as the copy of multiple gigabytes on a spinning devices take (\todo{sample GB and time}), require unnecessary storage due to multiple copies and provides no benefits in an archival and version control sense, because the video footage is not altered.
+So there needs to be another storage pool for input data, that is globally accessible and never changed: the global input storage pool.
+Providing one further storage pool for final results (global output pool), concern number three and four are also solved.
+
+Because the very first stage has no workspace to source its files from, on creation of the pipeline a workspace directory for the \enquote{zeroths} stage is created.
+The user can then provide the very first stage with a predefined and non-empty workspace if necessary.
+
+Because in the implementation of this project NFS was used, this also solves one further problem that was experienced in the prototyping phase: copying files on NFS (and many other network filesystems like Samba) is a client operation.
+This means, the client reads the input file and writes to the output file.
+Because the common network used (gigabit in this case) is slower than spinning disk sequential read/writes (network: 112 Megabytes/s in theory, divided by two because read+write on the same connection: 56 Megabytes/s, spinning enterprise disk: about 170 Megabytes/s \todo{test on johnny5}), this operation does not only take unnecessary long but also renders the network connection close to unusable for any other participant in the network that needs to use parts of the same physical route.
+
+To ensure that the global input and the previous intermediate results are not altered, the Docker daemon is instructed to mounted them as read-only filesystems.
+This makes it impossible\footnote{When there is no bug in the implementation of mount or Docker} for the stage to accidently delete or alter the wrong files\footnote{Like in this scenario, where an unexpected space in a script caued people to loose their home directory: \todo{steam rm -rf incident}}.
+
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.9\textwidth]{stage-storage.png}
 \end{figure}
 
-global input
+In summary, the storage pool solution looks like this:
 
-global output
+\todo{check paths}
+\begin{itemize}
+	\item \monospaceinline{/input} is mounted read-only from \monospaceinline{nfs-server:/winslow/workspaces/<pipeline-id>/input}
+	\item \monospaceinline{/output} is mounted with write permissions from \monospaceinline{nfs-server:/winslow/workspaces/<pipeline-id>/output}
+	\item \monospaceinline{/workspace} is mounted with write permissions from \monospaceinline{nfs-server:/winslow/workspaces/<pipeline-id>/<stage-id>} and was created by the copying the workspace directory of the logically previous stage
+\end{itemize}
 
-each stage has its own output
+\todo{define logically previous stage -> previous stage on linear execution and ... when jumping around}
+
+
 
 initial input
 
