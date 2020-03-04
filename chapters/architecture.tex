@@ -38,6 +38,74 @@ What is missing Jenkins and GitLab here is the capability to decentralize their 
 
 \subsection{Decision for Winslow}
 
+\section{Communication and Synchronization}
+
+For the instances of Winslow, communication and especially synchronization is very important.
+Without proper coordination, race conditions could cause stages to be started multiple times simultaneously, corrupt workspaces, configuration or project files.
+While starting too many stage executions are only wasting resources, data corruptions can lead to unrecoverable damage.
+
+Before synchronization can be achieved, communication must be possible.
+There are multiple ways to exchange data for systems that do not share the same process or machine.
+The most flexible implementation can be achieved by implementing a custom protocol on a raw TCP socket which allows to exchange blobs\footnote{\todo{Binary Large Objects}} between exactly two nodes.
+For a blob or message to reach all nodes, there needs to be connections to all other nodes \todo{great mafs N*N, N*(N-1) or whatever}, a centralized broker (introducing single point of failure), or another connection organization such as a tree structure.
+Having many connections can stress the hosting system while complex structures require additional development and maintenance overhead in non-problem related domains.
+To not have to worry about the structure, broadcasting or multicasting blobs to all nodes could be an alternative.
+But UDP messages are not guaranteed to be delivered and introduce further overhead to detect the need to retransmit a blob.
+Because of these concerns, the idea of a custom implementation on top of a raw TCP Socket was abandoned, instead alternatives were investigated.
+
+
+https://docs.microsoft.com/de-de/azure/architecture/microservices/design/interservice-communication
+
+
+raw TCP (how to connect, centralized? star? tree?) centralized works towards -> centralized master node
+broadcast?
+microservice REST
+event bus? kafka
+messaging queue mqtt
+NFS provides filesystem, filesystems are kind of standardized
+
+https://kafka.apache.org/protocol
+
+Apache Kafka \todo{CITE} comes very close in fulfilling all needs for a communication system.
+It is open source, distributed and is focused on data and event streams.
+But it introduces a dependency on the project.
+It also provides functionality that is not needed, like a transaction log and persistence and replayability of all transmitted data\todo{rly?}.
+Furthermore, because it is an independent service, it also requires its own TCP connection.
+It is required, that this connection can be established between seemingly random nodes.
+This adds another constraint to the system: the firewalls in-between the nodes must allow these connections.
+
+Because the communication between the Winslow nodes are primarily for synchronization and not for exchange of large binary data, the previous mentioned scenarios are over fulfilling the need.
+The most anticipated communication and synchronization mechanic should use and already established communication channel.
+The only defined requirement yet is a common filesystem, can this be utilized to coordinate stage execution and prevent data corruption by providing basic synchronization between the compute nodes? It can!
+
+ACID, which stands for Atomicity, Consistency, Isolation and Durability, describes the needs a database must fulfill so that it does not suffer from side effects or data corruption when executing queries.
+A series of changes might not be allowed to be intercepted (atomicity), must see and result in consistent data, is not allowed to interfere with simultaneously executed queries and guarantees that once completed successfully, is in fact persistent and will not be lost (durability).
+
+filesystem is close
+
+DB principles: ACID
+
+\begin{figure}[h]
+	\includegraphics[width=0.9\textwidth]{events.png}
+	\label{winslow:com:events}
+	\caption{Sample event and lock series with lifetimes}
+\end{figure}
+
+requires common a way to exchange messages
+
+all messages - called events - are published to all nodes
+
+using file system as bus
+
+clear and globally same order of events
+
+events consist of an id, command, time, duration, subject and issuer
+
+events might have a duration
+
+unspoken requirement: all nodes share the same clock - or one with very little drift
+
+
 
 \section{Storage}
 
@@ -303,21 +371,6 @@ voting/election by capabilities and 'will' of a node to run a stage
 
 
 
-\section{Event Bus}
-
-requires common a way to exchange messages
-
-all messages - called events - are published to all nodes
-
-using file system as bus
-
-clear and globally same order of events
-
-events consist of an id, command, time, duration, subject and issuer
-
-events might have a duration
-
-unspoken requirement: all nodes share the same clock - or one with very little drift
 
 \subsection{Atomicy of (Unix) Filesystems}
 
