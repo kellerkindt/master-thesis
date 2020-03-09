@@ -54,3 +54,43 @@ Paravirtualisation?
 https://www.monkeyvault.net/docker-vs-virtualization/
 
 Instead it uses built-in Linux Kernel containment features like CGroups, Namespaces, UnionFS, chroot (more on these later) to run applications in virtual environments. Those virtual environments - called Docker containers, have separate user lists, file systems or network devices.
+
+\section{Network File System}
+
+When distributing workload onto different machines, accessing input and output files becomes another concern which is not present when computation and storage reside on the same physical machine.
+In theory, one could use portable mediums such as USB-Sticks, CD-ROMs or external HDDs, but in reality, this becomes to tidies very fast.
+More advanced users might be able to take advantage of a common network connection between the computation and storage nodes to copy files and directories from and to the required places.
+This strategy - still being tidies - surfaces another issue: having multiple copies requires careful version management and additional storage space.
+One certainly would not want to continue computation on outdated files or have too many copies of the same files when the required next file no longer fits on the computation node.
+
+The solution is to use what is called network file system.
+To programs they seem to be just another local directory hierarchy, but in reality, the files might be located on another or multiple other machines.
+
+\subsection{Basics: file system?}
+
+To understand how a network file system works, it is necessary to first understand the concept of a file system.
+The following paragraph will focus on EXT(v4), which an open source file system used by many Linux servers, but the main concepts also apply to proprietary file systems such as NTFS from Microsoft.
+
+The EXT (extended file system) family is based upon the concept of interlinked Inodes and \todo{data blocks}.
+Data blocks describe large addressable binary objects that are linked by Inodes when allocated.
+Inodes carry metadata to regulate access privileges and to represent a directory hierarchy.
+To do so, the Inode has a type attribute that can declare it as a directory.
+The data associated to the Inode is then interpreted as table of names and Inode references to entries of the directory the Inode represents.
+In file mode, the Inode contains the content of the file.
+For every Inode there is a certain amount of storage assigned inline allowing the Inode to store small files or directories in itself without referencing others and improves access times.
+
+\todo{show (simplified) Inode+fields}
+
+Furthermore, EXTv4 is a so called journaling file system.
+\todo{interlink with DB ACID event system}
+
+
+\todo{cite: link online man page ext4}
+
+\subsection{Centralized}
+
+NFS, SMB
+
+\subsection{Decentralized}
+
+ceph, glusterfs, hadoop
