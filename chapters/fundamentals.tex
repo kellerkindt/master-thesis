@@ -87,10 +87,45 @@ Furthermore, EXTv4 is a so called journaling file system.
 
 \todo{cite: link online man page ext4}
 
-\subsection{Centralized}
+\subsection{POSIX Streams API}
+
+\url{https://www.gnu.org/software/libc/manual/html_node/I_002fO-on-Streams.html}
+
+The POSIX \todo{(Portable Operating System Interface)} defines a basic set of functions to work with files.
+It is a standard that was standardized by IEE \todo{number} to define common functions across operating systems.
+Simplified, and without caring about functions that create directories and links, move files or change attributes, the very basic functions to open and close streams are specified as the following C functions:
+
+\begin{itemize}
+	\item \monospaceinline{FILE* fopen(const char *filename, const char *opentype)} to open a stream to the file which the path \monospaceinline{filename} refers to. The \monospaceinline{opentype} specifies whether the file shall be created, overwritten, opened in read-only, write-only or append mode.
+	\item \monospaceinline{int fclose(FILE *stream)} to close the given \monospaceinline{stream}
+	\item \monospaceinline{size_t fread(void *data, size_t size, size_t count, FILE *stream)} to read  \monospaceinline{count}-number of objects of  size \monospaceinline{size} from  \monospaceinline{stream} and to the \monospaceinline{data} memory location.
+	\item \monospaceinline{size_t fwrite(const void* data, size_t size, size_t count, FILE *stream)} to write \monospaceinline{count}-number of objects of size \monospaceinline{size} read from the \monospaceinline{data} memory location to the \monospaceinline{stream}
+	\item \monospaceinline{int fflush(FILE* stream)} to write buffered and not yet committed data to the underlying destination (filesystem).
+\end{itemize}
+
+The operating system usually delegate these calls to the corresponding file system driver for a given path.
+The Linux kernel requires the filesystem to implement th following (simplified and incomplete) function listing:
+\url{https://www.tldp.org/LDP/khg/HyperNews/get/fs/vfstour.html}
+
+\begin{itemize}
+	\item \monospaceinline{int open(struct inode*, struct file*)} \todo{.}
+	\item \monospaceinline{int read(struct inode*, struct file*, char*, int)} \todo{.}
+	\item \monospaceinline{int write(struct inode*, struct file*, const char*, int)} \todo{.}
+	\item \monospaceinline{void release(struct inode*, struct file*)} \todo{.}
+	\item \monospaceinline{int fsync(struct inode*, struct file*)} \todo{.}
+\end{itemize} 
+
+A network file system needs to implement this interface and instead of writing and reading to and from a local device, it needs to send the requests to a remote storage server or to the storage cluster.
+
+
+\subsection{Centralized Network Storage}
 
 NFS, SMB
 
 \subsection{Decentralized}
 
 ceph, glusterfs, hadoop
+
+
+
+\section{HTTP and REST}
