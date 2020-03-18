@@ -14,14 +14,14 @@ No longer shall the owner of a car steer it, but instead the car becomes his or 
 The reason, autonomously driving cars are not common already, is their big complexity increase.
 Compared to already established technologies like parking assistants, entertainment systems or more efficient engine controllers, letting a computer reliably understand a certain traffic situation requires masses of input data and complex algorithms to process.
 As such, the problem itself becomes massive and cannot be solved that easily.
-To solve this, the industry has no choice than to divide this into many small pieces and work out solutions to it step by step.
+So the industry has no choice than to divide this into many small pieces and work out solutions step by step.
 
 The MEC-View research project explorers one such step: whether and how to include external, steady mounted sensors in the decision finding process for partially autonomous vehicles in situations where onboard sensors are insufficient.
 %As additional restriction, decisions made by autonomous vehicles  are not allowed to disrupt the surrounding traffic flow otherwise phenomens like the \todo{Phantomstau} could be caused by them.
 To not disrupt traffic flow with non-human behavior, one needs to study and thereby watch human traffic.
-Automatically analyzing traffic from video footage requires a lot of computation power and can be further optimized by specialized hardware such as GPUs.
+Automatically analyzing traffic from video footage requires a lot of computation power and can be further optimized by specialized hardware such as GPUs\footnote{Graphics Processing Units}.
 
-This thesis will conceptualize and realize a distributed and automated computer vision pipeline which can be used to analyzes traffic flow within video footage.
+This thesis will conceptualize and realize a distributed and automated computer vision pipeline which is in this case used to analyzes traffic flow within video footage.
 Compared to an existing but highly manual workflow, the new system shall help to utilize the available hardware more efficiently by reducing idle times.
 Stage transitions and basic scheduling shall be automated to allow a user to plan and execute multiple projects ahead of time and in parallel.
 %The current, highly manual workflow, can lead to a lot of idle time inbetween user intervention.
@@ -29,7 +29,7 @@ Stage transitions and basic scheduling shall be automated to allow a user to pla
 %The available hardware resources shall be utilized more efficiently, as well as time that is required by humans to monitor the system.
 
 
-
+\newpage
 \section{MEC-View}
 
 The MEC-View research project\cite{mecview:main} - funded by the German Federal Ministry for Economic Affairs and Energy - aims to supplement the field of view of automated driving cars with road-side sensor data using 5G mobile communication. The sensor information is merged into an environment model on the so-called Mobile Edge Computing (MEC) server. This server is directly attached to the radio station to ensure low latency environment model updates.

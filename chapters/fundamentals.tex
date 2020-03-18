@@ -1,28 +1,33 @@
 \chapter{Fundamentals}
 
-This chapter will explain and discuss fundamental knowledge required for the then following chapters.
+This chapter will explain and discuss fundamental knowledge and technologies used in this thesis.
+It is required to understand their basic principles for the following chapters.
 
 \section{Docker}
+\label{docker:image}
 
-\begin{wrapfigure}{r}{0.45\textwidth}
+\begin{wrapfigure}{r}{0.30\textwidth}
 	\centering
 	\includegraphics[width=.2\textwidth]{res/docker-Moby-logo.png}
 	\label{docker:logo}
 	\caption{Official Docker \enquote{Moby} Logo\cite{docker:logo}}
+	\vspace{1cm}
 \end{wrapfigure}
 
 Docker is the name of a software that combines isolation technologies (\autoref{docker:technology}) and a rich ecosystem (\autoref{docker:ecosystem}) to provide and execute third party software in virtual environments.
-Docker aims to increase security and to simplify installation and maintenance of applications.
+Docker aims are to increase security and to simplify installation as well as maintenance of applications.
+Docker Swarm\cite{docker:swarm:key-concepts} and Kubernetes\cite{kubernetes:overview} use these fundamental features to scale applications, services and microservices in the cloud.
 
 
 \subsection{Technology}
 \label{docker:technology}
 
-Docker uses so called images to package and transport binaries with all their required libraries and configuration files as a read-only archive to the destination host.
-\todo{layers? base image, less download, diffs}
-To spawn a new process for a binary within an image, a new virtual environment - the so called container - needs to be setup first.
-Changes to files within containers are stored in separate differentials, which allows the image to be used by multiple containers at once.
-Privileges, resource limitations and storage configurations are also part of a container definition.
+Docker uses so called images to package and transport binaries with all their required libraries and configuration files as a read-only archive to the destination system.
+\todo{layers? base image, less download, diffs}.
+Instead of spawning a new process for a binary in the host environment, the image is used to create a new virtual environment - the so called container.
+Because the image includes all required libraries (in the correct version!), it is possible to isolate the virtual environment which makes the host system invisible to any process inside.
+Changes to files within containers are also stored in separately\footnote{\todo{overlayfs, similar to differentials in backups}}, which allows an image to be used by multiple containers at once.
+Privileges, resource limitations and storage configurations can also be specified when creating a new container.
 Processes inside containers are unable to see  other processes or files that are not part of or assigned to the their container\footnote{This is the default behavior. It is possible to manually lift or modify many boundaries Docker enforces for containers on default.}.
 
 In contrary to a hypervisor, docker is archiving this without running additional virtual machines for each container.
@@ -129,3 +134,5 @@ ceph, glusterfs, hadoop
 
 
 \section{HTTP and REST}
+
+\section{TypeScript and Angular}

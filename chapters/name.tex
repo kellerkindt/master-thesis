@@ -1,13 +1,43 @@
+
+
 \chapter{Introducing Winslow}
 
-Giving it a name helps to refer to it.
+\begin{wrapfigure}{r}{0.37\textwidth}
+	\centering
+	\vspace{-1.5cm}
+	\includegraphics[width=0.3\textwidth]{winslow_friendly_flipped.png}
+	\label{winslow:icon}
+	\caption{Winslow Logo}
+\end{wrapfigure}
 
-\section{Domain Language(?)}
 
-what is a pipeline
+The program that shall implement the requested features listed by \autoref{requested-features} is being called Winslow.
+This name refers to Frederick Winslow Taylor who was an American mechanical engineer and one of the first management consultants in the 19th century\cite[wiki:winslow].
+Both strive to make people's work more efficient.
 
-what is a project
 
-what is a stage
+\section{Common Terminology}
+\label{winslow:terminology}
 
-..
+This chapter explains the meaning of words and terminology used later on.
+It is crucial that every reader has the same understanding for the words used so that there are no wrong assumptions, expectations or surprises.
+
+The root of a work item is called project.
+A project will usually refer to one video footage that shall be processed.
+Each project has its exclusive directory for input, output and intermediate files, called workspace.
+Furthermore a project as an author and possibly participants, that can help in steering and monitoring the processing.
+To do so, there is always a pipeline assigned to a project.
+
+A pipeline consists of at least one but usually multiple stages that can at least be processed linearly - one after the other.
+Furthermore, a pipeline can define environment variables that valid for all stages within the stage.
+
+A stage is the smallest work unit that can be executed.
+A docker image\autoref{docker:image} is specified as execution environment as well as further stage specific environment variables, command line arguments and hardware requirements (such as CPU cores, GPUs and minimum available RAM).
+This enables a stage to use a common image as well as to specify very precisely how to process the data.
+
+In addition, stages and pipelines can be distinguished in a active, running or completed stage or pipeline and a definition.
+A stage definition specifies the above mentioned presets - allowing the user to adjust details just before submission - to create multiple stages from, while a running or complete stage has all information of what is or was executed and allows no further alteration.
+For pipeline definitions this is similar, a pipeline definition can be used to specify a common order of execution.
+Once assigned to a project, the project can freely adjust and change its instance of the pipeline.
+
+\todo{execution node}
