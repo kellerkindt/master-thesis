@@ -78,12 +78,13 @@ Because the communication between the Winslow nodes are primarily for synchroniz
 The most anticipated communication and synchronization mechanic should use and already established communication channel.
 The only defined requirement yet is a common filesystem, can this be utilized to coordinate stage execution and prevent data corruption by providing basic synchronization between the compute nodes? It can!
 
+\todo{ACID in fundamentals?}
 ACID, which stands for Atomicity, Consistency, Isolation and Durability, describes the needs a database must fulfill so that it does not suffer from side effects or data corruption when executing queries.
 A series of changes might not be allowed to be intercepted (atomicity), must see and result in consistent data, is not allowed to interfere with simultaneously executed queries and guarantees that once completed successfully, is in fact persistent and will not be lost (durability).
 
-filesystem is close
+\todo{filesystem is close}
 
-DB principles: ACID
+\todo{DB principles: ACID}
 
 \todo{...}
 
@@ -93,21 +94,21 @@ DB principles: ACID
 	\caption{Sample event and lock series with lifetimes}
 \end{figure}
 
-requires common a way to exchange messages
+\todo{requires common a way to exchange messages}
 
-all messages - called events - are published to all nodes
+\todo{all messages - called events - are published to all nodes}
 
-using file system as bus
+\todo{using file system as bus}
 
-clear and globally same order of events
+\todo{clear and globally same order of events}
 
-events consist of an id, command, time, duration, subject and issuer
+\todo{events consist of an id, command, time, duration, subject and issuer}
 
-events might have a duration
+\todo{events might have a duration}
 
-unspoken requirement: all nodes share the same clock - or one with very little drift
+\todo{unspoken requirement: all nodes share the same clock - or one with very little drift}
 
-
+\todo{usage as synchronization primitive}
 
 \section{Storage}
 

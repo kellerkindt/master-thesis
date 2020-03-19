@@ -1,4 +1,4 @@
-\chapter{The Program}
+\chapter{Aims and Objectives}
 
 This chapter will discuss the program which shall be implemented.
 To do so, the problem to solve must be understood.
@@ -8,7 +8,7 @@ First, a rough glance over the current workflow is given, which is followed by a
 
 \section{Current Workflow}
 
-Currently, to analyze a video for the trajectories of the recorded vehicles, the following steps are executed manually:
+Currently, to analyze a video for the trajectories of  recorded vehicles, the following steps are executed manually:
 \begin{enumerate}
 	\item Upload the input video to a new directory on the GPU server
 	\item \label{cw:ex} Execute a shell script with the video as input file and let it run (hours to days) until completed. The shell script invokes a Java Program - called TrackerApplication - with parameters on what to do with the input file and additional parameters.
@@ -19,12 +19,12 @@ Currently, to analyze a video for the trajectories of the recorded vehicles, the
 \end{enumerate}
 
 Because all those steps are done manually, the user needs to check for errors by oneself.
-Also, if a execution is finished or failed early, there could be hours wasted if the regular check intervals are too far apart, such as during nights.
+Also, if a execution is finished or has failed early, there could be hours wasted until noticed, if the check intervals are too far apart, such as during nights or weekends.
 
 \section{Desired Workflow}
 \label{workflow}
 
-The desired workflow shall be supported through a rich user interface.
+The desired workflow shall be supported through a \todo{rich} user interface.
 This user interface shall provide an overview of all active projects and their current state, such as running computation, awaiting user input, failed or succeeded.
 
 To create a new project, a predefined pipeline definition shall be selected as well as a name chosen.
