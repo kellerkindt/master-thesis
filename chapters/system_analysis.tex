@@ -1,15 +1,29 @@
 
 \chapter{System analysis}
 
-This chapter is about analysing the problem space more detailed, separating concerns\todo{cite?} and finding solutions in an architectural viewpoint.
-It is important to find an architecture, that achieves all requirements and is able to evolve for upcoming changes.
-In some areas where this is foreseeable, preparations to apply upcoming changes easier can be implemented, whereas in other regions this is not possible.
-Generally, sticking to the SOLID\todo{.} and YAGNI\todo{.} principles, will help to achieve this goal.
+This chapter is about analyzing the to be implemented system more detailed, separating concerns\todo{cite?} and starting to evaluate solutions in an architectural viewpoint.
+It is important to find an architecture, that is able to fulfill all requirements and is able to be evolved on for upcoming needs.
+In some areas where this is foreseeable, preparations can be implemented, whereas in other regions this is not possible.
+When working on a architecture, the SOLID\todo{.} and YAGNI\todo{.} principles can help to evaluate the stability and expandability\todo{can it?}.
 
+
+
+\pagebreak
 \section{System Architecture}
 
-The requirements listed in \autoref{requirements} will be used to draft an initial architecture.
-By sorting these requirements, the following layers can be extracted: \todo{.}
+In \autoref{architecture:detailed} a high level overview of the architecture is shown.
+It shows various services and regions with internal and external communication channels.
+The architecture follows the \enquote{Onion Architecture Pattern}\todo{cite}, which is also indicated by the layer numbers and coloring (inner layers are darker).
+
+
+\begin{figure}[H]
+	\includegraphics[width=0.99\textwidth]{architecture_detailed.png}
+	\centering
+	\caption{Architecture overview of a Winslow instance}
+	\label{architecture:detailed}
+\end{figure}
+
+The meaning of the layers and their services will be explained in the following sub-sections.
 
 \subsection{Layer 1: Orchestration Service}
 
@@ -19,6 +33,7 @@ This level is also responsible to coordinate these actions between all Winslow i
 The following requirements are therefore implemented here: \todo{.?}
 
 \subsection{Layer 2: Events and Resources}
+\label{architecture:layer:event_bus}
 
 For the first layer to communicate with the environment, such as reading configurations, project files or cooperation commands, this layer is essential.
 It provides two important services: a synchronized event bus and a large file resource management.
@@ -31,22 +46,23 @@ While knowing the different requirements, because of the time constraint of this
 
 \subsection{Layer 3: Backend Driver}
 
-\subsection{Layer 4: REST API}
+This layer is responsible to bind a remote or external service to the reach of Winslow.
+Once the orchestration service decided to run a stage, collected all environment variables and prepared the workspace, the backend driver is instructed to start a certain image with said prepared environment.
+By separating this task to its own layer - and service in this case - it will be easier to change from Docker to another platform if necessary.
+A reason for this could be the change of needs, the appearance of a platform that is fulfilling the needs better or the disappearance of the currently used platform.
+The latter sounds not that common at first, but the recent partial acquisition of Docker Inc by Mirantis\cite{docker:acquisition} proves that even very popular third party software is not going to be around for all eternity.
+By moving the driver implementation into its own layer, but leaving the interface definition in layer 1, this also complies to the \enquote{Dependency Inversion Principle}. \todo{.}
 
-\subsection{Overview}
+While the backend driver does not access any storage itself, the stages need to read and write to the large file storage.
+In the case of the Docker implementation with an NFS share, the access from within the executed stage can be guarded to limit read and write access to only the required working directories.
+This is discussed more in-depth in \todo{autoref}.
 
-\begin{figure}[H]
-	\includegraphics[width=0.99\textwidth]{architecture_detailed.png}
-	\centering
-	\caption{Architecture overview of a Winslow instance}
-	\label{architecture:detailed}
-\end{figure}
+\subsection{Layer 4: Client Communication}
 
-\todo{java interfaces for backend}
-
-\todo{zwiebel layer model}
-
-System Interacts with the User and other instances of itself
+The final layer in this architecture is the client communication layer.
+This service is not crucial for the actual execution and may be disabled on Winslow instances that shall not response to a user input themselves.
+The REST API\todo{autoref rest} provides sites that can be called from the static Angular\todo{autref angular} content to upload or download files, to control stage execution and to monitor usage and logs.
+Removing or disabling this layer is not stopping the Winslow
 
 \begin{comment}
 \section{Use Case Diagrams}
@@ -219,4 +235,39 @@ Furthermore to the interactions with a user, the system must provide further cap
 
 \section{Communication / message analysis ?}
 
-\section{Interface analysis}
+For the communication described in \autoref{architecture:layer:event_bus} messages need to be defined.
+Because this is a multi instance system which can suffer partial failure, all operations that are non-instantaneous require to have a timeout, so that a failure is detectable.
+Without a failure detection, the end of an operation might not be signaled, which could potentially block further operations for ever.
+
+To account for transmission delay and clock offsets an additional time padding is granted. \todo{.}
+
+\todo{all messages are broadcast because of bus}
+
+\todo{all messages have an id}
+
+\todo{to detailed here? move detailed description to system design?}
+
+\begin{itemize}
+	\item \textbf{LOCK}: Locking a named resource or operation.
+	A lock is exclusive to the issuer and can only be granted if no other lock of the subject or parts of it exist.
+	\item \textbf{EXTEND}: Extending an ongoing operation timeout.
+	This can be used to signal, that a lock is required although its timeout is closing by, in which case the point in time the timeout is reached is pushed back.
+	The issuer must be the same node as the one that issued the \textbf{LOCK} previously.
+	\item \textbf{RELEASE}: An operation or resource is no longer required.
+	The issuer must be the same node as the one that issued the \textbf{LOCK} previously.
+	\item \textbf{KILL}: Non-gracefully stop an operation or destroy a lock.
+	This signals that an operation on its own or associated to a lock shall be stopped immediately and that the lock shall be released.
+	At the moment, this is only used whenever a user wants cancel a stage execution early. More details in \todo{autoref}.
+	\item \textbf{ELECTION\_START}: Signals that the need to execute a stage was detected.
+	The project, pipeline and stage execution id this message is about is included.
+	\item \textbf{ELECTION\_PARTICIPATE}: Signals that the issuer node is capable of executing the stage.
+	It also includes a scoring for the affinity and aversion of executing the stage\todo{cite} on the issuer node.
+	This message also includes the id to the \textbf{ELECTION\_START} it refers to.
+	\item \textbf{ELECTION\_STOP}: Signals that the election has ended.
+	The participator with the best affinity and aversion scoring is now allowed to start to execute the stage.
+	More detail in \todo{auref}.
+	The issuer must be the same node as the one that issued the \textbf{ELECTION\_START} previously.
+\end{itemize}
+
+%\section{Interface analysis}
+% huh?
