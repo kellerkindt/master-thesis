@@ -1,4 +1,6 @@
 use chrono::{DateTime, Datelike, Duration, NaiveDateTime, Timelike};
+use std::collections::hash_map::Entry;
+use std::collections::HashMap;
 use std::io::Error as IoError;
 use std::io::ErrorKind as IoErrorKind;
 use std::io::Write;
@@ -10,6 +12,8 @@ const DATE_FORMAT: &str = "%Y-%m-%d_%H:%M:%S%.3f";
 
 struct Log {
     file: PathBuf,
+    project: String,
+    stage_no: u32,
     begin: NaiveDateTime,
     end: NaiveDateTime,
 }
@@ -48,11 +52,20 @@ fn main() {
     let mut active = Usage::default();
     let mut starting = Usage::default();
 
-    for file in get_log_files() {
+    let files = get_log_files();
+    let mut logs = HashMap::<String, Vec<Log>>::default();
+
+    for file in files {
         match read_log_file(&file) {
             Ok(log) => {
                 add_active(&mut active, &log);
                 add_starting(&mut starting, &log);
+                match logs.entry(log.project.clone()) {
+                    Entry::Occupied(mut entry) => entry.get_mut().push(log),
+                    Entry::Vacant(mut entry) => {
+                        entry.insert(vec![log]);
+                    }
+                };
             }
             Err(e) => {
                 eprintln!("{}", e);
@@ -64,6 +77,36 @@ fn main() {
 
     write_csv(&active, "../active.csv");
     write_csv(&starting, "../starting.csv");
+
+    let auto = find_auto(logs);
+
+    let mut auto_active = Usage::default();
+    let mut auto_starting = Usage::default();
+
+    for log in &auto {
+        add_active(&mut auto_active, &log);
+        add_starting(&mut auto_starting, &log);
+    }
+
+    write_csv(&auto_active, "../auto_active.csv");
+    write_csv(&auto_starting, "../auto_starting.csv");
+}
+
+fn find_auto(map: HashMap<String, Vec<Log>>) -> Vec<Log> {
+    let mut vec = Vec::default();
+    for (_project, mut logs) in map.into_iter() {
+        logs.sort_by(|a, b| a.stage_no.cmp(&b.stage_no));
+        let mut iter = logs.into_iter();
+        let mut prev = iter.next().unwrap().end;
+        for log in iter {
+            let auto = log.begin - prev < Duration::minutes(1);
+            prev = log.end;
+            if auto {
+                vec.push(log);
+            }
+        }
+    }
+    vec
 }
 
 fn print(usage: &Usage) {
@@ -160,8 +203,16 @@ fn read_log_file(path: &PathBuf) -> Result<Log, IoError> {
         .ok_or_else(|| IoErrorKind::UnexpectedEof)?;
     let end = NaiveDateTime::parse_from_str(last, DATE_FORMAT)
         .map_err(|_| IoError::from(IoErrorKind::InvalidInput))?;
+
+    let file_name = path.file_name().unwrap().to_string_lossy().to_string();
+    let mut split = file_name.split("_");
+    let project = split.next().unwrap().to_string();
+    let stage_no = split.next().unwrap().parse::<u32>().unwrap();
+
     Ok(Log {
         file: path.clone(),
+        project,
+        stage_no,
         begin,
         end,
     })
