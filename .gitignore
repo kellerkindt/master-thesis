@@ -253,3 +253,7 @@ TSWLatexianTemp*
 
 # standalone packages
 *.sta
+
+
+logs-evaluation/target
+logs-evaluation/.idea*
