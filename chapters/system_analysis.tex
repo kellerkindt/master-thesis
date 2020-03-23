@@ -1,89 +1,55 @@
 
 \chapter{System analysis}
 
-\section{System context analysis}
-System Umwelt Diagram
+This chapter is about analysing the problem space more detailed, separating concerns\todo{cite?} and finding solutions in an architectural viewpoint.
+It is important to find an architecture, that achieves all requirements and is able to evolve for upcoming changes.
+In some areas where this is foreseeable, preparations to apply upcoming changes easier can be implemented, whereas in other regions this is not possible.
+Generally, sticking to the SOLID\todo{.} and YAGNI\todo{.} principles, will help to achieve this goal.
 
+\section{System Architecture}
+
+The requirements listed in \autoref{requirements} will be used to draft an initial architecture.
+By sorting these requirements, the following layers can be extracted: \todo{.}
+
+\subsection{Layer 1: Orchestration Service}
+
+This layer is all about the fundamental business logic: when to schedule, start and fail which stage of what project, while watching the hardware utilization.
+This level is also responsible to coordinate these actions between all Winslow instances, so that there is no duplicate, missing or undetected node failure.
+
+The following requirements are therefore implemented here: \todo{.?}
+
+\subsection{Layer 2: Events and Resources}
+
+For the first layer to communicate with the environment, such as reading configurations, project files or cooperation commands, this layer is essential.
+It provides two important services: a synchronized event bus and a large file resource management.
+The first is used to communicate with the other Winslow instances, while the latter is required for a stage execution.
+Although list here as two separate services, they do not necessarily need to be backed up by two storages.
+To provide a synchronized stream of events, it is required that the underlying storage provides some sort of synchronization primitives (see \todo{ref stream api / files?}).
+The large file storage has no such requirement, as this is ensured by Winslow's stage synchronization and thus a eventual consistent\todo{cite} storage could be used here.
+
+While knowing the different requirements, because of the time constraint of this thesis, a common NFS storage will be used\todo{autoref}.
+
+\subsection{Layer 3: Backend Driver}
+
+\subsection{Layer 4: REST API}
+
+\subsection{Overview}
 
 \begin{figure}[H]
-	\begin{tikzpicture}[node distance=5,scale=0.8, every node/.style={transform shape}]
-	\node [draw, rectangle, drop shadow, fill=white] (F) {Fahrzeug};
-	\node [draw, circle, drop shadow, fill=white, text width=3cm, align=center] (C) [below right=of F] {MEC-View Server};
-	\node [draw, rectangle, drop shadow, fill=white] (S) [below right=of C] {Sensor};
-	%		\node [draw, rectangle, drop shadow, fill=white] (A) [above right=of C] {Fusionsalgorithmus};
-	
-	\node (ctrl1) [above=of S] {};
-	\node (ctrl2) [above right=of C] {};
-	\node (ctrl3) [right=of C] {};
-	\node (ctrl4) [below=of F] {};
-	\node (ctrl5) [left=of C] {};
-	\node (ctrl6) [below=of ctrl5] {};
-	\node (ctrl7) [above=of C] {};
-	\node (ctrl8) [right=of F] {};
-	
-	%
-	% Fahrzeug -> MEC-View-Server
-	%
-	\path[draw, -{Latex[scale=2.0]}, dashed] (F)
-	edge [bend right] node [fill=white] {deabonnieren} (C)
-	edge [bend left]  node [fill=white] {abonnieren} (C)
-	.. controls (ctrl7) and (ctrl8) ..  node [fill=white] {Als Fahrzeug registrieren} (C);
-	
-	%
-	% MEC-View-Server -> Fahrzeug
-	%
-	\path[draw, -{Latex[scale=2.0]}] (C)
-	edge node [fill=white] {EnvironmentFrame} (F)
-	.. controls (ctrl4) and (ctrl5) ..  node [fill=white] {Sektoren} (F);
-	
-	%
-	% MEC-View-Server -> Algorithmus
-	%
-	%		\path[draw, -{Latex[scale=2.0]}] (C)
-	%				edge [bend right] node [fill=white] {SensorFrame} (A);
-	
-	%
-	% Algorithmus -> MEC-View-Server
-	%
-	%		\path[draw, -{Latex[scale=2.0]}] (A)
-	%				edge [bend right] node [fill=white] {EnvironmentFrame} (C);
-	
-	%
-	% Sensor -> MEC-View-Server
-	%		
-	\path[draw, -{Latex[scale=2.0]}, dashed] (S)
-	.. controls (ctrl3) and (ctrl1) ..  node [fill=white] {Als Sensor registrieren} (C);
-	
-	\path[draw, -{Latex[scale=2.0]}] (S)
-	edge node [fill=white] {Sensor(Idle)Frame} (C);
-	
-	%
-	% MEC-View-Server -> Sensor
-	%
-	\path[draw, -{Latex[scale=2.0]}, dashed] (C)
-	edge [bend left]  node [fill=white] {abonnieren} (S)
-	edge [bend right] node [fill=white] {deabonnieren} (S);
-	
-	
-	
-	
-	\path[draw, -{Latex[scale=2.0]}] (4, -8) -- (.5, -8) node [pos=.5, above] {Datenfluss};
-	\path[draw, -{Latex[scale=2.0]}, dashed] (4, -9) -- (.5, -9) node [pos=.5, above] {Kontrollfluss};
-	
-	%\umlinherit{F}{L}
-	%\umlinherit{S}{L}
-	\end{tikzpicture}
+	\includegraphics[width=0.99\textwidth]{architecture_detailed.png}
 	\centering
-	\caption{\todo{Systemkontextdiagramm}}
-	\label{system_context_diagramm}
+	\caption{Architecture overview of a Winslow instance}
+	\label{architecture:detailed}
 \end{figure}
 
+\todo{java interfaces for backend}
+
+\todo{zwiebel layer model}
 
 System Interacts with the User and other instances of itself
 
-
+\begin{comment}
 \section{Use Case Diagrams}
-
 Finding all requirements can be challenging.
 Drawing Use Case Diagrams can help to discover requirements while being very easy to understand.
 This helps in understanding the customers needs \cite{Rosenberg2007} while the customer receives an impression on what will be reflected in the final product.
@@ -249,6 +215,7 @@ Furthermore to the interactions with a user, the system must provide further cap
 	\caption{Use Case Diagram showing administrative interactions}
 	\label{use_case:admin}
 \end{figure}
+\end{comment}
 
 \section{Communication / message analysis ?}
 
