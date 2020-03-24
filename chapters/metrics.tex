@@ -18,6 +18,8 @@ maybe with error scenario: being able to dynamically execute a stage of another 
 			width=0.8\textwidth,
 			height=0.4\textwidth]
 			\addplot3[surf, shader=flat,mesh/cols=24,mesh/rows=7] table[x=hour, y=day, z=value, col sep=semicolon] {active.csv};
+			\addplot[mark=none, red] coordinates {(7,0) (7,7)};
+			\addplot[mark=none, red] coordinates {(16,0) (16,7)};
 		\end{axis}
 	\end{tikzpicture}
 	\caption{Actively running stages at a given day of the week and time of day}
@@ -36,6 +38,8 @@ maybe with error scenario: being able to dynamically execute a stage of another 
 			width=0.8\textwidth,
 			height=0.4\textwidth]
 			\addplot3[surf, shader=flat,mesh/cols=24,mesh/rows=7] table[x=hour, y=day, z=value, col sep=semicolon] {starting.csv};
+			\addplot[mark=none, red] coordinates {(7,0) (7,7)};
+			\addplot[mark=none, red] coordinates {(16,0) (16,7)};
 		\end{axis}
 	\end{tikzpicture}
 	\caption{Stages starting at a given day of the week and time of day}
@@ -59,6 +63,8 @@ maybe with error scenario: being able to dynamically execute a stage of another 
 			width=0.8\textwidth,
 			height=0.4\textwidth]
 			\addplot3[surf, shader=flat,mesh/cols=24,mesh/rows=7] table[x=hour, y=day, z=value, col sep=semicolon] {auto_active.csv};
+			\addplot[mark=none, red] coordinates {(7,0) (7,7)};
+			\addplot[mark=none, red] coordinates {(16,0) (16,7)};
 		\end{axis}
 	\end{tikzpicture}
 	\caption{Actively running stages at a given day of the week and time of day}
@@ -77,6 +83,8 @@ maybe with error scenario: being able to dynamically execute a stage of another 
 			width=0.8\textwidth,
 			height=0.4\textwidth]
 			\addplot3[surf, shader=flat,mesh/cols=24,mesh/rows=7] table[x=hour, y=day, z=value, col sep=semicolon] {auto_starting.csv};
+			\addplot[mark=none, red] coordinates {(7,0) (7,7)};
+			\addplot[mark=none, red] coordinates {(16,0) (16,7)};
 		\end{axis}
 	\end{tikzpicture}
 	\caption{Stages starting at a given day of the week and time of day}
