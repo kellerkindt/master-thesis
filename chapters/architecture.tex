@@ -1,12 +1,13 @@
 \chapter{System design}
 
-\todo{divide and conquer?}
+This chapter uses all collected information so far to make design decisions for the implementation of Winslow.
+The \todo{discussion} decision making process is documented to comprehend the reason for a decision.
 
-Designing a system requires deep understanding of the \todo{problem space/use cases/task definition} to then create a solution.
-The better the knowledge of existing system is, the more easier it is to take advantage of established solutions and evade known pitfalls.
-This chapter will concentrate on the big \todo{headaches} by analyzing and comparing them to existing or similar solutions and develop a solution with the help of the gathered knowledge.
 
 \section{Execution Management}
+
+As noted in \autoref{analysis:layer_1}, the central business logic is to deciding when and issuing stage executions.
+There are two general approaches in doing so, both will be discussed next.
 
 \subsection{Remote Execution}
 
@@ -29,14 +30,22 @@ The security risk is somewhat similar to Jenkins: once an attacker has access to
 
 \subsection{Local Execution}
 
-Executing a job locally means running the job on the same machine as the program that is watching and managing the execution.
-This has the advantage of having all libraries, tools and resources already present.
+Executing a job locally means running a job on the same machine as the program that is monitoring the execution.
+This has the advantage of having all libraries, tools and resources already present \todo{and is without the threat of connection loss to the remote machine}.
 But in the case of Jenkins and GitLab, this is means, each CI instance is separate from the others.
 There is no integration between those instance in this configuration.
 What is missing Jenkins and GitLab here is the capability to decentralize their core task of managing projects, resources and executions.
 
 
-\subsection{Decision for Winslow}
+\subsection{The approach for Winslow}
+
+\todo{.}
+
+potentially many executions -> easier when local
+
+need watch hardware utilization closely
+
+enables-ish \enquote{spin up a new instance and you are ready to go} slogan
 
 \section{Communication and Synchronization}
 
@@ -75,7 +84,7 @@ It is required, that this connection can be established between seemingly random
 This adds another constraint to the system: the firewalls in-between the nodes must allow these connections.
 
 Because the communication between the Winslow nodes are primarily for synchronization and not for exchange of large binary data, the previous mentioned scenarios are over fulfilling the need.
-The most anticipated communication and synchronization mechanic should use and already established communication channel.
+\todo{the smallest common denominator-ish} The most anticipated communication and synchronization mechanic should use and already established communication channel.
 The only defined requirement yet is a common filesystem, can this be utilized to coordinate stage execution and prevent data corruption by providing basic synchronization between the compute nodes? It can!
 
 \todo{ACID in fundamentals?}
@@ -87,12 +96,6 @@ A series of changes might not be allowed to be intercepted (atomicity), must see
 \todo{DB principles: ACID}
 
 \todo{...}
-
-\begin{figure}[h]
-	\includegraphics[width=0.9\textwidth]{events.png}
-	\label{winslow:com:events}
-	\caption{Sample event and lock series with lifetimes}
-\end{figure}
 
 \todo{requires common a way to exchange messages}
 
@@ -109,6 +112,55 @@ A series of changes might not be allowed to be intercepted (atomicity), must see
 \todo{unspoken requirement: all nodes share the same clock - or one with very little drift}
 
 \todo{usage as synchronization primitive}
+
+\subsection{Messages}
+
+To coordinate the Winslow instances, messages will be exchanged through the common event bus.
+Because of the nature of this simple event bus, messages are delivered by broadcasting them to all instances.
+
+\todo{issuer, command, subject, timestamp, duration}
+
+\todo{.}
+Because this is a multi instance system which can suffer partial failure, all operations that are non-instantaneous require to have a timeout, so that a failure is detectable.
+Without a failure detection, the end of an operation might not be signaled, which could potentially block further operations for forever.
+The presence of a timeout will not be mentioned again when listing the messages in detail.
+
+To account for transmission delay and clock offsets an additional time padding is granted. \todo{.}
+
+\todo{all messages have an id}
+
+\todo{to detailed here? move detailed description to system design?}
+
+\begin{itemize}
+	\item \textbf{LOCK}: Locking a named resource or operation.
+	A lock is exclusive to the issuer and can only be granted if no other lock of the subject or parts of it exist.
+	\item \textbf{EXTEND}: Extending an ongoing operation timeout.
+	This can be used to signal, that a lock is required although its timeout is closing by, in which case the point in time the timeout is reached is pushed back.
+	The issuer must be the same node as the one that issued the \textbf{LOCK} previously.
+	\item \textbf{RELEASE}: An operation or resource is no longer required.
+	The issuer must be the same node as the one that issued the \textbf{LOCK} previously.
+	\item \textbf{KILL}: Non-gracefully stop an operation or destroy a lock.
+	This signals that an operation on its own or associated to a lock shall be stopped immediately and that the lock shall be released.
+	At the moment, this is only used whenever a user wants cancel a stage execution early. More details in \todo{autoref}.
+	\item \textbf{ELECTION\_START}: Signals that the need to execute a stage was detected.
+	The project this signal refers to is included in the message.
+	\item \textbf{ELECTION\_PARTICIPATE}: Signals that the issuer node is capable of executing the stage.
+	It also includes a scoring for the affinity and aversion of executing the stage on the issuer node (more details in \autoref{election:affinity_and_aversion}).
+	This message also includes the project it refers to.
+	This allows elections for different projects to take place concurrently.
+	\item \textbf{ELECTION\_STOP}: Signals that the election for a certain project has ended.
+	The participator with the best affinity and aversion scoring is now allowed to start to execute the stage.
+	More detail in \todo{auref}.
+	This is signal is only allowed to be issued by the same node that started the election process.
+\end{itemize}
+
+\todo{explain figure}
+
+\begin{figure}[h]
+	\includegraphics[width=0.9\textwidth]{events.png}
+	\label{winslow:com:events}
+	\caption{Sample event and lock series with lifetimes}
+\end{figure}
 
 \section{Storage}
 
@@ -239,6 +291,11 @@ voting/election by capabilities and 'will' of a node to run a stage
 
 
 \section{Election System}
+\label{design:election}
+\label{election:affinity_and_aversion} \todo{.}
+
+\todo{affinity}
+\todo{aversion}
 
 Utilizing Event Bus for timely limited elections and to ensure that there are no concurrent election for a single project.
 

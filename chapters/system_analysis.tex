@@ -6,6 +6,7 @@ It is important to find an architecture, that is able to fulfill all requirement
 In some areas where this is foreseeable, preparations can be implemented, whereas in other regions this is not possible.
 When working on a architecture, the SOLID\todo{.} and YAGNI\todo{.} principles can help to evaluate the stability and expandability\todo{can it?}.
 
+\todo{divide and conquer -> split issue in smaller issues, solve one by one}
 
 
 \pagebreak
@@ -26,6 +27,7 @@ The architecture follows the \enquote{Onion Architecture Pattern}\todo{cite}, wh
 The meaning of the layers and their services will be explained in the following sub-sections.
 
 \subsection{Layer 1: Orchestration Service}
+\label{analysis:layer_1}
 
 This layer is all about the fundamental business logic: when to schedule, start and fail which stage of what project, while watching the hardware utilization.
 This level is also responsible to coordinate these actions between all Winslow instances, so that there is no duplicate, missing or undetected node failure.
@@ -33,16 +35,17 @@ This level is also responsible to coordinate these actions between all Winslow i
 The following requirements are therefore implemented here: \todo{.?}
 
 \subsection{Layer 2: Events and Resources}
-\label{architecture:layer:event_bus}
 
-For the first layer to communicate with the environment, such as reading configurations, project files or cooperation commands, this layer is essential.
-It provides two important services: a synchronized event bus and a large file resource management.
-The first is used to communicate with the other Winslow instances, while the latter is required for a stage execution.
-Although list here as two separate services, they do not necessarily need to be backed up by two storages.
-To provide a synchronized stream of events, it is required that the underlying storage provides some sort of synchronization primitives (see \todo{ref stream api / files?}).
-The large file storage has no such requirement, as this is ensured by Winslow's stage synchronization and thus a eventual consistent\todo{cite} storage could be used here.
+The second layer is essential for the first layer to interact with and understand its environment.
+It provides two important services: a synchronized communication channel and a large file storage.
 
-While knowing the different requirements, because of the time constraint of this thesis, a common NFS storage will be used\todo{autoref}.
+The communication channel requires a storage to persist messages that are relevant for a duration of time and it needs to  support basic synchronization primitives to ensure consistency.
+Winslow instances that are started need to see events that were issued before their start and which are not completed yet to replicate the state of the system correctly.
+
+For executing stages large files must be stored.
+The synchronized access is ensured by Winslow's event synchronization and thus the constraints to the storage is more relaxed than the one used to persist synchronization messages.
+An eventual consistent\todo{cite} storage could be used here. \todo{inter-stage synchronization? eventual-consistent might not be sufficient here?}
+
 
 \subsection{Layer 3: Backend Driver}
 
@@ -232,42 +235,3 @@ Furthermore to the interactions with a user, the system must provide further cap
 	\label{use_case:admin}
 \end{figure}
 \end{comment}
-
-\section{Communication / message analysis ?}
-
-For the communication described in \autoref{architecture:layer:event_bus} messages need to be defined.
-Because this is a multi instance system which can suffer partial failure, all operations that are non-instantaneous require to have a timeout, so that a failure is detectable.
-Without a failure detection, the end of an operation might not be signaled, which could potentially block further operations for ever.
-
-To account for transmission delay and clock offsets an additional time padding is granted. \todo{.}
-
-\todo{all messages are broadcast because of bus}
-
-\todo{all messages have an id}
-
-\todo{to detailed here? move detailed description to system design?}
-
-\begin{itemize}
-	\item \textbf{LOCK}: Locking a named resource or operation.
-	A lock is exclusive to the issuer and can only be granted if no other lock of the subject or parts of it exist.
-	\item \textbf{EXTEND}: Extending an ongoing operation timeout.
-	This can be used to signal, that a lock is required although its timeout is closing by, in which case the point in time the timeout is reached is pushed back.
-	The issuer must be the same node as the one that issued the \textbf{LOCK} previously.
-	\item \textbf{RELEASE}: An operation or resource is no longer required.
-	The issuer must be the same node as the one that issued the \textbf{LOCK} previously.
-	\item \textbf{KILL}: Non-gracefully stop an operation or destroy a lock.
-	This signals that an operation on its own or associated to a lock shall be stopped immediately and that the lock shall be released.
-	At the moment, this is only used whenever a user wants cancel a stage execution early. More details in \todo{autoref}.
-	\item \textbf{ELECTION\_START}: Signals that the need to execute a stage was detected.
-	The project, pipeline and stage execution id this message is about is included.
-	\item \textbf{ELECTION\_PARTICIPATE}: Signals that the issuer node is capable of executing the stage.
-	It also includes a scoring for the affinity and aversion of executing the stage\todo{cite} on the issuer node.
-	This message also includes the id to the \textbf{ELECTION\_START} it refers to.
-	\item \textbf{ELECTION\_STOP}: Signals that the election has ended.
-	The participator with the best affinity and aversion scoring is now allowed to start to execute the stage.
-	More detail in \todo{auref}.
-	The issuer must be the same node as the one that issued the \textbf{ELECTION\_START} previously.
-\end{itemize}
-
-%\section{Interface analysis}
-% huh?
