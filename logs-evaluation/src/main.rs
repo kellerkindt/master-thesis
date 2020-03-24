@@ -78,6 +78,9 @@ fn main() {
     write_csv(&active, "../active.csv");
     write_csv(&starting, "../starting.csv");
 
+    let duration = get_duration(logs.iter().flat_map(|(a, b)| b.iter()));
+    write_duration_csv(&duration[..], "../duration.csv");
+
     let auto = find_auto(logs);
 
     let mut auto_active = Usage::default();
@@ -181,6 +184,25 @@ fn write_csv(usage: &Usage, path: &str) {
         for (i, v) in usage.days[d].at_hour.iter().enumerate() {
             writeln!(file, "{};{};{}", d + 1, i, v).unwrap();
         }
+    }
+}
+
+fn get_duration<'a, I: Iterator<Item = &'a Log> + 'a>(logs: I) -> Vec<f32> {
+    let mut result = Vec::<f32>::default();
+    for log in logs {
+        let duration = log.end.signed_duration_since(log.begin);
+        if duration > Duration::minutes(5) {
+            let hours = duration.num_hours() as f32 + (duration.num_minutes() as f32 / 60_f32);
+            result.push(hours);
+        }
+    }
+    result
+}
+
+fn write_duration_csv(durations: &[f32], path: &str) {
+    let mut file = std::fs::File::create(path).unwrap();
+    for duration in durations {
+        writeln!(file, "{}", duration).unwrap();
     }
 }
 

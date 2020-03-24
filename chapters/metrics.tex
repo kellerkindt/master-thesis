@@ -12,14 +12,18 @@ maybe with error scenario: being able to dynamically execute a stage of another 
 			colormap/cool,
 			colorbar,
 			view={0}{90},
+			xtick={1,3,5,7,9,11,13,15,17,19,21,23},
 			ytick={1,2,3,4,5,6,7},yticklabels={Mo,Tu,We,Th,Fr,Sa,Su},
+			point meta max=0,
 			point meta max=30,
+			point meta=explicit,
 			y dir=reverse,
-			width=0.8\textwidth,
-			height=0.4\textwidth]
-			\addplot3[surf, shader=flat,mesh/cols=24,mesh/rows=7] table[x=hour, y=day, z=value, col sep=semicolon] {active.csv};
-			\addplot[mark=none, red] coordinates {(7,0) (7,7)};
-			\addplot[mark=none, red] coordinates {(16,0) (16,7)};
+			width=1.0\textwidth,
+			height=0.5\textwidth]
+			%			\addplot3[surf, shader=flat corner,mesh/cols=24,mesh/rows=7] table[x=hour, y=day, z=value, col sep=semicolon] {auto_starting.csv};
+			\addplot[matrix plot*,mesh/cols=24,mesh/rows=7,shader=flat corner] table[x=hour,y=day,meta=value, col sep=semicolon] {active.csv};
+			\addplot[mark=none, red] coordinates {(7.5,0) (7.5,8)};
+			\addplot[mark=none, red] coordinates {(16.5,0) (16.5,8)};
 		\end{axis}
 	\end{tikzpicture}
 	\caption{Actively running stages at a given day of the week and time of day}
@@ -32,14 +36,18 @@ maybe with error scenario: being able to dynamically execute a stage of another 
 			colormap/cool,
 			colorbar,
 			view={0}{90},
+			xtick={1,3,5,7,9,11,13,15,17,19,21,23},
 			ytick={1,2,3,4,5,6,7},yticklabels={Mo,Tu,We,Th,Fr,Sa,Su},
+			point meta max=0,
 			point meta max=30,
+			point meta=explicit,
 			y dir=reverse,
-			width=0.8\textwidth,
-			height=0.4\textwidth]
-			\addplot3[surf, shader=flat,mesh/cols=24,mesh/rows=7] table[x=hour, y=day, z=value, col sep=semicolon] {starting.csv};
-			\addplot[mark=none, red] coordinates {(7,0) (7,7)};
-			\addplot[mark=none, red] coordinates {(16,0) (16,7)};
+			width=1.0\textwidth,
+			height=0.5\textwidth]
+			%			\addplot3[surf, shader=flat corner,mesh/cols=24,mesh/rows=7] table[x=hour, y=day, z=value, col sep=semicolon] {auto_starting.csv};
+			\addplot[matrix plot*,mesh/cols=24,mesh/rows=7,shader=flat corner] table[x=hour,y=day,meta=value, col sep=semicolon] {starting.csv};
+			\addplot[mark=none, red] coordinates {(7.5,0) (7.5,8)};
+			\addplot[mark=none, red] coordinates {(16.5,0) (16.5,8)};
 		\end{axis}
 	\end{tikzpicture}
 	\caption{Stages starting at a given day of the week and time of day}
@@ -57,17 +65,21 @@ maybe with error scenario: being able to dynamically execute a stage of another 
 			colormap/cool,
 			colorbar,
 			view={0}{90},
+			xtick={1,3,5,7,9,11,13,15,17,19,21,23},
 			ytick={1,2,3,4,5,6,7},yticklabels={Mo,Tu,We,Th,Fr,Sa,Su},
+			point meta max=0,
 			point meta max=30,
+			point meta=explicit,
 			y dir=reverse,
-			width=0.8\textwidth,
-			height=0.4\textwidth]
-			\addplot3[surf, shader=flat,mesh/cols=24,mesh/rows=7] table[x=hour, y=day, z=value, col sep=semicolon] {auto_active.csv};
-			\addplot[mark=none, red] coordinates {(7,0) (7,7)};
-			\addplot[mark=none, red] coordinates {(16,0) (16,7)};
+			width=1.0\textwidth,
+			height=0.5\textwidth]
+			%			\addplot3[surf, shader=flat corner,mesh/cols=24,mesh/rows=7] table[x=hour, y=day, z=value, col sep=semicolon] {auto_starting.csv};
+			\addplot[matrix plot*,mesh/cols=24,mesh/rows=7,shader=flat corner] table[x=hour,y=day,meta=value, col sep=semicolon] {auto_active.csv};
+			\addplot[mark=none, red] coordinates {(7.5,0) (7.5,8)};
+			\addplot[mark=none, red] coordinates {(16.5,0) (16.5,8)};
 		\end{axis}
 	\end{tikzpicture}
-	\caption{Actively running stages at a given day of the week and time of day}
+	\caption{Actively running stages at a given day of the week and time of day which were started automatically}
 \end{figure}
 
 \begin{figure}[H]
@@ -77,16 +89,47 @@ maybe with error scenario: being able to dynamically execute a stage of another 
 			colormap/cool,
 			colorbar,
 			view={0}{90},
+			xtick={1,3,5,7,9,11,13,15,17,19,21,23},
 			ytick={1,2,3,4,5,6,7},yticklabels={Mo,Tu,We,Th,Fr,Sa,Su},
+			point meta max=0,
 			point meta max=30,
+			point meta=explicit,
 			y dir=reverse,
-			width=0.8\textwidth,
-			height=0.4\textwidth]
-			\addplot3[surf, shader=flat,mesh/cols=24,mesh/rows=7] table[x=hour, y=day, z=value, col sep=semicolon] {auto_starting.csv};
-			\addplot[mark=none, red] coordinates {(7,0) (7,7)};
-			\addplot[mark=none, red] coordinates {(16,0) (16,7)};
+			width=1.0\textwidth,
+			height=0.5\textwidth]
+%			\addplot3[surf, shader=flat corner,mesh/cols=24,mesh/rows=7] table[x=hour, y=day, z=value, col sep=semicolon] {auto_starting.csv};
+	       	\addplot[matrix plot*,mesh/cols=24,mesh/rows=7,shader=flat corner] table[x=hour,y=day,meta=value, col sep=semicolon] {auto_starting.csv};
+	       	\addplot[mark=none, red] coordinates {(7.5,0) (7.5,8)};
+	       	\addplot[mark=none, red] coordinates {(16.5,0) (16.5,8)};
 		\end{axis}
 	\end{tikzpicture}
-	\caption{Stages starting at a given day of the week and time of day}
+	\caption{Stages automatically starting at a given day of the week and time of day}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}[
+			ybar interval,
+  			xtick=,% reset from ybar interval
+			width=1.0\textwidth,
+			height=0.6\textwidth,
+			xmin=0
+			]
+			\addplot+[hist={data=x}] file {duration.csv};
+		\end{axis}
+	\end{tikzpicture}
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}[
+			width=1.0\textwidth,
+			height=0.2\textwidth,
+			boxplot/draw direction=x,
+			xmin=0,xmax=280
+		]
+		\addplot+[boxplot={average=auto,data=x}] file {duration.csv};
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Stages automatically starting at a given day of the week and time of day}
 \end{figure}
 
