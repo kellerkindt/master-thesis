@@ -1,5 +1,87 @@
-
 \chapter{System Analysis}
+
+
+\requirement{mgmt:create:pipeline}{1110}{Define a new Pipeline}{
+	The user must be able to create a new pipeline definition.
+	Only valid definitions must be accepted.
+	A valid pipeline definition has a name and must contain at least one stage definition.
+}
+\requirement{mgmt:update:pipeline}{1120}{Update an existing Pipeline}{
+	The user must be able to see and modify an existing pipeline definition.
+}
+\requirement{mgmt:delete:pipeline}{1130}{Delete an existing Pipeline}{
+	The user must be able to remove an existing pipeline definition.
+	Deleting a pipeline definition must not break and therefore must not prevent associated projects from further execution.
+}
+\requirement{mgmt:list:pipeline}{1140}{List all Pipelines}{
+	The user must be able to retrieve a named list of all existing pipeline definitions.
+}
+
+\requirement{mgmt:create:project}{1210}{Create a new Project}{
+	The user must be able to create a new project.
+	Only valid projects must be accepted.
+	A valid project has a name and must be using an existing pipeline definition.
+}
+\requirement{mgmt:update:project:pipeline}{1220}{Update the Pipeline of a Project}{
+	The user must be able to change the pipeline definition an existing project is based on.
+}
+\requirement{mgmt:update:project:name}{1230}{Update the Name of a Project}{
+	The user must be able to update the name of a project.
+}
+\requirement{mgmt:update:project:labels}{1240}{Updating Tags of a Project}{
+	The user must be able to add and remove tags to and from an existing project.
+}
+\requirement{mgmt:delete:project}{1250}{Delete an existing Project}{
+	The user must be able to delete a Project.
+	Deleting a project must delete all associated files, directories and configuration files.
+}
+\requirement{mgmt:list:project}{1260}{List all Projects}{
+	The user must be able to retrieved a named list of all existing projects.
+}
+
+\requirement{files:upload}{1310}{Upload Files}{
+	The user must be able to upload files into the scope of a project, so that further stage execution is able to retrieve said file.
+}
+\requirement{files:download}{1320}{Download Files}{
+	The user must be able to download files that are within the scope of a project.
+	Said files can be files that were previously uploaded by the user or are results of executed stages.
+}
+\requirement{files:list}{1340}{List Files}{
+	The user must be able to retrieve a list of files associated with a project.
+}
+
+\requirement{exec:start:stage}{1410}{Start a Stage}{
+	The user must be able to start a new Stage for a project.
+	Any Stage defined in the associated Pipeline Definition is considered a valid choice.
+	The user shall be able to choose whether the following Stages shall be executed automatically or the pipeline shall be paused upon completion.
+}
+\requirement{exec:pause:stage}{1420}{Pause a Pipeline}{
+	The user must be able to mark a running Pipeline of a Project to be paused before executing the next Stage.
+}
+\requirement{exec:resume:stage}{1430}{Resume a Pipeline}{
+	The user must be able to resume paused Pipelines.
+}
+\requirement{exec:abort:stage}{1440}{Abort a running Stage}{
+	The user must be able to commit an abort request for a running Stage.
+	An aborted Stage shall be considered failed and further Stage execution shall be paused.
+}
+\requirement{exec:inspect:logs}{1450}{Inspect logs of a Stage}{
+	The user must be able to see log messages produced by a selected Stage as well as to that stage associated system events.
+}
+\requirement{exec:inspect:state}{1460}{Inspect state a Stage}{
+	The user must be able to retrieve the state ('RUNNING', 'PAUSED', 'SUCCEEDED', 'FAILED') for all stages of a project.
+}
+
+\requirement{node:monitor:cpu}{1510}{Monitor CPU usage}{
+	The user must be able to retrieve the CPU utilization of all known nodes.
+}
+\requirement{node:monitor:ram}{1520}{Monitor RAM usage}{
+	The user must be able to retrieve the RAM utilization of all known nodes.
+}
+\requirement{node:monitor:netio}{1520}{Monitor Network IO}{
+	The user must be able to retrieve the Network IO utilization of all known nodes.
+}
+
 
 This chapter is about analyzing the to be implemented system more detailed, separating concerns\todo{cite?} and starting to evaluate solutions in an architectural viewpoint.
 It is important to find an architecture, that is able to fulfill all requirements and is able to be evolved on for upcoming needs.
@@ -10,8 +92,8 @@ When working on a architecture, the SOLID\todo{.} and YAGNI\todo{.} principles c
 
 \todo{drafting, finding responsibilities, separate by responsibility}
 
-\section{System Context}
-\todo{arg1}
+%\section{System Context}
+%\todo{.delete?}
 
 \section{Use Cases}
 Finding all requirements can be challenging.
@@ -52,17 +134,17 @@ Instead, the interactions are grouped in categories and displayed in separate di
 	\scalebox{.65}{
 		\begin{tikzpicture}[node distance=5]
 		\begin{umlsystem}{Winslow - Manage Pipelines and Projects}
-		\umlusecase[y=0,name=u110]{\reqNameRef{mgmt:create:pipeline}}
-		\umlusecase[y=-1,name=u120]{\reqNameRef{mgmt:update:pipeline}}
-		\umlusecase[y=-2,name=u130]{\reqNameRef{mgmt:delete:pipeline}}
-		\umlusecase[y=-3,name=u140]{\reqNameRef{mgmt:list:pipeline}}
+		\umlusecase[y=0,name=u110]{\reqName{mgmt:create:pipeline}}
+		\umlusecase[y=-1,name=u120]{\reqName{mgmt:update:pipeline}}
+		\umlusecase[y=-2,name=u130]{\reqName{mgmt:delete:pipeline}}
+		\umlusecase[y=-3,name=u140]{\reqName{mgmt:list:pipeline}}
 		
-		\umlusecase[y=-5,name=u210]{\reqNameRef{mgmt:create:project}}
-		\umlusecase[y=-6,name=u220]{\reqNameRef{mgmt:update:project:pipeline}}
-		\umlusecase[y=-7,name=u230]{\reqNameRef{mgmt:update:project:name}}
-		\umlusecase[y=-8,name=u240]{\reqNameRef{mgmt:update:project:labels}}
-		\umlusecase[y=-9,name=u250]{\reqNameRef{mgmt:delete:project}}
-		\umlusecase[y=-10,name=u260]{\reqNameRef{mgmt:list:project}}
+		\umlusecase[y=-5,name=u210]{\reqName{mgmt:create:project}}
+		\umlusecase[y=-6,name=u220]{\reqName{mgmt:update:project:pipeline}}
+		\umlusecase[y=-7,name=u230]{\reqName{mgmt:update:project:name}}
+		\umlusecase[y=-8,name=u240]{\reqName{mgmt:update:project:labels}}
+		\umlusecase[y=-9,name=u250]{\reqName{mgmt:delete:project}}
+		\umlusecase[y=-10,name=u260]{\reqName{mgmt:list:project}}
 		\end{umlsystem}
 		\umlactor[x=-9.5,y=-4]{User}
 		\umlassoc{User}{u110}
@@ -91,9 +173,9 @@ Instead, the interactions are grouped in categories and displayed in separate di
 	\scalebox{.65}{
 		\begin{tikzpicture}[node distance=5]
 		\begin{umlsystem}{Winslow - Manage Resources and Workspaces}
-		\umlusecase[y=0,name=u110]{\reqNameRef{files:upload}}
-		\umlusecase[y=-1,name=u120]{\reqNameRef{files:download}}
-		\umlusecase[y=-2,name=u130]{\reqNameRef{files:list}}
+		\umlusecase[y=0,name=u110]{\reqName{files:upload}}
+		\umlusecase[y=-1,name=u120]{\reqName{files:download}}
+		\umlusecase[y=-2,name=u130]{\reqName{files:list}}
 		\end{umlsystem}
 		\umlactor[x=-9.5,y=-1]{User}
 		\umlassoc{User}{u110}
@@ -114,12 +196,12 @@ Instead, the interactions are grouped in categories and displayed in separate di
 	\scalebox{.65}{
 		\begin{tikzpicture}[node distance=5]
 		\begin{umlsystem}{Winslow - Manage and Monitor Executions}
-		\umlusecase[y=0,name=u110]{\reqNameRef{exec:start:stage}}
-		\umlusecase[y=-1,name=u120]{\reqNameRef{exec:pause:stage}}
-		\umlusecase[y=-2,name=u130]{\reqNameRef{exec:resume:stage}}
-		\umlusecase[y=-3,name=u140]{\reqNameRef{exec:abort:stage}}
-		\umlusecase[y=-5,name=u150]{\reqNameRef{exec:inspect:logs}}
-		\umlusecase[y=-6,name=u160]{\reqNameRef{exec:inspect:state}}
+		\umlusecase[y=0,name=u110]{\reqName{exec:start:stage}}
+		\umlusecase[y=-1,name=u120]{\reqName{exec:pause:stage}}
+		\umlusecase[y=-2,name=u130]{\reqName{exec:resume:stage}}
+		\umlusecase[y=-3,name=u140]{\reqName{exec:abort:stage}}
+		\umlusecase[y=-5,name=u150]{\reqName{exec:inspect:logs}}
+		\umlusecase[y=-6,name=u160]{\reqName{exec:inspect:state}}
 		\end{umlsystem}
 		\umlactor[x=-9.5,y=-3]{User}
 		\umlassoc{User}{u110}
@@ -141,9 +223,9 @@ Instead, the interactions are grouped in categories and displayed in separate di
 	\scalebox{.65}{
 		\begin{tikzpicture}[node distance=5]
 		\begin{umlsystem}{Winslow - Monitor Nodes}
-		\umlusecase[y=0,name=u110]{\reqNameRef{node:monitor:cpu}}
-		\umlusecase[y=-1,name=u120]{\reqNameRef{node:monitor:ram}}
-		\umlusecase[y=-2,name=u130]{\reqNameRef{node:monitor:netio}}
+		\umlusecase[y=0,name=u110]{\reqName{node:monitor:cpu}}
+		\umlusecase[y=-1,name=u120]{\reqName{node:monitor:ram}}
+		\umlusecase[y=-2,name=u130]{\reqName{node:monitor:netio}}
 		\end{umlsystem}
 		\umlactor[x=-9.5,y=-1]{User}
 		\umlassoc{User}{u110}

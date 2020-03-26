@@ -165,6 +165,8 @@ Docker Swarm\cite{docker:swarm:key-concepts} and Kubernetes\cite{kubernetes:over
 \subsection{Technology}
 \label{docker:technology}
 
+\todo{.}
+
 Docker uses so called images to package and transport binaries with all their required libraries and configuration files as a read-only archive to the destination system.
 Instead of spawning a new process for a binary in the host environment, the image is used to create a new virtual environment - the so called container.
 Because the image includes all required libraries, it is possible to completely isolate the virtual environment which makes the host system invisible to any process inside the container.
@@ -208,15 +210,15 @@ Instead it uses built-in Linux Kernel containment features like CGroups, Namespa
 \todo{layers? base image, less download, diffs}.
 \end{comment}
 
-\section{Network File System}
+\section{Storage Technology \todo{Network File System}}
 
 When distributing workload onto different machines, accessing input and output files becomes another concern which is not present when computation and storage reside on the same physical machine.
-In theory, one could use portable mediums such as USB-Sticks, CD-ROMs or external HDDs, but in reality, this becomes to tidies very fast.
+In theory, one could use portable mediums such as USB-Sticks, CD-ROMs or external HDDs, but in reality, this becomes very tedious very fast.
 More advanced users might be able to take advantage of a common network connection between the computation and storage nodes to copy files and directories from and to the required places.
-This strategy - still being tidies - surfaces another issue: having multiple copies requires careful version management and additional storage space.
-One certainly would not want to continue computation on outdated files or have too many copies of the same files when the required next file no longer fits on the computation node.
+This strategy - still being tedious - surfaces another issue: dealing with multiple copies requires careful version management and additional storage space.
+One certainly would not want to continue computation on outdated data or have too many copies of the same files.
 
-The solution is to use what is called network file system.
+The solution is to use what is called network file system. \todo{welp.}
 To programs they seem to be just another local directory hierarchy, but in reality, the files might be located on another or multiple other machines.
 
 \todo{Comment: POSIX Stream API}
@@ -301,5 +303,5 @@ File systems like GlusterFS (\autoref{glusterfs}), Alluxio (\autoref{alluxio}), 
 \section{yaml?}
 
 
-\section{Agile development}
+\section{Agile development?}
 

@@ -55,8 +55,8 @@ In \autoref{comparision:storage} the results are displayed:
 				& NFS S.& SMB/CIFS S.& GlusterFS & SeaweedFs	& dCache 	& HDFS \\
 		\hline
 		Inst. 	& 0 	& 1 		& 0 		& 2 		& 3			& 1 \\
-		Dep. 	& 1\footnote{rpcbind} 	& 0 & 0 & 0 		& 3 		& 1 \\
-		SPoF 	& 2\footnote{pnfs}		& 3 & 0 & 2 		& 0			& 0 \\
+		Dep. 	& 1 	& 0			& 0 		& 0 		& 3 		& 1 \\
+		SPoF 	& 2		& 3			& 0			& 2 		& 0			& 0 \\
 		Docker 	& 0 	& 2 		& 2 		& 3 		& 2 		& 3 \\
 		Fail.	& 0		& 0			& 1			& 2			& 2			& 0 \\
 		\hline
@@ -84,8 +84,12 @@ Because of the NFS interface export of GlusterFS, Winslow could then easily swit
 \section{Event Synchronization}
 \autoref{analysis:layer_2}
 
+
+kafka does what? persist events and provides them in an order(?), cant Winslow do this itself, so that no further dependency is required?
+
 \section{Backend Driver}
 
+Docker REST API vs 
 \todo{ Nomad} \autoref{analysis:layer_3}
 
 
@@ -136,6 +140,8 @@ enables-ish \enquote{spin up a new instance and you are ready to go} slogan
 
 \section{Communication and Synchronization}
 
+\todo{see section event coordination}
+
 For the instances of Winslow, communication and especially synchronization is very important.
 Without proper coordination, race conditions could cause stages to be started multiple times simultaneously, corrupt workspaces, configuration or project files.
 While starting too many stage executions are only wasting resources, data corruptions can lead to unrecoverable damage.
@@ -150,6 +156,7 @@ But UDP messages are not guaranteed to be delivered and introduce further overhe
 Because of these concerns, the idea of a custom implementation on top of a raw TCP Socket was abandoned, instead alternatives were investigated.
 
 
+\todo{.}
 https://docs.microsoft.com/de-de/azure/architecture/microservices/design/interservice-communication
 
 
@@ -161,6 +168,7 @@ messaging queue mqtt
 NFS provides filesystem, filesystems are kind of standardized
 
 https://kafka.apache.org/protocol
+\todo{.}
 
 Apache Kafka \todo{CITE} comes very close in fulfilling all needs for a communication system.
 It is open source, distributed and is focused on data and event streams.
@@ -293,9 +301,10 @@ In summary, the storage pool solution looks like this:
 
 \todo{check paths}
 \begin{itemize}
-	\item \monospaceinline{/input} is mounted read-only from \monospaceinline{nfs-server:/winslow/workspaces/<pipeline-id>/input}
-	\item \monospaceinline{/output} is mounted with write permissions from \monospaceinline{nfs-server:/winslow/workspaces/<pipeline-id>/output}
-	\item \monospaceinline{/workspace} is mounted with write permissions from \monospaceinline{nfs-server:/winslow/workspaces/<pipeline-id>/<stage-id>} and was created by the copying the workspace directory of the logically previous stage
+	\item \monospaceinline{/input} is mounted read-only from \\ \monospaceinline{nfs-server:/winslow/workspaces/<pipeline-id>/input}
+	\item \monospaceinline{/output} is mounted with write permissions from \\ \monospaceinline{nfs-server:/winslow/workspaces/<pipeline-id>/output}
+	\item \monospaceinline{/workspace} is mounted with write permissions from \\ \monospaceinline{nfs-server:/winslow/workspaces/<pipeline-id>/<stage-id>} \\
+	and was created by the copying the workspace directory of the logically previous stage
 \end{itemize}
 
 \todo{define logically previous stage -> previous stage on linear execution and ... when jumping around}
@@ -308,11 +317,26 @@ stage execution does not need to depend on the result of the exact previous
 
 
 
-\section{Job Scheduling}
+\section{Job Scheduling / Election System}
+\label{design:election}
+\label{election:affinity_and_aversion} \todo{.}
 
-\todo{refer to kyberd presentations?}
+\todo{affinity}
+\todo{aversion}
+
+Utilizing Event Bus for timely limited elections and to ensure that there are no concurrent election for a single project.
+
+\todo{what about concurrent elections on multiple projects}
+
+\todo{regarding locking: check for updatable, try to lock, check for updatable again, update, unlock}
+
+\todo{on unlock: check updatable}
+
+
 
 \todo{scheduling / job assignment/pull strategy}
+
+\todo{graph displaying over time lock and election}
 
 \section{File system}
 
@@ -387,20 +411,6 @@ voting/election by capabilities and 'will' of a node to run a stage
 
 
 
-\section{Election System}
-\label{design:election}
-\label{election:affinity_and_aversion} \todo{.}
-
-\todo{affinity}
-\todo{aversion}
-
-Utilizing Event Bus for timely limited elections and to ensure that there are no concurrent election for a single project.
-
-\todo{what about concurrent elections on multiple projects}
-
-\todo{regarding locking: check for updatable, try to lock, check for updatable again, update, unlock}
-
-\todo{on unlock: check updatable}
 
 \section{Agile development}
 
