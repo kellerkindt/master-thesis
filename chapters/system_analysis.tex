@@ -1,5 +1,5 @@
 
-\chapter{System analysis}
+\chapter{System Analysis}
 
 This chapter is about analyzing the to be implemented system more detailed, separating concerns\todo{cite?} and starting to evaluate solutions in an architectural viewpoint.
 It is important to find an architecture, that is able to fulfill all requirements and is able to be evolved on for upcoming needs.
@@ -10,69 +10,10 @@ When working on a architecture, the SOLID\todo{.} and YAGNI\todo{.} principles c
 
 \todo{drafting, finding responsibilities, separate by responsibility}
 
+\section{System Context}
+\todo{arg1}
 
-\pagebreak
-\section{System Architecture}
-
-In \autoref{architecture:detailed} a high level overview of the architecture is shown.
-It shows various services and regions with internal and external communication channels.
-The architecture follows the \enquote{Onion Architecture Pattern}\todo{cite}, which is also indicated by the layer numbers and coloring (inner layers are darker).
-
-
-\begin{figure}[H]
-	\includegraphics[width=0.99\textwidth]{architecture_detailed.png}
-	\centering
-	\caption{High level architecture overview of Winslow}
-	\label{architecture:detailed}
-\end{figure}
-
-The meaning of the layers and their services will be explained in the following sub-sections.
-
-\subsection{Layer 1: Orchestration Service}
-\label{analysis:layer_1}
-
-This layer is all about the fundamental business logic: when to schedule, start and fail which stage of what project, while watching the hardware utilization.
-This level is also responsible to coordinate these actions between all Winslow instances, so that there is no duplicate, missing or undetected node failure.
-
-The following requirements are therefore implemented here: \todo{.?}
-
-\subsection{Layer 2: Events and Resources}
-\label{analysis:layer_2}
-
-The second layer is essential for the first layer to interact with and understand its environment.
-It provides two important services: a synchronized communication channel and a large file storage.
-
-The communication channel requires a storage to persist messages that are relevant for a duration of time and it needs to  support basic synchronization primitives to ensure consistency.
-Winslow instances that are started need to see events that were issued before their start and which are not completed yet to replicate the state of the system correctly.
-
-For executing stages large files must be stored.
-The synchronized access is ensured by Winslow's event synchronization and thus the constraints to the storage is more relaxed than the one used to persist synchronization messages.
-An eventual consistent\todo{cite} storage could be used here. \todo{inter-stage synchronization? eventual-consistent might not be sufficient here?}
-
-
-\subsection{Layer 3: Backend Driver}
-\label{analysis:layer_3}
-
-This layer is responsible to bind a remote or external service to the reach of Winslow.
-Once the orchestration service decided to run a stage, collected all environment variables and prepared the workspace, the backend driver is instructed to start a certain image with said prepared environment.
-By separating this task to its own layer - and service in this case - it will be easier to change from Docker to another platform if necessary.
-A reason for this could be the change of needs, the appearance of a platform that is fulfilling the needs better or the disappearance of the currently used platform.
-The latter sounds not that common at first, but the recent partial acquisition of Docker Inc by Mirantis\cite{docker:acquisition} proves that even very popular third party software is not going to be around for all eternity.
-By moving the driver implementation into its own layer, but leaving the interface definition in layer 1, this also complies to the \enquote{Dependency Inversion Principle}. \todo{.}
-
-While the backend driver does not access any storage itself, the stages need to read and write to the large file storage.
-In the case of the Docker implementation with an NFS share, the access from within the executed stage can be guarded to limit read and write access to only the required working directories.
-This is discussed more in-depth in \todo{autoref}.
-
-\subsection{Layer 4: Client Communication}
-
-The final layer in this architecture is the client communication layer.
-This service is not crucial for the actual execution and may be disabled on Winslow instances that shall not response to a user input themselves.
-The REST API\todo{autoref rest} provides sites that can be called from the static Angular\todo{autref angular} content to upload or download files, to control stage execution and to monitor usage and logs.
-Removing or disabling this layer is not stopping the Winslow
-
-\begin{comment}
-\section{Use Case Diagrams}
+\section{Use Cases}
 Finding all requirements can be challenging.
 Drawing Use Case Diagrams can help to discover requirements while being very easy to understand.
 This helps in understanding the customers needs \cite{Rosenberg2007} while the customer receives an impression on what will be reflected in the final product.
@@ -238,4 +179,67 @@ Furthermore to the interactions with a user, the system must provide further cap
 	\caption{Use Case Diagram showing administrative interactions}
 	\label{use_case:admin}
 \end{figure}
-\end{comment}
+
+
+
+\pagebreak
+\section{System Architecture}
+
+In \autoref{architecture:detailed} a high level overview of the architecture is shown.
+It shows various services and regions with internal and external communication channels.
+The architecture follows the \enquote{Onion Architecture Pattern}\todo{cite}, which is also indicated by the layer numbers and coloring (inner layers are darker).
+
+
+\begin{figure}[H]
+	\includegraphics[width=0.99\textwidth]{architecture_detailed.png}
+	\centering
+	\caption{High level architecture overview of Winslow}
+	\label{architecture:detailed}
+\end{figure}
+
+The meaning of the layers and their services will be explained in the following sub-sections.
+
+\subsection{Layer 1: Orchestration Service}
+\label{analysis:layer_1}
+
+This layer is all about the fundamental business logic: when to schedule, start and fail which stage of what project, while watching the hardware utilization.
+This level is also responsible to coordinate these actions between all Winslow instances, so that there is no duplicate, missing or undetected node failure.
+
+The following requirements are therefore implemented here: \todo{.?}
+
+\subsection{Layer 2: Events and Resources}
+\label{analysis:layer_2}
+
+The second layer is essential for the first layer to interact with and understand its environment.
+It provides two important services: a synchronized communication channel and a large file storage.
+
+The communication channel requires a storage to persist messages that are relevant for a duration of time and it needs to  support basic synchronization primitives to ensure consistency.
+Winslow instances that are started need to see events that were issued before their start and which are not completed yet to replicate the state of the system correctly.
+
+For executing stages large files must be stored.
+The synchronized access is ensured by Winslow's event synchronization and thus the constraints to the storage is more relaxed than the one used to persist synchronization messages.
+An eventual consistent\todo{cite} storage could be used here. \todo{inter-stage synchronization? eventual-consistent might not be sufficient here?}
+
+
+\subsection{Layer 3: Backend Driver}
+\label{analysis:layer_3}
+
+\todo{wrong, this is supposed to be about nomad/docker API not actually docker itself}
+
+This layer is responsible to bind a remote or external service to the reach of Winslow.
+Once the orchestration service decided to run a stage, collected all environment variables and prepared the workspace, the backend driver is instructed to start a certain image with said prepared environment.
+By separating this task to its own layer - and service in this case - it will be easier to change from Docker to another platform if necessary.
+A reason for this could be the change of needs, the appearance of a platform that is fulfilling the needs better or the disappearance of the currently used platform.
+The latter sounds not that common at first, but the recent partial acquisition of Docker Inc by Mirantis\cite{docker:acquisition} proves that even very popular third party software is not going to be around for all eternity.
+By moving the driver implementation into its own layer, but leaving the interface definition in layer 1, this also complies to the \enquote{Dependency Inversion Principle}. \todo{.}
+
+While the backend driver does not access any storage itself, the stages need to read and write to the large file storage.
+In the case of the Docker implementation with an NFS share, the access from within the executed stage can be guarded to limit read and write access to only the required working directories.
+This is discussed more in-depth in \todo{autoref}.
+
+\subsection{Layer 4: Client Communication}
+
+The final layer in this architecture is the client communication layer.
+This service is not crucial for the actual execution and may be disabled on Winslow instances that shall not response to a user input themselves.
+The REST API\todo{autoref rest} provides sites that can be called from the static Angular\todo{autref angular} content to upload or download files, to control stage execution and to monitor usage and logs.
+Removing or disabling this layer is not stopping the Winslow
