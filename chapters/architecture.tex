@@ -217,6 +217,7 @@ To account for transmission delay and clock offsets an additional time padding i
 \begin{itemize}
 	\item \textbf{LOCK}: Locking a named resource or operation.
 	A lock is exclusive to the issuer and can only be granted if no other lock of the subject or parts of it exist.
+	\todo{for example: a project needs to be locked to be modified by the issuer}
 	\item \textbf{EXTEND}: Extending an ongoing operation timeout.
 	This can be used to signal, that a lock is required although its timeout is closing by, in which case the point in time the timeout is reached is pushed back.
 	The issuer must be the same node as the one that issued the \textbf{LOCK} previously.
