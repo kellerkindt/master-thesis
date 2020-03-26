@@ -2,15 +2,14 @@
 %\chapter{State of the art}
 \label{state_of_the_art}
 
-\todo{.}
-
-In this chapter, programs solving similar problems, as described in the desired workflow, or dealing with a subset of the problem are looked into.
-The reason for this is to use well established or suitable programs as middle-ware to reduce implementation overhead.
-Where this is not possible, one might be able to gather ideas and learn about proven strategies to use or pitfalls to avoid while implementing custom solutions.
-
+This chapter is about accumulating information.
+Programs that are solving similar problems, as described in the desired workflow, or dealing with a subset of the problem are looked into.
+Fundamental knowledge for understanding this thesis is also acquired here.
 \section{Similar solutions}
 
 This sections focuses on programs trying to provide somewhat similar workflows.
+The reason for this is to use well established or suitable programs as middle-ware to reduce implementation overhead, or, where this is not possible, one might be able to gather ideas and learn about proven strategies to use or pitfalls to avoid while implementing custom solutions.
+
 
 \subsection{Hadoop MapReduce}
 \label{hadoop}
@@ -114,8 +113,9 @@ It is to be seen, whether such an complex and heavy system is actually required 
 
 \subsection{Further mentions}
 
-The following list shall acknowledge programs that behave similar to the previously mentioned strategies.
-Programs that are listed here, were looked into, but not in-depth because miss-fits were detected early on (listed in no specific order):
+The following list acknowledges programs that behave similar to the previously mentioned strategies or can be used as building blocks for custom implementations.
+Programs that are listed here, were looked into, but not all in great depth because miss-fits or missing functionality were detected early on.
+The list is in no specific order:
 
 \begin{itemize}
 	\item \textbf{Quartz}\cite{quartz:main} is a Java based program to schedule jobs. Instead of doing so by using input, Quartz executes programs through a timetable and in certain intervals.
@@ -138,21 +138,16 @@ Programs that are listed here, were looked into, but not in-depth because miss-f
 %	problem 2: du kannst nicht einfach master on-the-fly hinzufügen und musst stattdessen teilweise die neu starten  mitm parameter: hey da drüben ist noch ein master
 %	problem 3: es läuft nicht zuverlässig
 	\item \textbf{Alluxio}\cite{alluxio:main}\label{alluxio} provides a distributed file system but was dismissed because it itself requires a centralized file system for the master and its fallback instances
-	\item \textbf{GlusterFS}\cite{glusterfs:main}\label{glusterfs} is another tool to provide a distributed file system with replication. It was bought by IBM but is nonetheless available through the software repository of many Linux distributions such as Debian. A local test showed that the setup is very easy and no adjustments of configuration files are required. However, the replication mechanism requires that an integer multiple of nodes of the replica value are assigned to the file system. This makes GlusterFS hard to use in a scenario, where adding and removing nodes are expected to happen frequently. It was therefore dismissed.
+	\item \textbf{GlusterFS}\cite{glusterfs:main}\label{glusterfs} is another tool to provide a distributed file system with replication. It was bought by IBM but is nonetheless available through the software repository of many Linux distributions such as Debian. A local test showed that the setup is very easy and no adjustments of configuration files are required. However, the replication mechanism requires that an integer multiple of nodes of the replica value are assigned to the file system. This makes GlusterFS hard to use in a scenario, where adding and removing nodes are expected to happen frequently. 
+	% It was therefore dismissed.
 %	\item \textbf{Ceph}\label{ceph}\todo{...}
 \end{itemize}
 
-\section{Docker Integration}
-
-\todo{.delete/move?}
-As describe before (see \autoref{workflow}), for easy deployment, the implementation as well as the stages shall be executed inside Docker\cite{docker:main} containers.
-This allows easier isolation of the stages and workspaces from each other and other host programs.
-Because one needs to communicate with the Docker daemon, this increases the complexity for the implementation.
-But by using third party libraries, the increase in complexity can be limited.
-
-
 \section{Docker}
 \label{docker:image}
+
+As describe in \autoref{workflow}, for easy deployment, the implementation as well as the stages shall be executed inside Docker\cite{docker:main} containers.
+This allows easier isolation of the stages and workspaces from each other and other host programs, as will be explain further on.
 
 \begin{wrapfigure}{r}{0.30\textwidth}
 	\centering
@@ -187,6 +182,9 @@ Furthermore, control groups can be used to limit and constraint access to hardwa
 
 These approaches allow containers to run with very little additional overhead in comparison to running the application directly on the host.
 Containerization increases security by limiting what an application sees and is able to interact with, decreases maintenance overhead because of no additional operation systems to maintain and allows to run multiple instances of the same application besides each other with independent configurations and environments but with the same base image.
+
+\subsection{Ecosystem}
+\label{docker:ecosystem}
 
 \todo{Comment: Further Docker topics}
 \begin{comment}

@@ -1,7 +1,11 @@
 \chapter{System design}
 
 This chapter uses all collected information so far to make design decisions for the implementation of Winslow.
-The \todo{discussion} decision making process is documented to comprehend the reason for a decision.
+The decision making process is documented here as well.
+
+\section{Environment}
+
+
 
 \todo{env: shall be executed on ubuntu/debian linux servers, Docker}
 
@@ -51,12 +55,12 @@ In \autoref{comparision:storage} the results are displayed:
 				& NFS S.& SMB/CIFS S.& GlusterFS & SeaweedFs	& dCache 	& HDFS \\
 		\hline
 		Inst. 	& 0 	& 1 		& 0 		& 2 		& 3			& 1 \\
-		Dep. 	& 1\footnote{rpcbind} & 0 & 0 	& 0 		& 3 		& 1 \\
-		SPoF 	& 2\footnote{pnfs} 	& 3 		& 0 		& 2 		& 0			& 0 \\
+		Dep. 	& 1\footnote{rpcbind} 	& 0 & 0 & 0 		& 3 		& 1 \\
+		SPoF 	& 2\footnote{pnfs}		& 3 & 0 & 2 		& 0			& 0 \\
 		Docker 	& 0 	& 2 		& 2 		& 3 		& 2 		& 3 \\
 		Fail.	& 0		& 0			& 1			& 2			& 2			& 0 \\
 		\hline
-		Score 	& 3		& 6			& 3			& 9 		& 10		& 5 \\
+		Score 	& 3		& 6			& 3			& 9			& 10		& 5 \\
 	\end{tabular}
 	\caption{Comparison of storage technologies}
 	\label{comparision:storage}
