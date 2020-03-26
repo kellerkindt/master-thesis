@@ -40,6 +40,7 @@ Furthermore, control groups can be used to limit and constraint access to hardwa
 These approaches allow containers to run with very little additional overhead in comparison to running the application directly on the host.
 Containerization increases security by limiting what an application sees and is able to interact with, decreases maintenance overhead because of no additional operation systems to maintain and allows to run multiple instances of the same application besides each other with independent configurations and environments but with the same base image.
 
+\todo{Comment: Further Docker topics}
 \begin{comment}
 \subsection{Self hosted registry}
 
@@ -72,6 +73,8 @@ One certainly would not want to continue computation on outdated files or have t
 The solution is to use what is called network file system.
 To programs they seem to be just another local directory hierarchy, but in reality, the files might be located on another or multiple other machines.
 
+\todo{Comment: POSIX Stream API}
+\begin{comment}
 \subsection{Basics: file system?}
 
 To understand how a network file system works, it is necessary to first understand the concept of a file system.
@@ -123,6 +126,7 @@ The Linux kernel requires the filesystem to implement th following (simplified a
 
 A network file system needs to implement this interface and instead of writing and reading to and from a local device, it needs to send the requests to a remote storage server or to the storage cluster.
 
+\end{comment}
 
 \subsection{Remote File System}
 \label{analysis:storage:organisation}
