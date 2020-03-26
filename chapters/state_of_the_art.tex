@@ -11,6 +11,7 @@ This sections focuses on programs trying to provide somewhat similar workflows.
 
 \subsection{Hadoop MapReduce}
 \label{hadoop}
+\label{hadoopfs}
 \label{mapreduce}
 
 For big data transformation, Hadoop MapReduce\cite{hdfs:main} is well known.
@@ -81,6 +82,7 @@ Finally, there is also no overview of task executors, no centralized log accumul
 
 
 \subsection{Nomad}
+\label{nomad}
 
 Nomad\cite{nomad:main} by HashiCorp is a tool to deploy, manage and monitor containers, whereas each job is executed in its own container.
 It provides a rich REST API and can consider hardware constraints on job submissions.
@@ -93,6 +95,7 @@ Nonetheless, further testing and prototyping will be required for a final decisi
 
 
 \subsection{dCache}
+\label{dcache}
 
 \enquote{The goal of this project is to provide a system for storing and retrieving huge amounts of data, distributed among a large number of heterogenous server nodes, under a single virtual filesystem tree with a variety of standard access methods}\cite{dcache:main}.
 dCache seems to be able to solve the storage access and distribution concern for the stages and sever nodes.
@@ -120,8 +123,8 @@ Programs that are listed here, were looked into, but not in-depth because miss-f
 	\item \textbf{qsub}\cite{qsub:etc:wiki}\cite{qsub:etc:uiowa} is a CLI\footnote{Command Line Interface} used in HPC to submit jobs onto a cluster or grid. Dismissed due to an expected high setup overhead, non-required multi-user nature and the fact, that it only provides a way to submit jobs.
 	\item \textbf{CSCS}\cite{cscs:high_throughput} High Throughput Scheduler (GREASY). Dismissed for similar reasons as qsub, although it is more light weight and hardware agnostic (it can consider CUDA/GPU requirements).
 	\item \textbf{zsync}\cite{zsync:main}, similar to rsync, is a file transfer program. Zsync allows to only transfer new parts when a file that shall be copied already exists in an older version on the target. This tool might be useful when implementing a custom resource distribution strategy is required.
-	\item \textbf{OpenIO}\cite{openio:main} provides a distributed file system, is already provided as Docker image and provides a simple to use CLI. Because the NFS export is only available through a paid subscription plan, it was dismissed from further investigation.
-	\item \textbf{SeaweedFS}\cite{seeweedfs:main} provides a scalable and distributed file system. The most interesting aspects are that it is rack-aware as well as natively supports external storage such as Amazon S3. When adding server nodes from the cloud this could allow all nodes to access the same file system while using rack-aware replication to reduce bandwidth usage and latency. A local test also proved that it is easy to setup, but because it cannot hot-swap nodes and was not able to recover when the seeweed master node became unreachable it was dismissed.
+	\item \textbf{OpenIO}\cite{openio:main}\label{openio} provides a distributed file system, is already provided as Docker image and provides a simple to use CLI. Because the NFS export is only available through a paid subscription plan, it was dismissed from further investigation.
+	\item \textbf{SeaweedFS}\cite{seeweedfs:main}\label{seaweedfs} provides a scalable and distributed file system. The most interesting aspects are that it is rack-aware as well as natively supports external storage such as Amazon S3. When adding server nodes from the cloud this could allow all nodes to access the same file system while using rack-aware replication to reduce bandwidth usage and latency. A local test also proved that it is easy to setup, but because it cannot hot-swap nodes and was not able to recover when the seeweed master node became unreachable it was dismissed.
 %	master halten die zuweisung file -> addresse
 %	filer machen nur ein lookup und zuweisen oder sowas
 %	aber der client frägt filer an
@@ -131,12 +134,14 @@ Programs that are listed here, were looked into, but not in-depth because miss-f
 %	aber problem 1: anzahl der master soll immer ungerade sein
 %	problem 2: du kannst nicht einfach master on-the-fly hinzufügen und musst stattdessen teilweise die neu starten  mitm parameter: hey da drüben ist noch ein master
 %	problem 3: es läuft nicht zuverlässig
-	\item \textbf{Alluxio}\cite{alluxio:main} provides a distributed file system but was dismissed because it itself requires a centralized file system for the master and its fallback instances
-	\item \textbf{GlusterFS}\cite{glusterfs:main} is another tool to provide a distributed file system with replication. It was bought by IBM but is nonetheless available through the software repository of many Linux distributions such as Debian. A local test showed that the setup is very easy and no adjustments of configuration files are required. However, the replication mechanism requires that an integer multiple of nodes of the replica value are assigned to the file system. This makes GlusterFS hard to use in a scenario, where adding and removing nodes are expected to happen frequently. It was therefore dismissed.
+	\item \textbf{Alluxio}\cite{alluxio:main}\label{alluxio} provides a distributed file system but was dismissed because it itself requires a centralized file system for the master and its fallback instances
+	\item \textbf{GlusterFS}\cite{glusterfs:main}\label{glusterfs} is another tool to provide a distributed file system with replication. It was bought by IBM but is nonetheless available through the software repository of many Linux distributions such as Debian. A local test showed that the setup is very easy and no adjustments of configuration files are required. However, the replication mechanism requires that an integer multiple of nodes of the replica value are assigned to the file system. This makes GlusterFS hard to use in a scenario, where adding and removing nodes are expected to happen frequently. It was therefore dismissed.
+%	\item \textbf{Ceph}\label{ceph}\todo{...}
 \end{itemize}
 
 \section{Docker Integration}
 
+\todo{.delete/move?}
 As describe before (see \autoref{workflow}), for easy deployment, the implementation as well as the stages shall be executed inside Docker\cite{docker:main} containers.
 This allows easier isolation of the stages and workspaces from each other and other host programs.
 Because one needs to communicate with the Docker daemon, this increases the complexity for the implementation.

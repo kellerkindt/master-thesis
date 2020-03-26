@@ -8,6 +8,8 @@ When working on a architecture, the SOLID\todo{.} and YAGNI\todo{.} principles c
 
 \todo{divide and conquer -> split issue in smaller issues, solve one by one}
 
+\todo{drafting, finding responsibilities, separate by responsibility}
+
 
 \pagebreak
 \section{System Architecture}
@@ -35,6 +37,7 @@ This level is also responsible to coordinate these actions between all Winslow i
 The following requirements are therefore implemented here: \todo{.?}
 
 \subsection{Layer 2: Events and Resources}
+\label{analysis:layer_2}
 
 The second layer is essential for the first layer to interact with and understand its environment.
 It provides two important services: a synchronized communication channel and a large file storage.
@@ -48,6 +51,7 @@ An eventual consistent\todo{cite} storage could be used here. \todo{inter-stage 
 
 
 \subsection{Layer 3: Backend Driver}
+\label{analysis:layer_3}
 
 This layer is responsible to bind a remote or external service to the reach of Winslow.
 Once the orchestration service decided to run a stage, collected all environment variables and prepared the workspace, the backend driver is instructed to start a certain image with said prepared environment.

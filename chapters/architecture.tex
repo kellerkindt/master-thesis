@@ -3,6 +3,87 @@
 This chapter uses all collected information so far to make design decisions for the implementation of Winslow.
 The \todo{discussion} decision making process is documented to comprehend the reason for a decision.
 
+\todo{env: shall be executed on ubuntu/debian linux servers, Docker}
+
+\section{Storage Technology}
+
+Storing and accessing data is one of the main concerns for Winslow.
+In almost all use cases, there will be multiple Winslow instances that need to access the storage.
+Because of that, it must be accessible from remote and from multiple Winslow instances simultaneously.
+For that, the following technologies are reviewed: NFS or SMB/CIFS (\autoref{analysis:storage:organisation}),  GlusterFS (\autoref{glusterfs}), SeaweedFS (\autoref{seaweedfs}), OpenIO (\autoref{openio}), dCache (\autoref{dcache}) and HadoopFS (\autoref{hadoopfs}).
+
+The following criteria were used for comparison, with a scoring system with points from 0 to 3, in which 0 means the best solution and 3 the worst - the lower the overall score the better:
+
+\begin{itemize}
+\item \textbf{Installation Overhead}:
+How hard and extensive is the installation?
+Is there a good documentation?
+Is the package provided from within the main repository of Ubuntu, or alternatively, does it provide any other form of easy installation?
+Scoring 0 for installation through the main repository, 1 for an external repository, 2 for distribution specific archive, 3 for any other installation.
+
+\item \textbf{Dependencies}:
+Are further services required for operation? 
+How hard are they to setup?
+Do they need any additional configuration?
+Scoring 0 for no further dependencies, 1 for dependencies but without the need of configuration,  2 for dependencies that require manual configuration, 3 for dependencies that need to be installed manually and require manual configuration.
+
+\item \textbf{Single Point of Failure}:
+Is the solution decentralized and is it failure resilient?
+Is it site- or rack-aware or provide replication mechanisms to compensate?
+Scoring 0 for completely decentralized, 1 for \todo{.}, 2 for mostly centralized but with load balancing approaches, 3 for no single point of failure mitigations.
+
+\item \textbf{Docker integration}:
+How easy is it to integrate with Docker?
+Scoring 0 for native support, 1 for native but non-trivial support, 2 for support through additional exports facility, 3 for non-trivial solution.
+
+\item \textbf{Failure concerns}:
+Are there any noteworthy concerns?
+Was an early local test successful and reliable?
+Is it a known technology or \enquote{proven in use}?
+Who is developing it and what are the support guarantees?
+Scoring 0 for commonly used and no concerns, 1 for minor concerns, 2 for major uncertainty, 3 for abandoned technology.
+\end{itemize}
+
+In \autoref{comparision:storage} the results are displayed:
+
+\begin{table}[H]
+	\begin{tabular}{l|c|c|c|c|c|c|c}
+				& NFS S.& SMB/CIFS S.& GlusterFS & SeaweedFs	& dCache 	& HDFS \\
+		\hline
+		Inst. 	& 0 	& 1 		& 0 		& 2 		& 3			& 1 \\
+		Dep. 	& 1\footnote{rpcbind} & 0 & 0 	& 0 		& 3 		& 1 \\
+		SPoF 	& 2\footnote{pnfs} 	& 3 		& 0 		& 2 		& 0			& 0 \\
+		Docker 	& 0 	& 2 		& 2 		& 3 		& 2 		& 3 \\
+		Fail.	& 0		& 0			& 1			& 2			& 2			& 0 \\
+		\hline
+		Score 	& 3		& 6			& 3			& 9 		& 10		& 5 \\
+	\end{tabular}
+	\caption{Comparison of storage technologies}
+	\label{comparision:storage}
+\end{table}
+
+The worst scoring tool in this comparison is dCache.
+The installation overhead, missing documentation and uncertainty on reliable operation is too high for this project (see \autoref{dcache}).
+
+For similar reasons SeaweedFs is placed second worst.
+Local tests could not access SeaweedFs reliable when a node failed and there is no trivial support for Docker nor does it provide an NFS export.
+Using it from within Docker would require each container to be manipulated so that the first operation is mounting the storage with a custom binary and through a FUSE\footnote{Filesystem in Userspace} mount.
+The tool also seems to be developed by a single person which introduces further uncertainty about reliability and support in the future.
+
+HDFS and SMB/CIFS seem to be no terrible choice, but no especially good one either in this use case.
+
+The two best scoring storage solutions are a simple NFS share and GlusterFS.
+While GlusterFS provides replication and decentralized access, a NFS share scores with its simplicity.
+The idea is to start with a plain NFS share for Winslow which can natively be utilized by Docker as volume mount and to revisit later whether the need for replication and decentralization persists.
+Because of the NFS interface export of GlusterFS, Winslow could then easily switch to GlusterFS by accessing the NFS export closest to its' instance.
+
+\section{Event Synchronization}
+\autoref{analysis:layer_2}
+
+\section{Backend Driver}
+
+\todo{ Nomad} \autoref{analysis:layer_3}
+
 
 \section{Execution Management}
 
@@ -35,6 +116,8 @@ This has the advantage of having all libraries, tools and resources already pres
 But in the case of Jenkins and GitLab, this is means, each CI instance is separate from the others.
 There is no integration between those instance in this configuration.
 What is missing Jenkins and GitLab here is the capability to decentralize their core task of managing projects, resources and executions.
+
+\todo{scheduling}
 
 
 \subsection{The approach for Winslow}
@@ -162,7 +245,11 @@ To account for transmission delay and clock offsets an additional time padding i
 	\caption{Sample event and lock series with lifetimes}
 \end{figure}
 
-\section{Storage}
+\section{Backend Nomad}
+
+\todo{.}
+
+\section{Large File Storage organization}
 
 \subsection{Stage storage}
 
@@ -216,9 +303,15 @@ stage execution does not need to depend on the result of the exact previous
 
 
 
-\section{Decentralized Execution - how?}
+\section{Job Scheduling}
 
 \todo{refer to kyberd presentations?}
+
+\todo{scheduling / job assignment/pull strategy}
+
+\section{File system}
+
+\todo{docker can auto mount nfs to container}
 
 \subsection{Every node has a connection to every other node}
 
@@ -276,7 +369,6 @@ voting/election by capabilities and 'will' of a node to run a stage
 \section{Synchronization, Locking, publishing events}
 
 \section{REST for UI}
-
 
 
 

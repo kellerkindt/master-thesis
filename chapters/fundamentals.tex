@@ -23,27 +23,24 @@ Docker Swarm\cite{docker:swarm:key-concepts} and Kubernetes\cite{kubernetes:over
 \label{docker:technology}
 
 Docker uses so called images to package and transport binaries with all their required libraries and configuration files as a read-only archive to the destination system.
-\todo{layers? base image, less download, diffs}.
 Instead of spawning a new process for a binary in the host environment, the image is used to create a new virtual environment - the so called container.
-Because the image includes all required libraries (in the correct version!), it is possible to isolate the virtual environment which makes the host system invisible to any process inside.
-Changes to files within containers are also stored in separately\footnote{\todo{overlayfs, similar to differentials in backups}}, which allows an image to be used by multiple containers at once.
+Because the image includes all required libraries, it is possible to completely isolate the virtual environment which makes the host system invisible to any process inside the container.
+Changes to files within containers are also stored separately\footnote{\todo{overlayfs, similar to differentials in backups}}, which allows an image to be used by multiple containers at once.
 Privileges, resource limitations and storage configurations can also be specified when creating a new container.
 Processes inside containers are unable to see  other processes or files that are not part of or assigned to the their container\footnote{This is the default behavior. It is possible to manually lift or modify many boundaries Docker enforces for containers on default.}.
 
-In contrary to a hypervisor, docker is archiving this without running additional virtual machines for each container.
-Instead of running on virtualized operating systems, container processes share the host kernel.
-In order to do so, the host operating system needs to support additional isolation mechanisms.
+In contrary to a hypervisor, docker is archiving this without hardware and operating system virtualization.
+Instead of executing the container inside an additional vritualized operating system, they share the kernel of the host system.
+For that, the host needs to support additional isolation mechanisms
 At the time of writing this, only the Linux Kernel is capable to separate processes, network interfaces, interprocess communications, filesystem mounts and the timesharing systems by namespaces.
 By configuring these namespaces, Docker is capable to isolate containers into virtual environments.
 Furthermore, control groups can be used to limit and constraint access to hardware resources.
 \cite{docker:overview}
 
-These approaches allow containers to run with very little overhead in comparison to running the application directly on the host.
-Containerization increases security by limiting what an application sees and is able to interact with, decreases maintenance overhead because of no additional operation systems to maintain and allows to run multiple instances of the same application besides each other with independent configurations and environments.
+These approaches allow containers to run with very little additional overhead in comparison to running the application directly on the host.
+Containerization increases security by limiting what an application sees and is able to interact with, decreases maintenance overhead because of no additional operation systems to maintain and allows to run multiple instances of the same application besides each other with independent configurations and environments but with the same base image.
 
-\subsection{Architecture and Ecosystem}
-\label{docker:ecosystem} \todo{.??}
-
+\begin{comment}
 \subsection{Self hosted registry}
 
 \subsection{Deployment}
@@ -59,6 +56,10 @@ Paravirtualisation?
 https://www.monkeyvault.net/docker-vs-virtualization/
 
 Instead it uses built-in Linux Kernel containment features like CGroups, Namespaces, UnionFS, chroot (more on these later) to run applications in virtual environments. Those virtual environments - called Docker containers, have separate user lists, file systems or network devices.
+
+
+\todo{layers? base image, less download, diffs}.
+\end{comment}
 
 \section{Network File System}
 
@@ -123,19 +124,29 @@ The Linux kernel requires the filesystem to implement th following (simplified a
 A network file system needs to implement this interface and instead of writing and reading to and from a local device, it needs to send the requests to a remote storage server or to the storage cluster.
 
 
-\subsection{Centralized Network Storage}
+\subsection{Remote File System}
+\label{analysis:storage:organisation}
 
-NFS, SMB
+Remote file systems provide access to data that does not need to be stored on the local machine and can often be shared with other clients as well.
+Some file systems are organized centralized, where at a single address and physical location all data is stored and retrieved from.
+This can have advantages in setup time, maintenance and communication complexity, because of their simplicity.
 
-\subsection{Decentralized}
+The Network File Systems (NFS) for example, which is primarily used in the Linux and Unix world, is centralized, the clients are connecting to a remote server to read and write files from and to.
+Since NFS 4.1 pNFS\footnote{parallel NFS}\cite[p. 14, section 1.7.2.2]{nfs:pnfs} allows the server to spread load across multiple servers and volumes, but because all metadata is still handled by one server, this approach still has a single point of failure.
+The Common Internet File System (SMB/CIFS) is similar to NFS in regards of providing access to a remote file system locally, and it is the approach primarily used by Windows computers.
+Similar to NFS, it has also a centralized approach.
 
-ceph, glusterfs, hadoop
 
-\todo{basic words on UDP and TCP?}
+More advanced file systems provide additional functionality like replication, which stores the data more than once to recover from data carrier failures, site awareness, which replicates data to geographically distant locations\footnote{to not be affected by a burning data centre for example or to decrease access time for clients from the distant location} and decentralized communication endpoints that provide access to the data from more than a single point of failure.
+
+
+File systems like GlusterFS (\autoref{glusterfs}), Alluxio (\autoref{alluxio}), SeaweedFS (\autoref{seaweedfs}), OpenIO (\autoref{openio}), dCache (\autoref{dcache}) and HadoopFS (\autoref{hadoopfs}) try to provide these functionality.
 
 \section{HTTP and REST}
 
 \section{TypeScript and Angular}
+
+\todo{upload/download -> diff HTTP Header/Request and Body}
 
 \section{yaml?}
 
