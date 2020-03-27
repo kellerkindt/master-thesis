@@ -92,17 +92,101 @@ When working on a architecture, the SOLID\todo{.} and YAGNI\todo{.} principles c
 
 \todo{drafting, finding responsibilities, separate by responsibility}
 
-%\section{System Context}
+\pagebreak
+\section{System Context}
 %\todo{.delete?}
 
-\section{Use Cases}
-Finding all requirements can be challenging.
-Drawing Use Case Diagrams can help to discover requirements while being very easy to understand.
-This helps in understanding the customers needs \cite{Rosenberg2007} while the customer receives an impression on what will be reflected in the final product.
+A System Context Diagram is suitable to find the boundaries of a system to implement and interactions with external components, therefore the first step in this analysis was to create \autoref{system_context_diagramm}.
+The notation is a slight deviation from the UML standard so that the control and data flow can be displayed \cite[501]{goll2012methoden}.
 
-Listing all use cases in a single diagram negates the desired effect of it being easily understandable because of the number of interaction possibilities.
-Instead, the interactions are grouped in categories and displayed in separate diagrams.
-\autoref{use_case:overview} shows high-level use cases of all categories that are relevant to a user of the system.
+\begin{figure}[H]
+	\begin{tikzpicture}[node distance=5,scale=0.8, every node/.style={transform shape}]
+		\node [draw, rectangle, drop shadow, fill=white] (F) {User};
+		\node [draw, circle, drop shadow, fill=white, text width=3cm, align=center] (C) [below right=of F] {Winslow};
+		\node [draw, rectangle, drop shadow, fill=white] (S) [below right=of C] {Storage};
+		\node [draw, rectangle, drop shadow, fill=white] (A) [above right=of C] {Stage Execution};
+		
+		\node (ctrl1) [above=of S] {};
+		\node (ctrl2) [above right=of C] {};
+		\node (ctrl3) [right=of C] {};
+		\node (ctrl4) [below=of F] {};
+		\node (ctrl5) [left=of C] {};
+		\node (ctrl6) [below=of ctrl5] {};
+		\node (ctrl7) [above=of C] {};
+		\node (ctrl8) [right=of F] {};
+		\node (ctrl9) [below left=of C] {};
+		\node (ctrl10) [below=of C] {};
+		
+		%
+		% User -> Winslow
+		%
+		\path[draw, -{Latex[scale=2.0]}, dashed] (F)
+			edge [bend right] node [fill=white] {manage project} (C)
+			edge [bend left]  node [fill=white] {manage execution} (C)
+			.. controls (ctrl7) and (ctrl8) ..  node [fill=white] {monitor} (C);
+			
+		\path[draw, -{Latex[scale=2.0]}] (F)
+			edge node [fill=white] {input video} (C);
+		
+		%
+		% Winslow -> User
+		%
+		\path[draw, -{Latex[scale=2.0]}] (C)
+			.. controls (ctrl4) and (ctrl5) ..  node [fill=white] {results} (F);
+		
+		%
+		% Winslow -> Stage Execution
+		%
+		\path[draw, -{Latex[scale=2.0]}, dashed] (C)
+			edge [bend left] node [fill=white] {create} (A)
+			edge [bend right] node [fill=white] {destroy} (A);
+			
+		%
+		% Stage Execution -> Winslow
+		%
+		\path[draw, -{Latex[scale=2.0]}] (A)
+			edge node [fill=white] {logs \& satus} (C);
+		
+		%
+		% Storage -> Winslow
+		%		
+%		\path[draw, -{Latex[scale=2.0]}] (S)
+%			edge node [fill=white] {configuration} (C)
+%			.. controls (ctrl3) and (ctrl1) ..  node [fill=white] {resource files} (C);
+		
+		%
+		% Winslow -> Storage
+		%
+		\path[draw, {Latex[scale=2.0]}-{Latex[scale=2.0]}] (C)
+			edge [bend left]  node [fill=white] {configuration} (S)
+			edge [bend right] node [fill=white] {input files} (S)
+			edge node [fill=white] {results} (S);
+		
+		
+		\path[draw, {Latex[scale=2.0]}-{Latex[scale=2.0]}, dashed] (C)
+			.. controls (ctrl10) and (ctrl9) .. node [fill=white] {coordinate} (C);
+		
+		
+		\path[draw, -{Latex[scale=2.0]}] (1, -8) -- (-2.5, -8) node [pos=.5, above] {Data flow};
+		\path[draw, -{Latex[scale=2.0]}, dashed] (1, -9) -- (-2.5, -9) node [pos=.5, above] {Control flow};
+		
+		%\umlinherit{F}{L}
+		%\umlinherit{S}{L}
+	\end{tikzpicture}
+	\centering
+	\caption{System Context Diagram}
+	\label{system_context_diagramm}
+\end{figure}
+
+This thesis will not focus on all parts mentioned in \autoref{system_context_diagramm}, but for the implementation it is essential to have an as complete overview as possible.
+
+\pagebreak
+\section{Use Case Diagrams}
+
+A system context diagram is not suitable to elaborate all interactions in great detail, but use case diagrams can be used for that.
+They help to understand the customers needs \cite{Rosenberg2007} while the customer receives an impression on what will be reflected in the final product.
+Each but the very first of the following diagram focuses on one actor that is going to interact with the system.
+\autoref{use_case:overview} shows a high-level use case overview of all categories that are relevant to users of the system:
 
 \begin{figure}[H]
 	\scalebox{.65}{
@@ -121,14 +205,16 @@ Instead, the interactions are grouped in categories and displayed in separate di
 		\end{tikzpicture}
 	}
 	\centering
-	\caption{Use Case Diagram showing the top level interaction categories}
+	\caption{Use Case Diagram showing an high level overview of interactions}
 	\label{use_case:overview}
 \end{figure}
 
 \subsection{Managing Pipelines and Projects}
-\label{use_case:mgmt}
 
-\todo{.}
+One very important concern to the user of Winslow is to create an manage pipelines and to associate them to projects.
+For filtering and overview organization, the customer also expressed the need to attach tags to projects.
+This does not affect any execution strategy of Winslow, but regardless, it is still important to the end user.
+
 
 \begin{figure}[H]
 	\scalebox{.65}{
@@ -161,13 +247,13 @@ Instead, the interactions are grouped in categories and displayed in separate di
 	}
 	\centering
 	\caption{Use Case Diagram showing the general management interactions}
+	\label{use_case:mgmt}
 \end{figure}
 
 
 \subsection{Managing Resources and Workspaces}
-\label{use_case:files}
 
-\todo{.}
+Uploading, listing and downloading files is one of the main concerns of Winslow to enable stage executions, so it is to no surprise that this is important for the user as well.
 
 \begin{figure}[H]
 	\scalebox{.65}{
@@ -185,12 +271,15 @@ Instead, the interactions are grouped in categories and displayed in separate di
 	}
 	\centering
 	\caption{Use Case Diagram showing the general management interactions}
+	\label{use_case:files}
 \end{figure}
 
-\subsection{Managing and Monitoring Executions}
-\label{use_case:execution}
 
-\todo{.}
+\pagebreak
+\subsection{Managing and Monitoring Executions}
+
+The main goal of the system is stage execution.
+The user expressed interest in advanced control, such as aborting a running stage or pausing the stage execution of a project pipeline, as well as being able to view logs live and inspecting intermediate output files .
 
 \begin{figure}[H]
 	\scalebox{.65}{
@@ -214,11 +303,13 @@ Instead, the interactions are grouped in categories and displayed in separate di
 	}
 	\centering
 	\caption{Use Case Diagram showing the general management interactions}
+	\label{use_case:execution}
 \end{figure}
 
 \subsection{Monitoring Nodes}
-\label{use_case:monitor}
-\todo{.}
+
+To monitor the usage of all nodes, an overview listing CPU usage, RAM usage and Network IO for each node was requested.
+
 \begin{figure}[H]
 	\scalebox{.65}{
 		\begin{tikzpicture}[node distance=5]
@@ -235,12 +326,15 @@ Instead, the interactions are grouped in categories and displayed in separate di
 	}
 	\centering
 	\caption{Use Case Diagram showing the general management interactions}
+	\label{use_case:monitor}
 \end{figure}
 
 
+\pagebreak
 \subsection{System Administration}
 
-Furthermore to the interactions with a user, the system must provide further capabilities that are \todo{of} concern to the administrator.
+Furthermore to the interactions with a user, the system must provide further capabilities that are of concern to the administrator maintaining Winslow.
+What was raised here, is the appeal that the setup of new Winslow instances shall be easy as well as adding the new instance with an existing group of instances.
 
 
 \begin{figure}[H]

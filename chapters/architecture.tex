@@ -1,13 +1,17 @@
 \chapter{System design}
 
-This chapter uses all collected information so far to make design decisions for the implementation of Winslow.
-The decision making process is documented here as well.
+In this chapter the previously collected information are used to design the system in detail.
+The decision making process for that is documented here as well.
 
 \section{Environment}
 
+The environment of where the systems shall be deployed onto must be known for detailed design decisions, which will be elaborated here.
 
+All Winslow instances are supposed to run inside a Docker container (as requested in \autoref{workflow:desired:docker}).
+The host will be a Ubuntu or Debian Linux Servers with some having multiple Nvidia graphics cards.
+There will be no graphical user interface available on these servers.
 
-\todo{env: shall be executed on ubuntu/debian linux servers, Docker}
+%\todo{env: shall be executed on ubuntu/debian linux servers, Docker}
 
 \section{Storage Technology}
 
@@ -34,7 +38,7 @@ Scoring 0 for no further dependencies, 1 for dependencies but without the need o
 \item \textbf{Single Point of Failure}:
 Is the solution decentralized and is it failure resilient?
 Is it site- or rack-aware or provide replication mechanisms to compensate?
-Scoring 0 for completely decentralized, 1 for \todo{.}, 2 for mostly centralized but with load balancing approaches, 3 for no single point of failure mitigations.
+Scoring 0 for completely decentralized, 1 for decentralized but with dependency on centralized backend, 2 for mostly centralized but with load balancing approaches, 3 for no single point of failure mitigations.
 
 \item \textbf{Docker integration}:
 How easy is it to integrate with Docker?
@@ -81,80 +85,10 @@ While GlusterFS provides replication and decentralized access, a NFS share score
 The idea is to start with a plain NFS share for Winslow which can natively be utilized by Docker as volume mount and to revisit later whether the need for replication and decentralization persists.
 Because of the NFS interface export of GlusterFS, Winslow could then easily switch to GlusterFS by accessing the NFS export closest to its' instance.
 
-\section{Event Synchronization}
-\autoref{analysis:layer_2}
+\section{Event Synchronization and Communication}
 
 
 kafka does what? persist events and provides them in an order(?), cant Winslow do this itself, so that no further dependency is required?
-
-\section{Backend Driver}
-
-Docker REST API vs 
-\todo{ Nomad} \autoref{analysis:layer_3}
-
-
-\section{Execution Management}
-
-As noted in \autoref{analysis:layer_1}, the central business logic is to deciding when and issuing stage executions.
-There are two general approaches in doing so, both will be discussed next.
-
-\subsection{Remote Execution}
-
-In this approach, the job is executed on a remote machine and not on the same node which has the responsibility in managing the execution.
-Continuous Integration (CI) platform Jenkins\cite{jenkins:main} as well as GitLab\cite{gitlab:main} do offer this approach.
-The so called slave node (Jenkins) or runner (GitLab) is accessed by the CI through a common interface (SSH in these cases) to start the job execution.
-Jenkins and GitLab even copy a custom binary onto the slave node, that is then managing the execution on the remote machine locally.
-This is due to the complexity in executing the job for a given configuration as well as being able to continue the execution on disconnects or maintenance reboots of the master machine.
-
-In this scenario, the CI instance requires and stores login credentials for every remote machine to be able to login whenever needed.
-The system administrator therefore has to create a new user account on the remote machine, install required programs and environments (bot Jenkins and GitLab require an JRE\footnote{Java Runtime Environment}).
-In case of an security breach on the CI instance, the attacker is also able to login on all remote nodes and execute arbitrary programs as well \todo{there is probably a great article about an issue like this!?}.
-
-\todo{WRONG, on GitLab YOU need to intall/setup the runner}
-
-GitLab follows another approach, the system administrator has to manually install the GitLab Runner\footnote{\todo{cite}} on a slave node and is then able to add this runner to a Project.
-The security risk is somewhat similar to Jenkins: once an attacker has access to the CI instance, arbitrary code can be uploaded and executed on the remote machines. \todo{but no ssh login .... until first binary uploaded}
-
-\todo{winslow is more secure because of docker and therefore limited access to the system, no network..?}
-
-\subsection{Local Execution}
-
-Executing a job locally means running a job on the same machine as the program that is monitoring the execution.
-This has the advantage of having all libraries, tools and resources already present \todo{and is without the threat of connection loss to the remote machine}.
-But in the case of Jenkins and GitLab, this is means, each CI instance is separate from the others.
-There is no integration between those instance in this configuration.
-What is missing Jenkins and GitLab here is the capability to decentralize their core task of managing projects, resources and executions.
-
-\todo{scheduling}
-
-
-\subsection{The approach for Winslow}
-
-\todo{.}
-
-potentially many executions -> easier when local
-
-need watch hardware utilization closely
-
-enables-ish \enquote{spin up a new instance and you are ready to go} slogan
-
-\section{Communication and Synchronization}
-
-\todo{see section event coordination}
-
-For the instances of Winslow, communication and especially synchronization is very important.
-Without proper coordination, race conditions could cause stages to be started multiple times simultaneously, corrupt workspaces, configuration or project files.
-While starting too many stage executions are only wasting resources, data corruptions can lead to unrecoverable damage.
-
-Before synchronization can be achieved, communication must be possible.
-There are multiple ways to exchange data for systems that do not share the same process or machine.
-The most flexible implementation can be achieved by implementing a custom protocol on a raw TCP socket which allows to exchange blobs\footnote{\todo{Binary Large Objects}} between exactly two nodes.
-For a blob or message to reach all nodes, there needs to be connections to all other nodes \todo{great mafs N*N, N*(N-1) or whatever}, a centralized broker (introducing single point of failure), or another connection organization such as a tree structure.
-Having many connections can stress the hosting system while complex structures require additional development and maintenance overhead in non-problem related domains.
-To not have to worry about the structure, broadcasting or multicasting blobs to all nodes could be an alternative.
-But UDP messages are not guaranteed to be delivered and introduce further overhead to detect the need to retransmit a blob.
-Because of these concerns, the idea of a custom implementation on top of a raw TCP Socket was abandoned, instead alternatives were investigated.
-
 
 \todo{.}
 https://docs.microsoft.com/de-de/azure/architecture/microservices/design/interservice-communication
@@ -170,17 +104,25 @@ NFS provides filesystem, filesystems are kind of standardized
 https://kafka.apache.org/protocol
 \todo{.}
 
-Apache Kafka \todo{CITE} comes very close in fulfilling all needs for a communication system.
-It is open source, distributed and is focused on data and event streams.
-But it introduces a dependency on the project.
-It also provides functionality that is not needed, like a transaction log and persistence and replayability of all transmitted data\todo{rly?}.
-Furthermore, because it is an independent service, it also requires its own TCP connection.
-It is required, that this connection can be established between seemingly random nodes.
-This adds another constraint to the system: the firewalls in-between the nodes must allow these connections.
 
-Because the communication between the Winslow nodes are primarily for synchronization and not for exchange of large binary data, the previous mentioned scenarios are over fulfilling the need.
-\todo{the smallest common denominator-ish} The most anticipated communication and synchronization mechanic should use and already established communication channel.
-The only defined requirement yet is a common filesystem, can this be utilized to coordinate stage execution and prevent data corruption by providing basic synchronization between the compute nodes? It can!
+As discovered in \autoref{analysis:layer_2} there is a need for an event synchronization across Winslow instances.
+Without proper coordination, race conditions could cause stages to be started multiple times simultaneously, corrupt workspaces, configuration or project files.
+While starting too many stage executions are only wasting resources, data corruptions can lead to unrecoverable damage.
+
+There are multiple ways to exchange data between systems that do not share the same process or machine.
+The most flexible implementation can be achieved by implementing a custom protocol on a raw TCP socket which allows to exchange blobs\footnote{\todo{Binary Large Objects}} between exactly two nodes.
+For a blob or message to reach all nodes, a connection to every other node, a centralized broker, another topology such as a tree structure or broadcast messages would be required.
+Because this in itself seemed to be a complex subject, third party alternatives were investigated.
+
+Apache Kafka \todo{CITE} is one such alternatives.
+It is open source, distributed and is focused on data and event streams.
+But it as every third party service, it introduces a dependency on the project.
+Not only in regards to interfacing and driver implementation, but also for maintenance and setup.
+Each Winslow Image would require to be shipped with a pre-configured Kafka service and the administrator must ensure that these services can reach each other - in addition to storage solution.
+
+This was, where the idea appeared: Is it possible to not introduce any further dependencies to the system, but re-use the existing storage solution for synchronization and communication?
+To answer this, one must first investigate the smallest building block required for synchronized communication.
+Taking the idea from Kafka, an event stream, where the messages have are globally ordered: is it enough to provide synchronization over messages occurring in a synchronized sequence?
 
 \todo{ACID in fundamentals?}
 ACID, which stands for Atomicity, Consistency, Isolation and Durability, describes the needs a database must fulfill so that it does not suffer from side effects or data corruption when executing queries.
@@ -257,6 +199,59 @@ To account for transmission delay and clock offsets an additional time padding i
 	\label{winslow:com:events}
 	\caption{Sample event and lock series with lifetimes}
 \end{figure}
+
+\section{Backend Driver}
+
+Docker REST API vs 
+\todo{ Nomad} \autoref{analysis:layer_3}
+
+
+\section{Execution Management}
+
+As noted in \autoref{analysis:layer_1}, the central business logic is to deciding when and issuing stage executions.
+There are two general approaches in doing so, both will be discussed next.
+
+\subsection{Remote Execution}
+
+In this approach, the job is executed on a remote machine and not on the same node which has the responsibility in managing the execution.
+Continuous Integration (CI) platform Jenkins\cite{jenkins:main} as well as GitLab\cite{gitlab:main} do offer this approach.
+The so called slave node (Jenkins) or runner (GitLab) is accessed by the CI through a common interface (SSH in these cases) to start the job execution.
+Jenkins and GitLab even copy a custom binary onto the slave node, that is then managing the execution on the remote machine locally.
+This is due to the complexity in executing the job for a given configuration as well as being able to continue the execution on disconnects or maintenance reboots of the master machine.
+
+In this scenario, the CI instance requires and stores login credentials for every remote machine to be able to login whenever needed.
+The system administrator therefore has to create a new user account on the remote machine, install required programs and environments (bot Jenkins and GitLab require an JRE\footnote{Java Runtime Environment}).
+In case of an security breach on the CI instance, the attacker is also able to login on all remote nodes and execute arbitrary programs as well \todo{there is probably a great article about an issue like this!?}.
+
+\todo{WRONG, on GitLab YOU need to intall/setup the runner}
+
+GitLab follows another approach, the system administrator has to manually install the GitLab Runner\footnote{\todo{cite}} on a slave node and is then able to add this runner to a Project.
+The security risk is somewhat similar to Jenkins: once an attacker has access to the CI instance, arbitrary code can be uploaded and executed on the remote machines. \todo{but no ssh login .... until first binary uploaded}
+
+\todo{winslow is more secure because of docker and therefore limited access to the system, no network..?}
+
+\subsection{Local Execution}
+
+Executing a job locally means running a job on the same machine as the program that is monitoring the execution.
+This has the advantage of having all libraries, tools and resources already present \todo{and is without the threat of connection loss to the remote machine}.
+But in the case of Jenkins and GitLab, this is means, each CI instance is separate from the others.
+There is no integration between those instance in this configuration.
+What is missing Jenkins and GitLab here is the capability to decentralize their core task of managing projects, resources and executions.
+
+\todo{scheduling}
+
+
+\subsection{The approach for Winslow}
+
+\todo{.}
+
+potentially many executions -> easier when local
+
+need watch hardware utilization closely
+
+enables-ish \enquote{spin up a new instance and you are ready to go} slogan
+
+
 
 \section{Backend Nomad}
 
@@ -337,6 +332,8 @@ Utilizing Event Bus for timely limited elections and to ensure that there are no
 \todo{scheduling / job assignment/pull strategy}
 
 \todo{graph displaying over time lock and election}
+
+\section{CPU RAM Network IO Monitoring}
 
 \section{File system}
 
