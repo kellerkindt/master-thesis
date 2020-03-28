@@ -206,6 +206,7 @@ Docker REST API vs
 \todo{ Nomad} \autoref{analysis:layer_3}
 
 
+
 \section{Execution Management}
 
 As noted in \autoref{analysis:layer_1}, the central business logic is to deciding when and issuing stage executions.
@@ -335,6 +336,10 @@ Utilizing Event Bus for timely limited elections and to ensure that there are no
 
 \section{CPU RAM Network IO Monitoring}
 
+\section{User Interface}
+
+\todo{REST request, read only: no lock; for changes: POST -> LOCK -> update -> RELEASE, on RELEASE Winslow gets notified and checks whether the new configuration leads to a new stage execution}
+
 \section{File system}
 
 \todo{docker can auto mount nfs to container}
@@ -411,8 +416,10 @@ voting/election by capabilities and 'will' of a node to run a stage
 
 \section{Agile development}
 
-\section{Available infrastructure}
-
-\section{Execution environment}
 
 \section{Continuous Deployment}
+
+Ironically, although mentioned as unusable in \autoref{.}\todo{.} for the use case Winslow wants to fulfil, it will use GitLab CI for continuous \todo{delivery} of runnable Docker Images.
+Every code change in the Git repository will trigger a new build pipeline, that builds and tests Winslow, packages all dependencies \todo{nomad} into a Docker image and pushes it to our in house private Docker Registry \todo{.}.
+The \todo{execution nodes} will pull the latest image whenever they restart or are triggered to restart.
+\todo.

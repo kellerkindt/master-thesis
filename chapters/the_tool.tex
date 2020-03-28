@@ -31,8 +31,7 @@ Also, if a execution is finished or has failed early, there could be hours waste
 \label{workflow}
 \label{workflow:desired:docker}
 
-The desired workflow shall be supported through a \todo{rich} user interface.
-This user interface shall provide an overview of all active projects and their current state, such as running computation, awaiting user input, failed or succeeded.
+The desired workflow shall be supported through an user interface that provides an overview of all active projects and their current state, such as running computation, awaiting user input, failed or succeeded.
 
 To create a new project, a predefined pipeline definition shall be selected as well as a name chosen.
 Because only a handful of different pipeline definitions are expected, the creation of such does not need to happen through the user interface.
@@ -77,6 +76,11 @@ From the desired workflow, the following requirements can be extracted \todo{(sh
 	\item \todo{CI} Docker Image creation for the Java Binary as well as the program implementation, preferred in an automated fashion.
 \end{itemize}
 
+Furthermore, a given constraint is that the user interface is to be implemented as Angular Web-Application using a REST API (for more details see \autoref{fundamentals:angular}).
+
+\todo{something something agile extended as needed? \autoref{fundamental:agile}}
+
+\begin{comment}
 \subsection{Derived Requirements} \todo{.}
 Requirements that are derived by looking at other requirements.
 
@@ -88,10 +92,14 @@ Systems \cite[155]{goll2012methoden}.
 
 Nichtfunktionale Anforderungen zeigen im Gegensatz zu funktionalen Anforderungen Rah-
 menbedingungen bei der Umsetzung des Systems auf \cite[155]{goll2012methoden}.
+\end{comment}
 
 
 \subsection{Non-Requirements}
 
-\todo{real time scheduling}
-
-\todo{low latency scheduling}
+To know the requirements and expectations of a system is essential, but knowing what is not expected by the system is at least as valuable.
+It prevents wasting resources, effort and architectural specialization that will never be required or in the worst case, make further development harder by restricting available choices in the future.
+ 
+The system to implement shall not strive to implement real time scheduling or low latency scheduling.
+The expected work items are big chunks that require hours to compute.
+Whether the assignment of the work item takes sub seconds or several seconds is nearly unnoticeable in the overall compute time.
