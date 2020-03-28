@@ -1,8 +1,13 @@
-\section{Metrics?}
+\section{Evaluation}
 
-idle times that would be without automatically executing tasks
+The main focus of Winslow is to improve the efficiency in utilizing available hardware.
+Without it, new stages were seldom started at outside of the work time.
+To estimate whether Winslow is providing any improvements, the actions that are scheduled by Winslow outside of these hours are to be watched.
 
-maybe with error scenario: being able to dynamically execute a stage of another project instead of stalling
+The following graphs are based on activity metrics, that were logged in the time period from the first usage in mid January 2019 until counter actions for COVID-19 in early March 2019 prevented active use due to the lock-down in Germany.
+For each day of the week and hour of the day an associated cell shows the activity colour encoded.
+Furthermore, red lines show the begin and end of a typical work day.
+Interestingly, the actual position of these red lines can also be inferred by the graphs themselves, due to activity spikes.
 
 
 \begin{figure}[H]
@@ -14,6 +19,8 @@ maybe with error scenario: being able to dynamically execute a stage of another 
 			view={0}{90},
 			xtick={1,3,5,7,9,11,13,15,17,19,21,23},
 			ytick={1,2,3,4,5,6,7},yticklabels={Mo,Tu,We,Th,Fr,Sa,Su},
+			ylabel={day of week},
+			xlabel={hour of day},
 			point meta max=0,
 			point meta max=30,
 			point meta=explicit,
@@ -27,7 +34,13 @@ maybe with error scenario: being able to dynamically execute a stage of another 
 		\end{axis}
 	\end{tikzpicture}
 	\caption{Actively running stages at a given day of the week and time of day}
+	\label{metric:all_running}
 \end{figure}
+
+At first, \autoref{metric:all_running} and \autoref{metric:all_started} show the overall activity.
+In \autoref{metric:all_running} number of running stages per hour is shown and in \autoref{metric:all_started} the number of started stages per hour is shown.
+The increased activity between the read line - within the working hours - is visible.
+But especially in \autoref{metric:all_started} the activity outside these times is visible as well.
 
 \begin{figure}[H]
 	\centering
@@ -38,6 +51,8 @@ maybe with error scenario: being able to dynamically execute a stage of another 
 			view={0}{90},
 			xtick={1,3,5,7,9,11,13,15,17,19,21,23},
 			ytick={1,2,3,4,5,6,7},yticklabels={Mo,Tu,We,Th,Fr,Sa,Su},
+			ylabel={day of week},
+			xlabel={hour of day},
 			point meta max=0,
 			point meta max=30,
 			point meta=explicit,
@@ -51,10 +66,11 @@ maybe with error scenario: being able to dynamically execute a stage of another 
 		\end{axis}
 	\end{tikzpicture}
 	\caption{Stages starting at a given day of the week and time of day}
+	\label{metric:all_started}
 \end{figure}
 
+\autoref{metrics:auto_running} and \autoref{metrics:auto_started} show only stages that were triggered by Winslow, without a direct user input.
 
-\todo{same graphs but where the stage was not manually started between 8h and (+9h) 17h}
 
 
 
@@ -67,6 +83,8 @@ maybe with error scenario: being able to dynamically execute a stage of another 
 			view={0}{90},
 			xtick={1,3,5,7,9,11,13,15,17,19,21,23},
 			ytick={1,2,3,4,5,6,7},yticklabels={Mo,Tu,We,Th,Fr,Sa,Su},
+			ylabel={day of week},
+			xlabel={hour of day},
 			point meta max=0,
 			point meta max=30,
 			point meta=explicit,
@@ -80,7 +98,16 @@ maybe with error scenario: being able to dynamically execute a stage of another 
 		\end{axis}
 	\end{tikzpicture}
 	\caption{Actively running stages at a given day of the week and time of day which were started automatically}
+	\label{metrics:auto_running}
 \end{figure}
+
+\autoref{metric:all_running} clearly shows that there is quite a bit of activity event without direct user input.
+This is especially obvious by looking at \autoref{metrics:auto_started}: there are many stages started in the late evening and until midnight as well as a second wave at about one o'clock in the morning and activity on Saturdays.
+Without Winslow these stages would not have been triggered.
+
+That the system was actively used to schedule work to be executed on the weekends.
+This can be seen in \autoref{metrics:auto_started} by highlighted areas late hours on Fridays, early and late hours on Saturdays as well as the continuous but decreasing overall activity from Saturday to Sunday in \autoref{metrics:auto_running}.
+The gap of activity on Mondays at around noon in \autoref{metrics:auto_running} could indicate that the results were evaluated at here.
 
 \begin{figure}[H]
 	\centering
@@ -91,6 +118,8 @@ maybe with error scenario: being able to dynamically execute a stage of another 
 			view={0}{90},
 			xtick={1,3,5,7,9,11,13,15,17,19,21,23},
 			ytick={1,2,3,4,5,6,7},yticklabels={Mo,Tu,We,Th,Fr,Sa,Su},
+			ylabel={day of week},
+			xlabel={hour of day},
 			point meta max=0,
 			point meta max=30,
 			point meta=explicit,
@@ -104,7 +133,17 @@ maybe with error scenario: being able to dynamically execute a stage of another 
 		\end{axis}
 	\end{tikzpicture}
 	\caption{Stages automatically starting at a given day of the week and time of day}
+	\label{metrics:auto_started}
 \end{figure}
+
+
+\todo{great staticists table}
+
+\todo{number of stages }
+\todo{same graphs but where the stage was not manually started between 8h and (+9h) 17h}
+\todo{table of number of stages executed, number of projects, manual trigger, auto trigger, average/min/max time?}
+\todo{percentage of stages triggered by user vs winslow}
+
 
 \begin{figure}[H]
 	\centering
@@ -133,3 +172,8 @@ maybe with error scenario: being able to dynamically execute a stage of another 
 	\caption{Stages automatically starting at a given day of the week and time of day}
 \end{figure}
 
+idle times that would be without automatically executing tasks
+
+maybe with error scenario: being able to dynamically execute a stage of another project instead of stalling
+
+\todo{hours spent in work time} \todo{hours spent outside of work time} \todo{percentage win}
