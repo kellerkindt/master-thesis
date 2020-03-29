@@ -11,6 +11,10 @@ All Winslow instances are supposed to run inside a Docker container (as requeste
 The host will be a Ubuntu or Debian Linux Servers with some having multiple Nvidia graphics cards.
 There will be no graphical user interface available on these servers.
 
+Furthermore, the decision to implement Winslow in Java was made early on.
+This has three main reasons, first, the developer is experience in Java development, the server side web framework used is a Java library (see \autoref{design:springboot}) and the company this implementation is for has a focus on Java development, which means if the system is successfully, maintained and possibly extended by another developer, it is highly probable that this developer has knowledge in Java development as well.
+ \todo{.cleanup}
+
 %\todo{env: shall be executed on ubuntu/debian linux servers, Docker}
 
 \section{Storage Technology}
@@ -88,7 +92,7 @@ Because of the NFS interface export of GlusterFS, Winslow could then easily swit
 
 
 \section{Execution Management}
-\todo{.rework}
+\todo{.polish}
 
 As noted in \autoref{analysis:layer_1}, the central business logic is to deciding when and issuing stage executions.
 Generally speaking, there are two approaches when executing jobs: local or remote. Both will be discussed next.
@@ -259,6 +263,7 @@ This synchronization mechanism ensures that each event is only published if it i
 It also allows for multiple locks and elections to happen concurrently, as long as there is no overlap.
 
 \begin{figure}[H]
+	\centering
 	\includegraphics[width=0.9\textwidth]{events.png}
 	\label{winslow:com:events}
 	\caption{Sample event and lock series with lifetimes}
@@ -269,20 +274,50 @@ The coloured rectangles below shows the duration of the lifetime of events.
 The crossed-out event is violating the constraint that a resource can only be locked by one instance at a time, which is the owner of the yellow lifetime in this case.
 Because of this violation the even is never published to the event bus, which is demonstrate with the sequence number not skipping the number 4.
 
-\section{Backend Driver}
+\section{Docker interface}
 
-Docker REST API vs 
-\todo{ Nomad} \autoref{analysis:layer_3}
+To interface with the Docker daemon a driver implementation is needed to pass on container creation.
+Docker provides a REST API\cite{docker:api} for third party libraries as well as implementations in Go and Python.
+There is no official Java API implementation.
+This means, either a third party Java library must be used, the REST calls that are required have to be implemented within this project or another alternative must be found.
+The Docker REST API is very expressive which is another reason to find a viable alternative.
+
+As it turns out, the Nomad Project, which was already investigated in \autoref{nomad}, provides a library with a thin abstraction layer and lots of reasonable default values.
+It also includes support to create container which use the Docker plugin by Nvidia\cite{nvidia:docker_plugin}.
+This allows attaching GPUs to a container without the need of listing all libraries and device files manually\footnote{If you are interested in how tedious this could otherwise become see \url{https://github.com/hashicorp/nomad/issues/3499\#issuecomment-364214506}}.
+The scheduling capabilities of Nomad are not used \todo{because: nomad focuses on scheduling multiple instances of a load balanced service, lack of control on where it is spawned, additional communication channels required -> firewall/admin/maintanance, interfer with further extenstions cloud like cloudstore and GlusteFS because a 'randomly' by nomad chosen node would require access to the storage which might not be visible to all executions nodes through the same path}.
 
 
 \section{Directory Structure and Organization}
 
+This section describe the organization of the working directory for the Winslow instances.
+Because a common network share is required by Winslow for event synchronization and the projects' workspaces, this was further extended to share the configuration and project files as well.
+This has the very nice side-effect, that is no real setup to do when starting a new Winslow instance, the only required input by the administrator is the path to the common network share.
+Of course, special needs apply to certain directories, which will be discussed next.
+
+For the configuration files, a principle found on Unix and Linux was applied: human readable text files.
+In the case of Winslow they use YAML\todo{cite} or property\todo{.} \todo{formatting}.
+This allows easy debugging in error scenarios. \todo{.}
 
 \subsection{Winslow working directory}
 
-\todo{.}
+A brief summary of the by all instances shared working directory:
+
+\begin{itemize}
+	\item \monospaceinline{logs}: The location for stage log files. Logs system events and console output with timestamps. File name format looks like \monospaceinline{<project-id>-<stage-number>-<stage-name>}.
+	\item \monospaceinline{pipelines}: Pipeline definition file (YAML) are located here.
+	\item \monospaceinline{projects}: Project definition files (YAML) are located here.
+	\item \monospaceinline{resources}: The globally available input resources \todo{see ref}
+	\item \monospaceinline{run/events}: The directory used to synchronized events \todo{see ref}
+	\item \monospaceinline{run/nodes}: The directory used to publish node utilization \todo{see ref}
+	\item \monospaceinline{settings}: The directory used to share common configurations, currently this only contains a global environment variable configuration.
+	\item \monospaceinline{workspaces}: Discussed in \autoref{stage:workspace}
+\end{itemize}
+
+Because the files in \monospaceinline{run/events} and especially \monospaceinline{run/nodes} are very temporary, the NFS server locates these in shared memory (\monospaceinline{/dev/shm}) to reduce stress on IO and unnecessary wear on SSDs.
 
 \subsection{Stage storage}
+\label{stage:workspace}
 
 
 Thinking about the storage organisation for the pipeline and its stages, a few expectations and concerns arise.
@@ -358,12 +393,18 @@ Utilizing Event Bus for timely limited elections and to ensure that there are no
 
 \todo{graph displaying over time lock and election}
 
+
 \section{CPU RAM Network IO Monitoring}
 
 \section{User Interface}
 
 \todo{REST request, read only: no lock; for changes: POST -> LOCK -> update -> RELEASE, on RELEASE Winslow gets notified and checks whether the new configuration leads to a new stage execution}
 
+\subsection{Spring Boot}
+\label{design:springboot}
+\todo{spring boot}
+
+\begin{comment}
 \section{File system}
 
 \todo{docker can auto mount nfs to container}
@@ -443,11 +484,14 @@ voting/election by capabilities and 'will' of a node to run a stage
 \subsection{Using as lock backend}
 
 \subsection{Using as election backend}
+\end{comment}
 
 
 
 
 \section{Agile development}
+
+\todo{.depends, maybe to shallow and not worth noting, dont forget to then ref to \autoref{fundamental:agile}}
 
 
 \section{Continuous Deployment}

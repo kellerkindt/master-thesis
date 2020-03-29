@@ -83,13 +83,14 @@
 }
 
 
-This chapter is about analyzing the to be implemented system more detailed, separating concerns\todo{cite?} and starting to evaluate solutions in an architectural viewpoint.
-It is important to find an architecture, that is able to fulfill all requirements and is able to be evolved on for upcoming needs.
-In some areas where this is foreseeable, preparations can be implemented, whereas in other regions this is not possible.
-When working on a architecture, the SOLID\todo{.} and YAGNI\todo{.} principles can help to evaluate the stability and expandability\todo{can it?}.
+This chapter is about analysing the to be implemented system.
+It is important to find an architecture that is able to fulfil all requirements and that is able to be evolved for upcoming needs.
+But, as the YAGNI\cite[36]{goll2018entwurfsprinzipien} principle describes, this does not mean one should plan for speculative events.
+In some areas where changes or extensions are foreseeable, preparations can be considered, whereas if there is no such indication, one should only consider the actual and current need.
+In addition, keeping the SOLID\cite[86]{martin2003agile} patterns in mind can help to improve correctness, simplicity, stability, changeability and testability\cite[162]{goll2018entwurfsprinzipien}.
 
 
-\todo{Top Down Approach, CITE!!}
+The analysis and design follows the \enquote{Top-Down} approach\cite[171]{goll2012methoden} in which the system is first outlined and then step by step partitioned into smaller and more detailed pieces.
 
 \pagebreak
 \section{System Context}
@@ -365,10 +366,10 @@ But that would create further pages, with a lot of details for user interaction,
 
 In \autoref{architecture:detailed} a high level overview of the architecture is shown.
 It shows various services and regions with internal and external communication channels.
-The architecture follows a simplified\footnote{fewer layers} \enquote{Onion Architecture Pattern}\cite{palermo:onion}, which is indicated by the layer numbers and colouring (inner layers are darker).
+The architecture follows a simplified\footnote{fewer, collapsed layers} \enquote{Onion Architecture Pattern}\cite{palermo:onion}, which is indicated by the layer numbers and colouring (inner layers are darker).
 For better readability, it is not arranged in circles.
 
-\todo{mention user stories?}
+%\todo{mention user stories?}
 
 
 \begin{figure}[H]
@@ -423,5 +424,5 @@ The access from within the executed stage can then be guarded to limit read and 
 The final layer in this architecture is the client communication layer.
 This service is not crucial for the actual execution and may be disabled on Winslow instances that shall not response to a user request themselves.
 A reason for this could be, that SSL certificate for a sub-domain points to a specific Winslow instances and unsecure access is not desired.
-The REST API shall provide resources that can be called from the statical served Angular Web-Application\footnote{\todo{see} \autoref{fundamental:angular}} or further tools to upload or download files, to control stage execution and to monitor usage and logs.
+The REST API shall provide resources that can be called from the statical served Angular Web-Application\footnote{see \autoref{fundamental:angular}} or further tools to upload or download files, to control stage execution and to monitor usage and logs.
 %Removing or disabling this layer is not stopping the Winslow
