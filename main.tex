@@ -13,6 +13,7 @@
 \usepackage[ngerman, english]{babel}\usepackage[autostyle=true,german=quotes]{csquotes} %\enquote might not work on older latex versions ... huh
 
 \usepackage{makecell} % multi line table cells
+\usepackage{pdfpages}
 
 \usepackage{verbatim} % for multiline comments: \begin{comment} .. \end{comment}
 \usepackage[hidelinks]{hyperref}
@@ -109,33 +110,54 @@
 \textsc{\LARGE \theuniversity} \\[0.5cm] 
 \textsc{\large 
 \thecollege \\ [1.0cm]
-\thedepartment} \\[1.5cm]
-\textsc{\Large \textbf{\thecoursetitle}} \\[1.8cm]
+\thedepartment} \\[1.1cm]
+\textsc{\Large \textbf{\thecoursetitle}} \\[0.8cm]
 
 % Project title
 \rule{\linewidth}{0.25mm} \\[0.5cm]
 { \Large\textbf{\thetitle} } \\
-\rule{\linewidth}{0.25mm} \\[3.5cm]
+\rule{\linewidth}{0.25mm} \\[1.5cm]
 
 % Student name, student number and supervisor
-\begin{minipage}{0.4\textwidth}
-\begin{flushleft} \large
+\includegraphics[height=1cm]{signature.jpg} \\
 \textbf{\thestudent} \\
-\thestudentid
-\end{flushleft}
-\end{minipage}
-~
-	\begin{minipage}{0.4\textwidth}
-\begin{flushright} \large
-\emph{Supervisor:} \\
-\thesupervisor
-\end{flushright}
-\end{minipage}\\[1cm]
+\thestudentid\\[1cm]
 
 % Year
-{\large {\selectlanguage{english}March 31st, 2020}} \\[2cm] 
+{\large {\selectlanguage{english}March 31st, 2020}} \\[1cm] 
+
+\textbf{Declaration: } I have read and I understand the MSc dissertation guidelines on plagiarism and cheating, and I certify that this submission fully complies with these guidelines.
 
 \vfill % Fill the rest of the page with whitespace
+\end{titlepage}
+\newpage
+
+\begin{titlepage}
+	\center
+	
+	% Name of university, college, department and degree
+	\textsc{\LARGE \theuniversity} \\[0.5cm] 
+	\textsc{\large 
+		\thecollege \\ [1.0cm]
+		\thedepartment} \\[1.1cm]
+	\textsc{\Large \textbf{\thecoursetitle}} \\[0.8cm]
+	
+	% Project title
+	\rule{\linewidth}{0.25mm} \\[0.5cm]
+	{ \Large\textbf{\thetitle} } \\
+	\rule{\linewidth}{0.25mm} \\[1.5cm]
+	
+	% Student name, student number and supervisor
+	~\\[1cm]
+	\textbf{ } \\
+	\thestudentid\\[1cm]
+	
+	% Year
+	{\large {\selectlanguage{english}March 31st, 2020}} \\[1cm] 
+	
+	A Dissertation submitted in partial fulfilment of the requirements for the degree of Master of Science
+	
+	\vfill % Fill the rest of the page with whitespace
 \end{titlepage}
 \newpage
 
@@ -186,7 +208,9 @@
 \printbibliography
 \addcontentsline{toc}{chapter}{Bibliography}
 
-%\appendix
+\appendix
 %\input{appendices}
+\chapter{Interim Report}
+\includepdf[pages={2-}]{interim.pdf}
 		
 \end{document}
