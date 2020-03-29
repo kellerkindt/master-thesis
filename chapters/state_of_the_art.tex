@@ -146,8 +146,8 @@ The list is in no specific order:
 \section{Docker}
 \label{docker:image}
 
-As describe in \autoref{workflow}, for easy deployment, the implementation as well as the stages shall be executed inside Docker\cite{docker:main} containers.
-This allows easier isolation of the stages and workspaces from each other and other host programs, as will be explain further on.
+As describe in \autoref{workflow}, for easy deployment and setup Docker\cite{docker:main} containers shall be used.
+This allows easier isolation of the executed stages and other host programs, as will be explain further on.
 
 \begin{wrapfigure}{r}{0.30\textwidth}
 	\centering
@@ -157,27 +157,26 @@ This allows easier isolation of the stages and workspaces from each other and ot
 	\vspace{1cm}
 \end{wrapfigure}
 
-Docker is the name of a software that combines isolation technologies (\autoref{docker:technology}) and a rich ecosystem (\autoref{docker:ecosystem}) to provide and execute third party software in virtual environments.
+Docker is the name of a software that combines various isolation technologies (\autoref{docker:technology}) to provide and execute third party software in virtual environments.
 Docker aims are to increase security and to simplify installation as well as maintenance of applications.
 Docker Swarm\cite{docker:swarm:key-concepts} and Kubernetes\cite{kubernetes:overview} use these fundamental features to scale applications, services and microservices in the cloud.
+Software is retrieved from a public registry, called Docker Hub\cite{docker:hub} or from local or private registries.
 
 
 \subsection{Technology}
 \label{docker:technology}
 
-\todo{.}
-
 Docker uses so called images to package and transport binaries with all their required libraries and configuration files as a read-only archive to the destination system.
 Instead of spawning a new process for a binary in the host environment, the image is used to create a new virtual environment - the so called container.
 Because the image includes all required libraries, it is possible to completely isolate the virtual environment which makes the host system invisible to any process inside the container.
-Changes to files within containers are also stored separately\footnote{\todo{overlayfs, similar to differentials in backups}}, which allows an image to be used by multiple containers at once.
+Changes to files within containers are stored separately as differentials\footnote{for example by using OverlayFS\cite{overlayfs}}, which allows an image to be used by multiple containers at once.
 Privileges, resource limitations and storage configurations can also be specified when creating a new container.
-Processes inside containers are unable to see  other processes or files that are not part of or assigned to the their container\footnote{This is the default behavior. It is possible to manually lift or modify many boundaries Docker enforces for containers on default.}.
+Processes inside containers are unable to see  other processes or files that are not part of or assigned to the their container\footnote{This is the default behaviour. It is possible to manually lift or modify many boundaries Docker enforces for containers on default.}.
 
 In contrary to a hypervisor, docker is archiving this without hardware and operating system virtualization.
-Instead of executing the container inside an additional vritualized operating system, they share the kernel of the host system.
+Instead of executing the container inside an additional virtualized operating system, they share the kernel of the host system.
 For that, the host needs to support additional isolation mechanisms
-At the time of writing this, only the Linux Kernel is capable to separate processes, network interfaces, interprocess communications, filesystem mounts and the timesharing systems by namespaces.
+At the time of writing this, only the Linux Kernel is capable to separate processes, network interfaces, interprocess communications, filesystem mounts and the time-sharing systems by namespaces.
 By configuring these namespaces, Docker is capable to isolate containers into virtual environments.
 Furthermore, control groups can be used to limit and constraint access to hardware resources.
 \cite{docker:overview}
@@ -185,10 +184,6 @@ Furthermore, control groups can be used to limit and constraint access to hardwa
 These approaches allow containers to run with very little additional overhead in comparison to running the application directly on the host.
 Containerization increases security by limiting what an application sees and is able to interact with, decreases maintenance overhead because of no additional operation systems to maintain and allows to run multiple instances of the same application besides each other with independent configurations and environments but with the same base image.
 
-\subsection{Ecosystem}
-\label{docker:ecosystem}
-
-\todo{Comment: Further Docker topics}
 \begin{comment}
 \subsection{Self hosted registry}
 
@@ -210,18 +205,17 @@ Instead it uses built-in Linux Kernel containment features like CGroups, Namespa
 \todo{layers? base image, less download, diffs}.
 \end{comment}
 
-\section{Storage Technology \todo{Network File System}}
+\section{Data Storage}
 
-When distributing workload onto different machines, accessing input and output files becomes another concern which is not present when computation and storage reside on the same physical machine.
-In theory, one could use portable mediums such as USB-Sticks, CD-ROMs or external HDDs, but in reality, this becomes very tedious very fast.
-More advanced users might be able to take advantage of a common network connection between the computation and storage nodes to copy files and directories from and to the required places.
+When distributing workload onto different machines, accessing input and output files becomes another concern which is not present when all computation and storage resides on the same physical machine.
+In theory, one could use portable mediums such as USB-Sticks, CD-ROMs or external HDDs, but in reality, this becomes very tedious really fast.
+More advanced users might be able to take advantage of a common network connection between the computation to copy files and directories to the required places.
 This strategy - still being tedious - surfaces another issue: dealing with multiple copies requires careful version management and additional storage space.
 One certainly would not want to continue computation on outdated data or have too many copies of the same files.
 
-The solution is to use what is called network file system. \todo{welp.}
-To programs they seem to be just another local directory hierarchy, but in reality, the files might be located on another or multiple other machines.
+The solution to that can be a network file system.
+To programs this solution seems to be just another local directory hierarchy, but in reality, the files might be located on another or multiple other machines.
 
-\todo{Comment: POSIX Stream API}
 \begin{comment}
 \subsection{Basics: file system?}
 
@@ -294,24 +288,22 @@ More advanced file systems provide additional functionality like replication, wh
 
 File systems like GlusterFS (\autoref{glusterfs}), Alluxio (\autoref{alluxio}), SeaweedFS (\autoref{seaweedfs}), OpenIO (\autoref{openio}), dCache (\autoref{dcache}) and HadoopFS (\autoref{hadoopfs}) try to provide these functionality.
 
-\todo{.}
-
 \section{Angular Web-Application and REST API}
 \label{fundamental:angular}
 
-\todo{HTTP}
+The user interface is supposed to be implemented by an Angular Web-Application.
+Angular\cite{angular} itself is a framework for mobile and desktop Web-Applications which uses templating to generate the website completely on the client.
+It uses TypeScript\cite{typescript}, which is, in essence, an enriched subset of JavaScript with type annotations, that compiles back to JavaScript.
+This allows any recent web-browser to execute TypeScript \enquote{code}, without the need to explicitly supporting it.
+The additional type annotation in TypeScript supports developers by giving helpful error messages, instead of runtime errors.
 
-\todo{REST}
+This thesis uses REST REST (Representation State Transfer) to enable the Angular application to communicate with the web-server.
+REST is, by now, commonly used to transfer state on top of HTTP in the internet.
+It utilizes the HTTP methods\cite{http:methods} to request resources or to push updates using URLs for localization.
 
-\todo{Typescript}
+\todo{needs more work -- and detail?}
 
-\todo{Angualr, very structures, helps in development}
-
-\todo{upload/download -> difference HTTP Header/Request and Body?}
-
-\section{yaml?}
-
-
-\section{Agile development?}
+\section{Agile development}
 \label{fundamental:agile}
 
+\todo{some notes regarding user stories, backlog, prioritization and sprints?}
