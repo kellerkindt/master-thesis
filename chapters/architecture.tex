@@ -85,9 +85,36 @@ While GlusterFS provides replication and decentralized access, a NFS share score
 The idea is to start with a plain NFS share for Winslow which can natively be utilized by Docker as volume mount and to revisit later whether the need for replication and decentralization persists.
 Because of the NFS interface export of GlusterFS, Winslow could then easily switch to GlusterFS by accessing the NFS export closest to its' instance.
 
+
+
+\section{Execution Management}
+\todo{.rework}
+
+As noted in \autoref{analysis:layer_1}, the central business logic is to deciding when and issuing stage executions.
+Generally speaking, there are two approaches when executing jobs: local or remote. Both will be discussed next.
+
+In the remote approach, the job is executed on another machine and not on the same which has the responsibility to manage the process.
+Continuous Integration (CI) platform Jenkins\cite{jenkins:main} does offer this approach.
+The so called slave node (Jenkins) is accessed through a native interface (SSH for Linux servers) to copy resources and to start the job process.
+In this scenario, the CI instance requires and stores login credentials for every remote machine to be able to login whenever needed.
+The system administrator therefore has to create a new user account on the remote machine, install required programs and prepare the environments.
+One big risk for this approach is that in case of any security breach on the central CI instance, the attacker is also able to login on all remote machines.
+
+GitLab\cite{gitlab:main} follows the approach, where the system administrator has to manually install the GitLab Runner on the machine that is then able to connect to GitLab and execute jobs.
+This runner is responsible in pulling jobs, execute them locally, monitor and report back the outcome.
+
+Winslow is going to follow the local approach.
+On each physical machine that is supposed to execute stages, Winslow needs to be installed and connected to the cluster.
+The installation is expected to be easy, as is based on starting prepared Docker images.
+An election is selecting the instance which is most fitting for a stage execution (see affinity and aversion in \autoref{election:affinity_and_aversion}).
+It is expected that each instance can judge this best on its own, as it knows which resources are available.
+Work is therefore distributed to an executor as it is detected.
+
+
+
 \section{Event Synchronization and Communication}
 
-
+\begin{comment}
 kafka does what? persist events and provides them in an order(?), cant Winslow do this itself, so that no further dependency is required?
 
 \todo{.}
@@ -103,6 +130,7 @@ NFS provides filesystem, filesystems are kind of standardized
 
 https://kafka.apache.org/protocol
 \todo{.}
+\end{comment}
 
 
 As discovered in \autoref{analysis:layer_2} there is a need for an event synchronization across Winslow instances.
@@ -110,19 +138,24 @@ Without proper coordination, race conditions could cause stages to be started mu
 While starting too many stage executions are only wasting resources, data corruptions can lead to unrecoverable damage.
 
 There are multiple ways to exchange data between systems that do not share the same process or machine.
-The most flexible implementation can be achieved by implementing a custom protocol on a raw TCP socket which allows to exchange blobs\footnote{\todo{Binary Large Objects}} between exactly two nodes.
+The most flexible implementation can be achieved by implementing a custom protocol on a raw TCP socket which allows to exchange blobs (Binary Large Objects) between exactly two nodes.
 For a blob or message to reach all nodes, a connection to every other node, a centralized broker, another topology such as a tree structure or broadcast messages would be required.
 Because this in itself seemed to be a complex subject, third party alternatives were investigated.
 
-Apache Kafka \todo{CITE} is one such alternatives.
-It is open source, distributed and is focused on data and event streams.
-But it as every third party service, it introduces a dependency on the project.
+Apache Kafka\cite{kafka} is one such alternative.
+It is open source, distributed and is focused on providing system wide ordered data and event stream that can be persisted over a certain time period.
+But as every third party service, it introduces a dependency on the project.
 Not only in regards to interfacing and driver implementation, but also for maintenance and setup.
 Each Winslow Image would require to be shipped with a pre-configured Kafka service and the administrator must ensure that these services can reach each other - in addition to storage solution.
 
-This was, where the idea appeared: Is it possible to not introduce any further dependencies to the system, but re-use the existing storage solution for synchronization and communication?
-To answer this, one must first investigate the smallest building block required for synchronized communication.
-Taking the idea from Kafka, an event stream, where the messages have are globally ordered: is it enough to provide synchronization over messages occurring in a synchronized sequence?
+\todo{.rework transition}
+It would be rather elegant, if an existing connection - the storage - between all Winslow instances could be reused for this.
+This could eliminate the need for this third party dependency.
+To do so, a mechanism must be found to give each occurring event a sequence number, that is unique system wide.
+A new event would not be allowed to be propagated by an instance before it did not process all previous events.
+With this idea in mind, messages that can communication all required coordination information are defined  next.
+
+\begin{comment}
 
 \todo{ACID in fundamentals?}
 ACID, which stands for Atomicity, Consistency, Isolation and Durability, describes the needs a database must fulfill so that it does not suffer from side effects or data corruption when executing queries.
@@ -149,56 +182,92 @@ A series of changes might not be allowed to be intercepted (atomicity), must see
 \todo{unspoken requirement: all nodes share the same clock - or one with very little drift}
 
 \todo{usage as synchronization primitive}
+\end{comment}
 
 \subsection{Messages}
+\todo{this chapter really needs further polishing}
 
 To coordinate the Winslow instances, messages will be exchanged through the common event bus.
-Because of the nature of this simple event bus, messages are delivered by broadcasting them to all instances.
+Because of the nature of this global event bus, messages are delivered by broadcasting them to all instances.
 
-\todo{issuer, command, subject, timestamp, duration}
-
-\todo{.}
-Because this is a multi instance system which can suffer partial failure, all operations that are non-instantaneous require to have a timeout, so that a failure is detectable.
-Without a failure detection, the end of an operation might not be signaled, which could potentially block further operations for forever.
+Because this is a multi instance system which can suffer partial failure, all multi-part operations have to have a timeout, so that a failure is detectable.
+Without this timeout detection, one could not detect the absence of finish signal of a multi-part operation, which could potentially block further operations for forever.
 The presence of a timeout will not be mentioned again when listing the messages in detail.
 
-To account for transmission delay and clock offsets an additional time padding is granted. \todo{.}
+To account for transmission delay and clock offsets an additional time padding is granted.
+Because of the non-requirement of real-time scheduling this is generously set to 5 seconds.
 
-\todo{all messages have an id}
-
-\todo{to detailed here? move detailed description to system design?}
+A message has the following fields:
 
 \begin{itemize}
-	\item \textbf{LOCK}: Locking a named resource or operation.
-	A lock is exclusive to the issuer and can only be granted if no other lock of the subject or parts of it exist.
-	\todo{for example: a project needs to be locked to be modified by the issuer}
-	\item \textbf{EXTEND}: Extending an ongoing operation timeout.
-	This can be used to signal, that a lock is required although its timeout is closing by, in which case the point in time the timeout is reached is pushed back.
+	\item \textbf{issuer}: The id of the Winslow instance that wrote the message
+	\item \textbf{command}: The state change command (described a bit further below)
+	\item \textbf{subject}: What the command is about to change
+	\item \textbf{timestamp}: The time of when the message was issued
+	\item \textbf{duration}: Optionally a non zero time period of the expected duration
+\end{itemize}
+
+With this message structure definition, the following commands can be used:
+
+\begin{itemize}
+	\item \textbf{LOCK}: Locking a resource, commonly a project.
+	A lock is exclusive to the issuer and can only be granted if there exist no lock for the same subject yet.
+	\item \textbf{EXTEND}: Extending an ongoing operation by pushing back its timeout.
+	This can be used to signal, that a lock is still required although its timeout is close
+	The duration of the original event extended and thus the timeout is pushed back.
+	The issuer must be the same as did issue the operation that is referred to.
+	\item \textbf{RELEASE}: Releasing a locked resource.
 	The issuer must be the same node as the one that issued the \textbf{LOCK} previously.
-	\item \textbf{RELEASE}: An operation or resource is no longer required.
-	The issuer must be the same node as the one that issued the \textbf{LOCK} previously.
-	\item \textbf{KILL}: Non-gracefully stop an operation or destroy a lock.
-	This signals that an operation on its own or associated to a lock shall be stopped immediately and that the lock shall be released.
-	At the moment, this is only used whenever a user wants cancel a stage execution early. More details in \todo{autoref}.
-	\item \textbf{ELECTION\_START}: Signals that the need to execute a stage was detected.
-	The project this signal refers to is included in the message.
-	\item \textbf{ELECTION\_PARTICIPATE}: Signals that the issuer node is capable of executing the stage.
-	It also includes a scoring for the affinity and aversion of executing the stage on the issuer node (more details in \autoref{election:affinity_and_aversion}).
-	This message also includes the project it refers to.
-	This allows elections for different projects to take place concurrently.
-	\item \textbf{ELECTION\_STOP}: Signals that the election for a certain project has ended.
-	The participator with the best affinity and aversion scoring is now allowed to start to execute the stage.
-	More detail in \todo{auref}.
+	\item \textbf{KILL}: Non-gracefully stop an operation or destruction of a lock.
+	This signals that an operation shall be stopped or that the lock shall be released immediately.
+	This can be used to abort an running stage execution.
+	\item \textbf{ELECTION\_START}: Signals that an election for a stage execution started.
+	The signal must refer to an project that can make progress.
+	\item \textbf{ELECTION\_PARTICIPATE}: Signals that the issuer node is capable of executing the next stage of a project.
+	It also includes a scoring for the affinity and aversion (more details in \autoref{election:affinity_and_aversion}).
+	This message also includes the election it refers to.
+	\item \textbf{ELECTION\_STOP}: Signals that an election has finished.
+	The participator with the best affinity and aversion scoring is now allowed execute the next stage of the referred project.
 	This is signal is only allowed to be issued by the same node that started the election process.
 \end{itemize}
 
-\todo{explain figure}
+\subsection{Synchronization}
 
-\begin{figure}[h]
+In a file system two files with the same path are now allowed to exist, therefore the sequence number of the event to publish can be used as name for the file in a known directory to write events to.
+Watching the directory will then result a stream of ordered events.
+To publish an event, a naive implementation would fist check the directory for a file for the sequence number of the new event and create it, if it was not found.
+But this has a potential race condition: between checking for the file and creating it, another instance could have created the file as well.
+Luckily, the POSIX standard provides a flag when creating files, that will expose this conflict by returning an error if \enquote{Both O\_CREAT and O\_EXCL are set, and the named file already exists}\cite{gnu:open}.
+This mechanism is also exposed in Java by calling \javacinline{Files.write(..)}\cite{javadoc:files:write} with \javacinline{StandardOpenOptions.CREATE\_NEW}\cite{javadoc:standard_open_options:create_new}.
+The behaviour of publishing an event can therefore be summarized in \autoref{event:synchronized_publish}:
+
+\begin{wrapfigure}{l}{0.37\textwidth}
+	\centering
+	\includegraphics[width=0.4\textwidth]{event_publishing.png}
+	\caption{Publishing process}
+	\label{event:synchronized_publish}
+\end{wrapfigure}
+
+Every Winslow instance is responsible for keeping track of all global states and check before publishing a new event \todo{ref} whether the state would be violated by this event.
+If it is not, it will try to publish it by creating a new file with the next expected sequence number.
+If the file already exists, another instance did publish an event in the meantime.
+This externally published event must then loaded and the global state updated before a new trial to publish its own event can be made.
+Eventually, this will either lead to successfully publishing the event or failing due to state violation - for example trying to lock a project that is already locked.
+
+
+This synchronization mechanism ensures that each event is only published if it is not violating any constraints, such as locking resources that are already locked.
+It also allows for multiple locks and elections to happen concurrently, as long as there is no overlap.
+
+\begin{figure}[H]
 	\includegraphics[width=0.9\textwidth]{events.png}
 	\label{winslow:com:events}
 	\caption{Sample event and lock series with lifetimes}
 \end{figure}
+
+In \autoref{winslow:com:events} a series of events, their id and commands are shown.
+The coloured rectangles below shows the duration of the lifetime of events.
+The crossed-out event is violating the constraint that a resource can only be locked by one instance at a time, which is the owner of the yellow lifetime in this case.
+Because of this violation the even is never published to the event bus, which is demonstrate with the sequence number not skipping the number 4.
 
 \section{Backend Driver}
 
@@ -206,59 +275,12 @@ Docker REST API vs
 \todo{ Nomad} \autoref{analysis:layer_3}
 
 
-
-\section{Execution Management}
-
-As noted in \autoref{analysis:layer_1}, the central business logic is to deciding when and issuing stage executions.
-There are two general approaches in doing so, both will be discussed next.
-
-\subsection{Remote Execution}
-
-In this approach, the job is executed on a remote machine and not on the same node which has the responsibility in managing the execution.
-Continuous Integration (CI) platform Jenkins\cite{jenkins:main} as well as GitLab\cite{gitlab:main} do offer this approach.
-The so called slave node (Jenkins) or runner (GitLab) is accessed by the CI through a common interface (SSH in these cases) to start the job execution.
-Jenkins and GitLab even copy a custom binary onto the slave node, that is then managing the execution on the remote machine locally.
-This is due to the complexity in executing the job for a given configuration as well as being able to continue the execution on disconnects or maintenance reboots of the master machine.
-
-In this scenario, the CI instance requires and stores login credentials for every remote machine to be able to login whenever needed.
-The system administrator therefore has to create a new user account on the remote machine, install required programs and environments (bot Jenkins and GitLab require an JRE\footnote{Java Runtime Environment}).
-In case of an security breach on the CI instance, the attacker is also able to login on all remote nodes and execute arbitrary programs as well \todo{there is probably a great article about an issue like this!?}.
-
-\todo{WRONG, on GitLab YOU need to intall/setup the runner}
-
-GitLab follows another approach, the system administrator has to manually install the GitLab Runner\footnote{\todo{cite}} on a slave node and is then able to add this runner to a Project.
-The security risk is somewhat similar to Jenkins: once an attacker has access to the CI instance, arbitrary code can be uploaded and executed on the remote machines. \todo{but no ssh login .... until first binary uploaded}
-
-\todo{winslow is more secure because of docker and therefore limited access to the system, no network..?}
-
-\subsection{Local Execution}
-
-Executing a job locally means running a job on the same machine as the program that is monitoring the execution.
-This has the advantage of having all libraries, tools and resources already present \todo{and is without the threat of connection loss to the remote machine}.
-But in the case of Jenkins and GitLab, this is means, each CI instance is separate from the others.
-There is no integration between those instance in this configuration.
-What is missing Jenkins and GitLab here is the capability to decentralize their core task of managing projects, resources and executions.
-
-\todo{scheduling}
+\section{Directory Structure and Organization}
 
 
-\subsection{The approach for Winslow}
+\subsection{Winslow working directory}
 
 \todo{.}
-
-potentially many executions -> easier when local
-
-need watch hardware utilization closely
-
-enables-ish \enquote{spin up a new instance and you are ready to go} slogan
-
-
-
-\section{Backend Nomad}
-
-\todo{.}
-
-\section{Large File Storage organization}
 
 \subsection{Stage storage}
 
@@ -315,6 +337,8 @@ stage execution does not need to depend on the result of the exact previous
 
 \section{Job Scheduling / Election System}
 \label{design:election}
+
+\subsection{Affinity and Aversion}
 \label{election:affinity_and_aversion} \todo{.}
 
 \todo{affinity}
