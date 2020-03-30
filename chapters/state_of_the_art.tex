@@ -120,7 +120,7 @@ The list is in no specific order:
 	\item \textbf{Quartz}\cite{quartz:main} is a Java based program to schedule jobs. Instead of doing so by using input, Quartz executes programs through a timetable and in certain intervals.
 	%	\cite{quartz:overview} 	\cite{quartz:quickstart}
 	\item \textbf{Luigi}\cite{luigi:etc:distributed_pipelines} also executes pipelines with stages and is written in python. The advertised advantage is to define the pipeline directly in python code. But, this is at the same time the only way to define pipelines which contradictions with the existing Java TrackerApplication implementation.
-	\item \textbf{Calery}\cite{celery:main} is focused on task execution through message passing and is written in Python. Intermediate results are expected to be transmitted through messages. Because there is no storage strategy and python adapter-code would have been required, Calery was dismissed.
+	\item \textbf{Celery}\cite{celery:main} is focused on task execution through message passing and is written in Python. Intermediate results are expected to be transmitted through messages. Because there is no storage strategy and python adapter-code would have been required, Celery was dismissed.
 	\item \textbf{IBM InfoSphere}\cite{infosphere:datastage} provides similar to Camunda a rich graphical user interface but for data transfer. Dismissed due to commercial nature.
 	\item \textbf{qsub}\cite{qsub:etc:wiki}\cite{qsub:etc:uiowa} is a CLI\footnote{Command Line Interface} used in HPC to submit jobs onto a cluster or grid. Dismissed due to an expected high setup overhead, non-required multi-user nature and the fact, that it only provides a way to submit jobs.
 	\item \textbf{CSCS}\cite{cscs:high_throughput} High Throughput Scheduler (GREASY). Dismissed for similar reasons as qsub, although it is more light weight and hardware agnostic (it can consider CUDA/GPU requirements).
@@ -300,12 +300,11 @@ This thesis uses REST REST (Representation State Transfer) to enable the Angular
 REST is, by now, commonly used to transfer state on top of HTTP in the internet.
 It utilizes the HTTP methods\cite{http:methods} to request resources or to push updates using URLs for localization.
 
-\todo{needs more work -- and detail?}
+\todo{cleanup}
 
-\section{Java}
-\todo{?}
+%\section{Java}
+%\todo{?}
 
-\section{Agile development}
-\label{fundamental:agile}
-
-\todo{some notes regarding user stories, backlog, prioritization and sprints?}
+%\section{Agile development}
+%\label{fundamental:agile}
+%\todo{some notes regarding user stories, backlog, prioritization and sprints?}

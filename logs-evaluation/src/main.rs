@@ -48,7 +48,17 @@ impl Default for Usage {
     }
 }
 
+#[derive(Default)]
+struct Statistic {
+    overall_hours: usize,
+    overall_hours_within: usize,
+    overall_hours_outside: usize,
+    triggered_hours: usize,
+    triggered_hours_outside: usize,
+}
+
 fn main() {
+    let mut stat = Statistic::default();
     let mut active = Usage::default();
     let mut starting = Usage::default();
 
@@ -75,6 +85,22 @@ fn main() {
     print(&active);
     print(&starting);
 
+    stat.overall_hours = active.days.iter().flat_map(|d| d.at_hour.iter()).sum();
+    stat.overall_hours_outside = active
+        .days
+        .iter()
+        .enumerate()
+        .flat_map(|(day, d)| d.at_hour.iter().enumerate().map(move |v| (day, v)))
+        .flat_map(|(day, (a, b))| {
+            if day == 6 || day == 5 || (a <= 8 && a >= 16) {
+                Some(b)
+            } else {
+                None
+            }
+        })
+        .sum();
+    stat.overall_hours_within = stat.overall_hours - stat.overall_hours_outside;
+
     write_csv(&active, "../active.csv");
     write_csv(&starting, "../starting.csv");
 
@@ -91,8 +117,45 @@ fn main() {
         add_starting(&mut auto_starting, &log);
     }
 
+    stat.triggered_hours = auto_active.days.iter().flat_map(|d| d.at_hour.iter()).sum();
+    stat.triggered_hours_outside = auto_active
+        .days
+        .iter()
+        .enumerate()
+        .flat_map(|(day, d)| d.at_hour.iter().enumerate().map(move |v| (day, v)))
+        .flat_map(|(day, (a, b))| {
+            if day == 6 || day == 5 || (a <= 8 && a >= 16) {
+                Some(b)
+            } else {
+                None
+            }
+        })
+        .sum();
+
     write_csv(&auto_active, "../auto_active.csv");
     write_csv(&auto_starting, "../auto_starting.csv");
+
+    println!("All hours                      {:5}", stat.overall_hours);
+    println!(
+        "Hours within work time         {:5} / {:4.1}",
+        stat.overall_hours_within,
+        (stat.overall_hours_within as f32) / (stat.overall_hours as f32) * 100_f32
+    );
+    println!(
+        "Hours outside work time        {:5} / {:4.1}",
+        stat.overall_hours_outside,
+        (stat.overall_hours_outside as f32) / (stat.overall_hours as f32) * 100_f32
+    );
+    println!(
+        "Triggered hours                {:5} / {:4.1}",
+        stat.triggered_hours,
+        (stat.triggered_hours as f32) / (stat.overall_hours as f32) * 100_f32
+    );
+    println!(
+        "Triggered hours outside        {:5} / {:4.1}",
+        stat.triggered_hours_outside,
+        (stat.triggered_hours_outside as f32) / (stat.overall_hours as f32) * 100_f32
+    );
 }
 
 fn find_auto(map: HashMap<String, Vec<Log>>) -> Vec<Log> {

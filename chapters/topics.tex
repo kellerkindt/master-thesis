@@ -2,15 +2,22 @@
 
 In this chapter the outcome is measured and evaluated.
 
-\todo{compare to initial deliverable requirements?}
+%\todo{compare to initial deliverable requirements?}
 
 \section{What did not work as expected}
 
-\todo{timeout for events might be reached when in between the bandwidth is used by a copy of a large file and the extend signal is because of that deferred, stages that are fine are then marked as failed}
+\todo{?}
 
-\todo{. old sections}
+It is impossible to plan a system ahead of time without making some mistakes.
+The biggest issue that surfaced on early implementation of Winslow were caused by too short-termed EXTEND signals (see \autoref{message:extend}).
+In combination with short but high network bandwidth usages, the event was published too late, which led the other instances consider the node to have failed.
+This was solved by increasing lock timeouts and issuing the EXTEND signal halfway through the timeout instead of very close to the end.
+%\todo{timeout for events might be reached when in between the bandwidth is used by a copy of a large file and the extend signal is because of that deferred, stages that are fine are then marked as failed}
+
+%\todo{. old sections}
 
 \section{User Authentication and Security}
+\label{outcome:ssl}
 
 One aspect that was not yet mentioned at all is user authentication and security.
 Winslow is prepared in this regards because every project has an owner field and a member list and every web access check these.
@@ -79,21 +86,30 @@ Web based solutions such as React and Angular shall therefore be investigated fo
 \todo{loosely coupled backend driver}\autoref{architecture:detailed}
 \end{comment}
 
+
+
+%\section{Internal Locking API}
+%\todo{omit? but it plays so well with try with resource: try(var lock = bus.lock(path)) { ..  }}
+
 \section{High Level System Overview}
 
 \todo{.delete?}
 
-\autoref{architecture:high-level} shows the high level system overview of Winslow as it has been implemented by the end of this thesis.
+\autoref{architecture:high-level} shows the high level system overview of Winslow as it has been implemented by the end of this thesis in our company.
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{architecture.png}
 	\caption{High level view on the system structure}
 	\label{architecture:high-level}
 \end{figure}
 
+The user can access the system through the Web-Application, which itself is not indicating from which Winslow instance it is served.
+The three compute nodes supply different hardware, one with 128 GiB RAM, one with 4 NVIDIA Titans, and one with 48 Intel CPU cores.
+All instances access the same NFS share for synchronization and work distribution.
 
-\todo{explain what is going on in \autoref{architecture:high-level}}
+
+%\todo{explain what is going on in \autoref{architecture:high-level}}
 
 \section{Failure resilience}
 
@@ -101,10 +117,10 @@ Web based solutions such as React and Angular shall therefore be investigated fo
 
 One of the initial requirements is to be resilient against node failures.
 Node failures can be simulated easily by killing the Docker container of a Winslow instance.
-The behaviour that is then displayed, depends on whether that killed instance was executing a stage.
+The behaviour that is then displayed depends on whether that killed instance was actually executing a stage.
 If it did not, the only change is that in the Web-Application the node with its utilization reports will vanish.
 
 But if it did execute a stage, it held locks for it.
 These locks will expire, and after the additional grace period (see \autoref{message:grace_period}), the other instances will notice it, lock the affected project themselves and mark the execution as failed.
-Currently, the project is then paused and user confirmation awaited.
+Currently, the project is then paused and a user confirmation awaited.
 An alternative to this could be to re-schedule the stage automatically.

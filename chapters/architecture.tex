@@ -3,7 +3,7 @@
 In this chapter the previously collected information are used to design the system in detail.
 The decision making process for that is documented here as well.
 
-\todo{mention? decentralization aspects?}
+%\todo{mention? decentralization aspects?}
 
 \section{Environment}
 
@@ -220,7 +220,7 @@ With this message structure definition, the following commands can be used:
 \begin{itemize}
 	\item \textbf{LOCK}: Locking a resource, commonly a project.
 	A lock is exclusive to the issuer and can only be granted if there exist no lock for the same subject yet.
-	\item \textbf{EXTEND}: Extending an ongoing operation by pushing back its timeout.
+	\item \label{message:extend} \textbf{EXTEND}: Extending an ongoing operation by pushing back its timeout.
 	This can be used to signal, that a lock is still required although its timeout is close
 	The duration of the original event extended and thus the timeout is pushed back.
 	The issuer must be the same as did issue the operation that is referred to.
@@ -256,7 +256,7 @@ The behaviour of publishing an event can therefore be summarized in \autoref{eve
 	\label{event:synchronized_publish}
 \end{wrapfigure}
 
-Every Winslow instance is responsible for keeping track of all global states and check before publishing a new event \todo{ref} whether the state would be violated by this event.
+Every Winslow instance is responsible for keeping track of all global states and check before publishing a new event whether the state would be violated by this event.
 If it is not, it will try to publish it by creating a new file with the next expected sequence number.
 If the file already exists, another instance did publish an event in the meantime.
 This externally published event must then loaded and the global state updated before a new trial to publish its own event can be made.
@@ -280,6 +280,8 @@ Because of this violation the even is never published to the event bus, which is
 
 \section{Docker interface}
 
+\todo{.cleanup}
+
 To interface with the Docker daemon a driver implementation is needed to pass on container creation.
 Docker provides a REST API\cite{docker:api} for third party libraries as well as implementations in Go and Python.
 There is no official Java API implementation.
@@ -289,7 +291,13 @@ The Docker REST API is very expressive which is another reason to find a viable 
 As it turns out, the Nomad Project, which was already investigated in \autoref{nomad}, provides a library with a thin abstraction layer and lots of reasonable default values.
 It also includes support to create container which use the Docker plugin by Nvidia\cite{nvidia:docker_plugin}.
 This allows attaching GPUs to a container without the need of listing all libraries and device files manually\footnote{If you are interested in how tedious this could otherwise become see \url{https://github.com/hashicorp/nomad/issues/3499\#issuecomment-364214506}}.
-The scheduling capabilities of Nomad are not used \todo{because: nomad focuses on scheduling multiple instances of a load balanced service, lack of control on where it is spawned, additional communication channels required -> firewall/admin/maintanance, interfer with further extenstions cloud like cloudstore and GlusteFS because a 'randomly' by nomad chosen node would require access to the storage which might not be visible to all executions nodes through the same path}.
+The scheduling capabilities of Nomad are not used because the focus of nomad does only overlap partially with the needs of Winslow.
+A job is expected by Nomad to rerun, moved to different hosts and - in the service mode - scaled as it seems needed.
+The control of where the job is actually executed is to lost, which is not acceptable when different firewall rules apply to all Winslow instances.
+When using GlusterFS, other cloud storage or compute capabilities, the storage is not always reachable through the same path for every node.
+Nomad will only be used in the local Winslow container as thin layer to interfere with an enriched Docker API.
+
+%\todo{because: nomad focuses on scheduling multiple instances of a load balanced service, lack of control on where it is spawned, additional communication channels required -> firewall/admin/maintanance, interfer with further extenstions cloud like cloudstore and GlusteFS because a 'randomly' by nomad chosen node would require access to the storage which might not be visible to all executions nodes through the same path}.
 
 
 \section{Directory Structure and Organization}
@@ -332,7 +340,7 @@ Sometimes a stage wants to access intermediate data produces by multiple previou
 Next, the input video footage needs to be accessed by multiple stages throughout the pipeline execution.
 Finally, some stage results are not intermediate but final results.
 
-The first and second concern can be solved by providing a workspace directory for each stage, that is copied from the logically previous stage.
+The first and second concern can be solved by providing a workspace directory for each stage, that is copied from the logically previous stage\footnote{the stage the new one is based on, this does not always need to be the \todo{numerical} previous stage}.
 Once the computation of a stage is completed, the workspace is considered immutable and only used to source new workspaces from.
 This works fine for small intermediate results, but it does not work very well for large files - like the video footage.
 This delays the start of the stage execution, requires unnecessary storage due to multiple copies and provides no benefits in an archival and version control sense, because the video footage is not altered.
@@ -366,7 +374,7 @@ In summary, for a running stage the mounted directories look like the following:
 \end{itemize}
 
 
-\todo{define logically previous stage -> previous stage on linear execution and ... when jumping around}
+%\todo{define logically previous stage -> previous stage on linear execution and ... when jumping around}
 %stage execution does not need to depend on the result of the exact previous
 
 
@@ -375,7 +383,8 @@ In summary, for a running stage the mounted directories look like the following:
 \label{design:election}
 
 Winslow has no ahead of time plan to schedule stage executions, the main reason for this that it is unknown how long a stage is about to take.
-One could consider to build statistics to eventually be able to guess the duration of repeatedly executed stage definitions, but this seems error prone, does not cover seldom executed stages and is in addition unreasonable complex. \todo{mention these complex scheduling techniques?}
+One could consider to build statistics to eventually be able to guess the duration of repeatedly executed stage definitions, but this seems error prone, does not cover seldom executed stages and is in addition unreasonable complex.
+%\todo{mention these complex scheduling techniques?}
 Instead, the system is reacting to an user submissions and on stages that have just completed.
 For each new execution, an election is then held in which the winner will execute the stage.
 Winslow instances that do not fulfil the resource requirements do not participate in the election.
@@ -526,10 +535,6 @@ The release will then trigger a listening Winslow instance, which will check the
 
 
 
-\section{Internal Locking API}
-
-\todo{omit? but it plays so well with try with resource: try(var lock = bus.lock(path)) { ..  }}
-
 \begin{comment}
 \section{File system}
 
@@ -615,9 +620,9 @@ voting/election by capabilities and 'will' of a node to run a stage
 
 
 
-\section{Agile development}
+%\section{Agile development}
 
-\todo{.depends, maybe to shallow and not worth noting, dont forget to then ref to \autoref{fundamental:agile}}
+%\todo{.depends, maybe to shallow and not worth noting, dont forget to then ref to \autoref{fundamental:agile}}
 
 
 \section{Continuous Deployment}

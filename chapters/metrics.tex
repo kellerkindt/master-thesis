@@ -137,10 +137,44 @@ The gap of activity on Mondays at around noon in \autoref{metrics:auto_running} 
 \end{figure}
 
 
-\todo{to be added: table with more numbers, overall hours, hours in working time, hours outside working time, percentage of stages additionally executed thanks to Winslow, hours won by using Winslow...}
+%\todo{to be added: table with more numbers, overall hours, hours in working time, hours outside working time, percentage of stages additionally executed thanks to Winslow, hours won by using Winslow...}
 
-\todo{table of number of stages executed, number of projects, manual trigger, auto trigger, average/min/max time?}
-\todo{percentage of stages triggered by user vs winslow}
+%\todo{table of number of stages executed, number of projects, manual trigger, auto trigger, average/min/max time?}
+%\todo{percentage of stages triggered by user vs winslow}
+
+For the graphs above, the table can be used to summarize the results:
+
+\begin{table}
+	\centering
+	\begin{tabular}{l|r|r|r}
+												& absolute 			& relative	& gain \\
+		\hline
+		All 		 							& 2003h 			& 100\% 	& \\
+		Within work time						& 1575h				& 78.6\% 	& \\
+		Outside work time	 					&  428h 			& 21.4\% 	& \\
+		Triggered by Winslow overall			& 1131h				& 56.5\%	& +129\%\\
+		Triggered by Winslow outside work time	&  286h  			& 14.3\% 	& +16\%\\
+		 
+	\end{tabular}
+	\caption{Categorization of stage execution hours}
+\end{table}
+
+Overall in the test period 2003 hours were spent computing - this includes overlapping stage executions - of which 78.6\% were executed within regular working hours.
+To see the benefits of Winslow, the hours spent in stage executions that were automatically issued are of interest.
+Here, Winslow triggered 1575 hours or 78.6\% of all stage executions which did not require staff assistance.
+286 hours were overall gained by automatically triggering and performing stage executions outside of the working hours of the staff.
+This is an increase of +16\% compared to no automated triggers.
+
+To put this into perspective, typically week consists of 40 hours working and 128 hours with the staff being absent from the office.
+So in theory 128 hours (+220\%) per week could additionally be spent executing stages, which raises the question why the numbers of Winslow are so low.
+
+To answer this, one needs to look again at the heat-maps of \autoref{metric:all_running} and \autoref{metrics:auto_running}.
+Winslow is being used, and as for \autoref{metrics:auto_started} discussed, it is being used for long running stage executions with one or two automatic triggers at nights.
+But it is used even more during working hours, as can be seen in \autoref{metric:all_running}, where all pink cells fall within working hours.
+
+In conclusion, the Winslow is being used - actively, with over 2003 hours worth of compute time\footnote{in the previously mentioned time period}.
+It is supporting the users by automatically triggering over half of all compute time and additionally enabling the staff to let large multi-stage tasks be executed over night or the weekend.
+If the system would not be beneficial to the staff, it would not be used in such an extend so shortly after implementation.
 
 \begin{comment}
 \todo{remove figure below?}
