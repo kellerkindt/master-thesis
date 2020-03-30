@@ -303,6 +303,7 @@ For complex structures YAML formatting is used, while for simple key value files
 This makes understanding state the system is for debugging in error scenarios easier.
 
 \subsection{Winslow working directory}
+\label{design:winslow:workdir}
 
 A brief summary of the by all instances shared working directory:
 
@@ -377,6 +378,7 @@ Winslow has no ahead of time plan to schedule stage executions, the main reason 
 One could consider to build statistics to eventually be able to guess the duration of repeatedly executed stage definitions, but this seems error prone, does not cover seldom executed stages and is in addition unreasonable complex. \todo{mention these complex scheduling techniques?}
 Instead, the system is reacting to an user submissions and on stages that have just completed.
 For each new execution, an election is then held in which the winner will execute the stage.
+Winslow instances that do not fulfil the resource requirements do not participate in the election.
 
 \subsection{Affinity and Aversion}
 \label{election:affinity_and_aversion} \todo{.}
@@ -457,6 +459,22 @@ As shown in the example, the aversion score is important to prevent stages takin
 In this example, it prevent Ex2 to be scheduled on Node 3.
 
 In comparison to just forbidding executions on nodes with hardware that is not used, in scenarios where all general purpose nodes have failed, this system would still allow executions like Ex1 and Ex2 to be scheduled on GPU nodes.
+
+\section{Execution}
+
+The execution of a stage is started on the Winslow instance with the best aversion and affinity score and therefore won the election.
+It first locks the project, to re-read the configuration and to prevent any changes to in the meantime.
+The workspace is prepared (see \autoref{stage:workspace}), environment variables collected and the backend driver issued to start the new container.
+Any data logged to the containers' stdout or stderr is collected and written to a log file exclusive to this stage execution (see \autoref{design:winslow:workdir}).
+System related events, such as errors pulling an image, exhausted resources or sudden aborts are also logged to this file.
+
+The lock on the project configuration file is not held for all the time the stage is executed, because it would prevent the ability to enqueue and prepare further stages.
+Instead, after successfully starting the new container and the log file has been created, a new lock pointing to the log file is created.
+The currently executed stage is noted in the project file and then the lock on it is released.
+As long as the lock for the log file is alive, no election for the project is triggered.
+
+Once the container stopped - and the stage has therefore either failed or succeeded - the lock on the project is acquired again to update the stage state.
+After this, both locks are released, potentially triggering the next stage execution election.
 
 \begin{comment}
 \todo{affinity}

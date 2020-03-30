@@ -10,9 +10,18 @@ In this chapter the outcome is measured and evaluated.
 
 \todo{. old sections}
 
-\section{User Authentication}
+\section{User Authentication and Security}
 
-\todo{mostly planned, implemented not tested}
+One aspect that was not yet mentioned at all is user authentication and security.
+Winslow is prepared in this regards because every project has an owner field and a member list and every web access check these.
+An internal user repository also associates user with groups and provides defaults, such as the user and group \enquote{anonymous} and \enquote{root}, for no and full access privileges, respectively.
+But at the moment, there is no user login, instead to the system all requests seem to be issued by \enquote{root}.
+In the future this is planned to be replaced by an Single Sign-On implementation that uses the user accounts of our company.
+Winslow is then associating a from this service given user name to an internal user and groups.
+Unknown users are not allowed to see or alter anything, known users will be able to create and view their own projects and projects they are listed in as members.
+%\todo{mostly planned, implemented not tested}
+
+Winslow also supports secure HTTP (HTTPS) whenever a SSL certificate is provided\footnote{This can be seen in \autoref{appendix:winslow_installation}}.
 
 \begin{comment}
 \section{Storage}
