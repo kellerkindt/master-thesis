@@ -1,9 +1,8 @@
 \chapter{Outcome and Measurements}
 
-In this chapter the main concerns are listed.
-For each concern the current progress is described as well as further work that needs to be done.
+In this chapter the outcome is measured and evaluated.
 
-\todo{compare to initial deliverable requirements}
+\todo{compare to initial deliverable requirements?}
 
 \section{What did not work as expected}
 
@@ -73,8 +72,9 @@ Web based solutions such as React and Angular shall therefore be investigated fo
 
 \section{High Level System Overview}
 
+\todo{.delete?}
 
-\todo{intro words}
+\autoref{architecture:high-level} shows the high level system overview of Winslow as it has been implemented by the end of this thesis.
 
 \begin{figure}[h]
 	\centering
@@ -85,3 +85,17 @@ Web based solutions such as React and Angular shall therefore be investigated fo
 
 
 \todo{explain what is going on in \autoref{architecture:high-level}}
+
+\section{Failure resilience}
+
+\todo{.delete? or polish!}
+
+One of the initial requirements is to be resilient against node failures.
+Node failures can be simulated easily by killing the Docker container of a Winslow instance.
+The behaviour that is then displayed, depends on whether that killed instance was executing a stage.
+If it did not, the only change is that in the Web-Application the node with its utilization reports will vanish.
+
+But if it did execute a stage, it held locks for it.
+These locks will expire, and after the additional grace period (see \autoref{message:grace_period}), the other instances will notice it, lock the affected project themselves and mark the execution as failed.
+Currently, the project is then paused and user confirmation awaited.
+An alternative to this could be to re-schedule the stage automatically.

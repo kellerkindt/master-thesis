@@ -3,6 +3,8 @@
 In this chapter the previously collected information are used to design the system in detail.
 The decision making process for that is documented here as well.
 
+\todo{mention? decentralization aspects?}
+
 \section{Environment}
 
 The environment of where the systems shall be deployed onto must be known for detailed design decisions, which will be elaborated here.
@@ -117,6 +119,7 @@ Work is therefore distributed to an executor as it is detected.
 
 
 \section{Event Synchronization and Communication}
+\label{design:synchronization}
 
 \begin{comment}
 kafka does what? persist events and provides them in an order(?), cant Winslow do this itself, so that no further dependency is required?
@@ -189,6 +192,7 @@ A series of changes might not be allowed to be intercepted (atomicity), must see
 \end{comment}
 
 \subsection{Messages}
+\label{message:grace_period}
 \todo{this chapter really needs further polishing}
 
 To coordinate the Winslow instances, messages will be exchanged through the common event bus.
@@ -292,29 +296,30 @@ The scheduling capabilities of Nomad are not used \todo{because: nomad focuses o
 
 This section describe the organization of the working directory for the Winslow instances.
 Because a common network share is required by Winslow for event synchronization and the projects' workspaces, this was further extended to share the configuration and project files as well.
-This has the very nice side-effect, that is no real setup to do when starting a new Winslow instance, the only required input by the administrator is the path to the common network share.
-Of course, special needs apply to certain directories, which will be discussed next.
+This has the very nice side-effect, that is no real setup to do when installing a new Winslow instance\footnote{\autoref{appendix:winslow_installation} lists the complete installation script for a new Winslow instance}.
 
-For the configuration files, a principle found on Unix and Linux was applied: human readable text files.
-In the case of Winslow they use YAML\todo{cite} or property\todo{.} \todo{formatting}.
-This allows easy debugging in error scenarios. \todo{.}
+For the configuration files, a principle found on Unix and Linux systems was applied: human readable text files.
+For complex structures YAML formatting is used, while for simple key value files property formatting is used.
+This makes understanding state the system is for debugging in error scenarios easier.
 
 \subsection{Winslow working directory}
 
 A brief summary of the by all instances shared working directory:
 
 \begin{itemize}
-	\item \monospaceinline{logs}: The location for stage log files. Logs system events and console output with timestamps. File name format looks like \monospaceinline{<project-id>-<stage-number>-<stage-name>}.
+	\item \monospaceinline{logs}: The location for stage log files. Logs system events and console output with timestamps. File name format looks like \\
+	\monospaceinline{<project-id>-<stage-number>-<stage-name>}.
 	\item \monospaceinline{pipelines}: Pipeline definition file (YAML) are located here.
 	\item \monospaceinline{projects}: Project definition files (YAML) are located here.
-	\item \monospaceinline{resources}: The globally available input resources \todo{see ref}
-	\item \monospaceinline{run/events}: The directory used to synchronized events \todo{see ref}
-	\item \monospaceinline{run/nodes}: The directory used to publish node utilization \todo{see ref}
+	\item \monospaceinline{resources}: The globally available input resources, see \autoref{stage:workspace}.
+	\item \monospaceinline{run/events}: The directory used to synchronized events, see \autoref{design:synchronization}.
+	\item \monospaceinline{run/nodes}: The directory used to publish node utilization, see \autoref{design:monitor_resources}.
 	\item \monospaceinline{settings}: The directory used to share common configurations, currently this only contains a global environment variable configuration.
 	\item \monospaceinline{workspaces}: Discussed in \autoref{stage:workspace}
 \end{itemize}
 
 Because the files in \monospaceinline{run/events} and especially \monospaceinline{run/nodes} are very temporary, the NFS server locates these in shared memory (\monospaceinline{/dev/shm}) to reduce stress on IO and unnecessary wear on SSDs.
+Thanks to the locking synchronization and locking mechanism (presented in \autoref{design:synchronization}), the directory can shared between all Winslow instances.
 
 \subsection{Stage storage}
 \label{stage:workspace}
@@ -325,34 +330,33 @@ First of all, to redo a stage, one needs to be able to access the files that wer
 Sometimes a stage wants to access intermediate data produces by multiple previous stages.
 Next, the input video footage needs to be accessed by multiple stages throughout the pipeline execution.
 Finally, some stage results are not intermediate but final results.
-\todo{examples}
 
 The first and second concern can be solved by providing a workspace directory for each stage, that is copied from the logically previous stage.
 Once the computation of a stage is completed, the workspace is considered immutable and only used to source new workspaces from.
 This works fine for small intermediate results, but it does not work very well for large files - like the video footage.
-Starting a new stage will take as long as the copy of multiple gigabytes on a spinning devices take (\todo{sample GB and time}), require unnecessary storage due to multiple copies and provides no benefits in an archival and version control sense, because the video footage is not altered.
+This delays the start of the stage execution, requires unnecessary storage due to multiple copies and provides no benefits in an archival and version control sense, because the video footage is not altered.
 So there needs to be another storage pool for input data, that is globally accessible and never changed: the global input storage pool.
 Providing one further storage pool for final results (global output pool), concern number three and four are also solved.
 
 Because the very first stage has no workspace to source its files from, on creation of the pipeline a workspace directory for the \enquote{zeroths} stage is created.
 The user can then provide the very first stage with a predefined and non-empty workspace if necessary.
 
-Because in the implementation of this project NFS was used, this also solves one further problem that was experienced in the prototyping phase: copying files on NFS (and many other network filesystems like Samba) is a client operation.
-This means, the client reads the input file and writes to the output file.
-Because the common network used (gigabit in this case) is slower than spinning disk sequential read/writes (network: 112 Megabytes/s in theory, divided by two because read+write on the same connection: 56 Megabytes/s, spinning enterprise disk: about 170 Megabytes/s \todo{test on johnny5}), this operation does not only take unnecessary long but also renders the network connection close to unusable for any other participant in the network that needs to use parts of the same physical route.
+This also solves te problem with delays due copy operations in NFS, which are performed client side.
+This means, the client reads the input file and writes to the output file\footnote{Server-side copy has just been standardized for NFS 4.2\cite{nfs:ssc}}.
+This operation does not only take unnecessary long but also utilizes all available network bandwidth which then cannot be used by other applications.
 
 To ensure that the global input and the previous intermediate results are not altered, the Docker daemon is instructed to mounted them as read-only filesystems.
-This makes it impossible\footnote{When there is no bug in the implementation of mount or Docker} for the stage to accidently delete or alter the wrong files\footnote{Like in this scenario, where an unexpected space in a script caued people to loose their home directory: \todo{steam rm -rf incident}}.
+This also prevents bugs or errors from accidentality deleting unrelated files\footnote{\enquote{This so theoretical and will actually never happen in real life} proven otherwise: \url{https://github.com/valvesoftware/steam-for-linux/issues/3671}}
 
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.9\textwidth]{stage-storage.png}
+	\caption{Stages with their intermediate and global resources}
 \end{figure}
 
-In summary, the storage pool solution looks like this:
+In summary, for a running stage the mounted directories look like the following::
 
-\todo{check paths}
 \begin{itemize}
 	\item \monospaceinline{/input} is mounted read-only from \\ \monospaceinline{nfs-server:/winslow/workspaces/<pipeline-id>/input}
 	\item \monospaceinline{/output} is mounted with write permissions from \\ \monospaceinline{nfs-server:/winslow/workspaces/<pipeline-id>/output}
@@ -360,22 +364,101 @@ In summary, the storage pool solution looks like this:
 	and was created by the copying the workspace directory of the logically previous stage
 \end{itemize}
 
+
 \todo{define logically previous stage -> previous stage on linear execution and ... when jumping around}
+%stage execution does not need to depend on the result of the exact previous
 
 
 
-initial input
-
-stage execution does not need to depend on the result of the exact previous
-
-
-
-\section{Job Scheduling / Election System}
+\section{Job Scheduling and Election System}
 \label{design:election}
+
+Winslow has no ahead of time plan to schedule stage executions, the main reason for this that it is unknown how long a stage is about to take.
+One could consider to build statistics to eventually be able to guess the duration of repeatedly executed stage definitions, but this seems error prone, does not cover seldom executed stages and is in addition unreasonable complex. \todo{mention these complex scheduling techniques?}
+Instead, the system is reacting to an user submissions and on stages that have just completed.
+For each new execution, an election is then held in which the winner will execute the stage.
 
 \subsection{Affinity and Aversion}
 \label{election:affinity_and_aversion} \todo{.}
 
+For a winner to be selectable, participants must be comparable.
+Winslow uses a two factor scoring mechanism for that judges how efficient a node is going to be utilized (affinity scoring) and which unused resources will be wasted (aversion scoring).
+The instance with the highest affinity out of the instances of the lowest aversion wins.
+
+For determining the affinity scoring only requested resource categories $c_i$ need to be considered.
+Through the resource monitoring (see \autoref{design:monitor_resources}) the total resources $r_{c_max}$ as well as the reserved resources $r_{c_{in\_use}}$ is known.
+For every resource requested by the stage definition $c1 .. cx$, the ratio of request $r_{c_i}$ to available resources is built.
+The lowest ratio, and therefore the most pessimistic value, of any category is used as the affinity score:
+
+\begin{equation}
+	\label{election:eq:affinity}
+	{affinity} = \min_{c_1 .. c_x} \left( \frac{r_{c_i}}{r_{c_{max}} - r_{c_{in\_use}}} \cdot n_{c_x} \right)
+\end{equation}
+
+As seen above, every node can apply a node and resource category specific multiplier $n_{c_x}$ for punishment or gratification.
+This allows to fine tune the score.
+
+For determining the aversion scoring, all by a node available resource categories $c_a$ need to be considered.
+In contrast to the affinity score, the highest ratio of any unused resource is used as aversion score.
+
+\begin{equation}
+	\label{election:eq:aversion}
+	{aversion} = \max_{c_1 .. c_a} \left( \frac{r_{c_{max}} - r_{c_{in\_use}} - r_{c_a}}{r_{c_{max}}  - r_{c_{in\_use}}} \cdot n_{c_a} \right)
+\end{equation}
+
+The more resources are wasted - especially categories that are untouched - the worse the aversion score.
+
+An example shall illustrate the scoring system.
+Lets consider the following three execution nodes exist:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{l|r|r|r}
+		 & Free CPUs & Free memory & Free GPUs \\
+		 \hline
+		 Node 1 & 4  	& 16 GiB & 0 \\
+		 Node 2 & 12 	& 58 GiB & 0 \\
+		 Node 3 & 4 	& 50 GiB & 1 \\
+	\end{tabular}
+	\caption{Nodes to consider}
+\end{table}
+
+The following three stages executions shall be assessed:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{l|r|r|r}
+		& Req. CPUs & Req. memory & Req. GPUs \\
+		\hline
+		Ex1 & 2 & 16 GiB & 0 \\
+		Ex2 & 4 & 48 GiB & 0 \\
+		Ex3 & 4 & 16 GiB & 1 \\
+	\end{tabular}
+	\caption{Stage executions to consider}
+\end{table}
+
+The following table shows the resulting affinity and aversion score.
+The winning node for an execution is marked by the bold formatting.
+
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{l|r|r|r}
+		& Node 1 & Node 2 & Node 3 \\
+		\hline
+		Ex1 & \textbf{0.5/0.5}	& 		  0.28/0.72	& 		  0.32/1.0 \\
+		Ex2 & - 				& \textbf{0.34/0.67}& 		  0.96/1.0 \\
+		Ex3 & - 				& - 				& \textbf{0.32/0.68} \\
+	\end{tabular}
+	\caption{Affinity/Aversion score for every stage definition and node constellation}
+\end{table}
+
+As shown in the example, the aversion score is important to prevent stages taking execution nodes that provide specialised hardware (such as GPUs) but which isn't required by the stage execution.
+In this example, it prevent Ex2 to be scheduled on Node 3.
+
+In comparison to just forbidding executions on nodes with hardware that is not used, in scenarios where all general purpose nodes have failed, this system would still allow executions like Ex1 and Ex2 to be scheduled on GPU nodes.
+
+\begin{comment}
 \todo{affinity}
 \todo{aversion}
 
@@ -392,17 +475,42 @@ Utilizing Event Bus for timely limited elections and to ensure that there are no
 \todo{scheduling / job assignment/pull strategy}
 
 \todo{graph displaying over time lock and election}
+\end{comment}
 
 
-\section{CPU RAM Network IO Monitoring}
+\section{CPU, RAM, Network- and Disk-IO Monitoring}
+\label{design:monitor_resources}
+
+\todo{polish!}
+
+Monitoring the hardware utilization can be accomplished by parsing the contents of \monospaceinline{/proc/cpuinfo}\footnote{\url{https://www.kernel.org/doc/Documentation/cputopology.txt}}, \monospaceinline{/proc/stat}, \monospaceinline{/proc/meminfo}\footnote{\url{https://www.kernel.org/doc/Documentation/vm/hugetlbpage.txt}}, \monospaceinline{/proc/net/dev} and \linebreak\monospaceinline{/proc/diskstats}\footnote{\url{https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats} and \url{https://www.kernel.org/doc/Documentation/iostats.txt}}.
+These special files in the \monospaceinline{/proc} directory are text files generated by the Linux kernel to summarize the current utilization\cite{linux:doc:proc}.
+
+Each Winslow instance is repetitively reading and parsing these files and writing a summarized version to \monospaceinline{/run/node/<node-name>} in common network share, an example can be seen in \autoref{appendix:run_nodes}.
 
 \section{User Interface}
-
-\todo{REST request, read only: no lock; for changes: POST -> LOCK -> update -> RELEASE, on RELEASE Winslow gets notified and checks whether the new configuration leads to a new stage execution}
-
-\subsection{Spring Boot}
 \label{design:springboot}
-\todo{spring boot}
+
+To display data\footnote{Screenshots in \autoref{appendix:screenshots}} on the user interface in the Angular Web-Application, REST requests are sent to the web-backend of Winslow.
+To handle these requests and to send the responses SpringBoot\cite{springboot} is used.
+
+To not stress the event bus with lock requests caused by the user, all data retrieval operation open and read configuration files without locking them.
+This bears the risk of reading incompletely written files, but as the user interface is not crucial to the system it must account for failed requests due to network issues anyway, this is considered acceptable.
+The user interface would simple resubmit its request. \todo{ACID hazards ref?}
+
+When modifying settings or triggering stage executions, the request handling must also obey the locking rule to not introduce inconsistent state into the system (due to a dirty read).
+This means, on a HTTP POST request, the affected resource is being locked, updated and released.
+The release will then trigger a listening Winslow instance, which will check the file to potentially spawn an election.
+
+
+%\todo{REST request, read only: no lock; for changes: POST -> LOCK -> update -> RELEASE, on RELEASE Winslow gets notified and checks whether the new configuration leads to a new stage execution}
+
+
+
+
+\section{Internal Locking API}
+
+\todo{omit? but it plays so well with try with resource: try(var lock = bus.lock(path)) { ..  }}
 
 \begin{comment}
 \section{File system}
@@ -496,7 +604,9 @@ voting/election by capabilities and 'will' of a node to run a stage
 
 \section{Continuous Deployment}
 
-Ironically, although mentioned as unusable in \autoref{.}\todo{.} for the use case Winslow wants to fulfil, it will use GitLab CI for continuous \todo{delivery} of runnable Docker Images.
-Every code change in the Git repository will trigger a new build pipeline, that builds and tests Winslow, packages all dependencies \todo{nomad} into a Docker image and pushes it to our in house private Docker Registry \todo{.}.
-The \todo{execution nodes} will pull the latest image whenever they restart or are triggered to restart.
-\todo.
+Winslow uses GitLab CI to continuously deliver runnable Docker Images after each git push.
+Every code change will trigger a new build pipeline, that builds and tests Winslow, packages all dependencies\footnote{Nomad and the Angular Web-Application} into a Docker image and pushes it to our in house private Docker Registry.
+Broken code or failing unit tests will result in a notification for the developer and prevents the image from being published.
+
+To update an execution node, the Docker container can simple be stopped and discarded.
+The installation script\footnote{Which is displayed in \autoref{appendix:winslow_installation}} then pulls and starts the most recent image.

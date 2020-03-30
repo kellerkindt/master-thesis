@@ -1,0 +1,43 @@
+name = "srv515"
+
+[cpuInfo]
+modelName = "Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz"
+utilization = [0.029411765, 0.009803922, 0.0, 0.009803922, 0.0, 0.0, 0.0, 0.0, 0.0, 0.029411765, 0.0, 0.0]
+
+[memInfo]
+memoryTotal = 67447889920
+memoryFree = 55159222272
+systemCache = 39576674304
+swapTotal = 1074786304
+swapFree = 815677440
+
+[netInfo]
+transmitting = 2888
+receiving = 2042
+
+[diskInfo]
+reading = 0
+writing = 188416
+free = 440000196608
+used = 48637153280
+
+[[gpuInfo]]
+vendor = "nvidia"
+name = "GeForce RTX 2080 Ti"
+
+[[gpuInfo]]
+vendor = "nvidia"
+name = "GeForce RTX 2080 Ti"
+
+[[gpuInfo]]
+vendor = "nvidia"
+name = "GeForce RTX 2080 Ti"
+
+[[gpuInfo]]
+vendor = "nvidia"
+name = "GeForce RTX 2080 Ti"
+
+[buildInfo]
+date = "2020-02-12 14:24:39"
+commitHashShort = "cb259423"
+commitHashLong = "cb259423a47a38530abae211cf0108fbaf01d852"
