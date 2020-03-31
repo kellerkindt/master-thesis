@@ -90,7 +90,7 @@ In some areas where changes or extensions are foreseeable, preparations can be c
 In addition, keeping the SOLID\cite[86]{martin2003agile} patterns in mind can help to improve correctness, simplicity, stability, changeability and testability\cite[162]{goll2018entwurfsprinzipien}.
 
 
-The analysis and design follows the \enquote{Top-Down} approach\cite[171]{goll2012methoden} in which the system is first outlined and then step by step partitioned into smaller and more detailed pieces.
+The analysis and design in this thesis follows the \enquote{Top-Down} approach\cite[171]{goll2012methoden} in which the system is first generally outlined and then step by step partitioned into smaller and more detailed pieces.
 
 
 %\todo{mention? decentralization aspects?}
@@ -99,8 +99,9 @@ The analysis and design follows the \enquote{Top-Down} approach\cite[171]{goll20
 \section{System Context}
 %\todo{.delete?}
 
-A System Context Diagram is suitable to find the boundaries of a system to implement and interactions with external components, therefore the first step in this analysis was to create \autoref{system_context_diagramm}.
-The notation is a slight deviation from the UML standard so that the control and data flow can be displayed \cite[501]{goll2012methoden}.
+A System Context Diagram is suitable to find the boundaries of the system to implement and interactions with external components.
+The first step was therefore to create \autoref{system_context_diagramm}.
+The notation is a slight deviation from the UML standard so that the control and data flow can also be displayed \cite[501]{goll2012methoden}.
 
 \begin{figure}[H]
 	\begin{tikzpicture}[node distance=5,scale=0.8, every node/.style={transform shape}]
@@ -181,14 +182,14 @@ The notation is a slight deviation from the UML standard so that the control and
 	\label{system_context_diagramm}
 \end{figure}
 
-This thesis will not focus on all parts mentioned in \autoref{system_context_diagramm}, but for the implementation it is essential to have an as complete overview as possible.
+This thesis will not focus on all parts mentioned in \autoref{system_context_diagramm}, but for the implementation it was essential to have an as complete overview as possible.
 
 \pagebreak
 \section{Use Case Diagrams}
 
-A system context diagram is not suitable to elaborate all interactions in great detail, but use case diagrams can be used for that.
-They help to understand the customers needs \cite{Rosenberg2007} while the customer receives an impression on what will be reflected in the final product.
-Each but the very first of the following diagram focuses on one actor that is going to interact with the system.
+A System Context Diagram is not suitable to elaborate all interactions in great detail, but a Use Case Diagrams can be used for that.
+It helps to understand the customers needs \cite{Rosenberg2007} while the customer receives an impression on what will be reflected in the final product.
+Each but the very first of the following diagrams focuses on one actor that is going to interact with the system.
 \autoref{use_case:overview} shows a high-level use case overview of all categories that are relevant to users of the system:
 
 \begin{figure}[H]
@@ -215,7 +216,7 @@ Each but the very first of the following diagram focuses on one actor that is go
 \subsection{Managing Pipelines and Projects}
 
 One very important concern to the user of Winslow is to create an manage pipelines and to associate them to projects.
-For filtering and overview organization, the customer also expressed the need to attach tags to projects.
+The customer expressed the need to also attach tags to projects and to filter the overview by them.
 This does not affect any execution strategy of Winslow, but regardless, it is still important to the end user.
 
 
@@ -249,7 +250,7 @@ This does not affect any execution strategy of Winslow, but regardless, it is st
 		\end{tikzpicture}
 	}
 	\centering
-	\caption{Use Case Diagram showing the general management interactions}
+	\caption{Use Case Diagram showing the pipeline and project management interactions}
 	\label{use_case:mgmt}
 \end{figure}
 
@@ -273,7 +274,7 @@ Uploading, listing and downloading files is one of the main concerns of Winslow 
 		\end{tikzpicture}
 	}
 	\centering
-	\caption{Use Case Diagram showing the general management interactions}
+	\caption{Use Case Diagram showing the resource management interactions}
 	\label{use_case:files}
 \end{figure}
 
@@ -282,7 +283,7 @@ Uploading, listing and downloading files is one of the main concerns of Winslow 
 \subsection{Managing and Monitoring Executions}
 
 The main goal of the system is stage execution.
-The user expressed interest in advanced control, such as aborting a running stage or pausing the stage execution of a project pipeline, as well as being able to view logs live and inspecting intermediate output files .
+The user expressed interest in advanced control, such as aborting a running stage or pausing the stage execution of a project, as well as being able to view live logs and inspecting intermediate output files .
 
 \begin{figure}[H]
 	\scalebox{.65}{
@@ -305,7 +306,7 @@ The user expressed interest in advanced control, such as aborting a running stag
 		\end{tikzpicture}
 	}
 	\centering
-	\caption{Use Case Diagram showing the general management interactions}
+	\caption{Use Case Diagram showing the control interactions}
 	\label{use_case:execution}
 \end{figure}
 
@@ -328,7 +329,7 @@ To monitor the usage of all nodes, an overview listing CPU usage, RAM usage and 
 		\end{tikzpicture}
 	}
 	\centering
-	\caption{Use Case Diagram showing the general management interactions}
+	\caption{Use Case Diagram showing the monitor needs}
 	\label{use_case:monitor}
 \end{figure}
 
@@ -336,8 +337,9 @@ To monitor the usage of all nodes, an overview listing CPU usage, RAM usage and 
 \pagebreak
 \subsection{System Administration}
 
-Furthermore to the interactions with a user, the system must provide further capabilities that are of concern to the administrator maintaining Winslow.
-What was raised here, is the appeal that the setup of new Winslow instances shall be easy as well as adding the new instance with an existing group of instances.
+Furthermore, to the interactions with a general user, the system must provide further capabilities that are of concern to the administrator maintaining and installing Winslow.
+The wish for an easy setup and low maintenance overhead for Winslow was raised here.
+It should be easy to add a new installation to an existing group of instances.
 
 
 \begin{figure}[H]
@@ -362,7 +364,8 @@ What was raised here, is the appeal that the setup of new Winslow instances shal
 \section{Detailed Use Case analysis}
 
 The next step would be to write a detailed analysis for each use case, including information such as who is the initiator, which components are involved, what is the expected and what are alternative outcomes.
-But that would create further pages, with a lot of details for user interaction, which is not the focus for this thesis, which is the reason this is omitted here.
+But that would create further pages, with a lot of details for user interaction, which is not the focus of this thesis.
+For that reason, is omitted here.
 
 \pagebreak
 \section{System Architecture}
@@ -387,7 +390,7 @@ The meaning of the layers and their services will be explained in the following 
 \subsection{Layer 1: Orchestration Service}
 \label{analysis:layer_1}
 
-This layer is all about the fundamental business logic: when to schedule, start and fail which stage of what project a well as monitoring the hardware utilization.
+This layer is all about the fundamental business logic: when to schedule, start and abort which stage of what project a well as tracking the hardware utilization.
 This level is also responsible to communicate these actions with all other Winslow instances, so that there is no duplicate or  missing stage execution or undetected node failure.
 
 %The following requirements are therefore implemented here: \todo{.?}
@@ -398,11 +401,12 @@ This level is also responsible to communicate these actions with all other Winsl
 The second layer is essential for the first layer to interact with and understand its environment.
 It provides two important services: a synchronized communication channel and a large file storage.
 
-The communication channel requires a storage to persist messages that are relevant for a duration of time and it needs to  support basic synchronization primitives to ensure consistency.
-Winslow instances that are started need to see events that were issued before their start and which are not completed yet to replicate the state of the system correctly.
+The communication channel requires a storage to persist messages that are relevant for a duration of time.
+It also needs to  support basic synchronization primitives to ensure consistency.
+Winslow instances that have just been started need to see events that were issued before their start and which are still relevant to be able to replicate the system state correctly.
 
-For executing stages large files must be stored.
-The synchronized access is ensured by Winslow's event synchronization and thus the constraints to the storage is more relaxed than the one used to persist synchronization messages.
+For executing stages, the system must be able to store large files.
+The synchronized access can be ensured the event synchronization and thus the constraints to this storage is more relaxed than the one used to persist synchronization messages.
 %An eventual consistent\todo{cite} storage could be used here. \todo{inter-stage synchronization? eventual-consistent might not be sufficient here?}
 
 
@@ -411,21 +415,20 @@ The synchronized access is ensured by Winslow's event synchronization and thus t
 
 
 This layer is responsible to interface with Docker.
-Once it is decided to run a stage this driver is instructed to start a certain image with environment variables and a prepared workspace.
-By separating this task to its own layer it will be easier to change from the Docker API to another implementation or away from the Docker platform at all if necessary.
+Once stage shall be executed, this driver is instructed to start a certain image with environment variables and the path to a prepared workspace.
+By separating this task to its own layer it will be easier to change the Docker API for another implementation or to move away from the Docker platform at all if necessary.
 A reason for this could be the change of needs, the appearance of a platform that is fulfilling the needs better or the disappearance of the currently used platform.
 The latter sounds not that common at first, but the recent partial acquisition of Docker Inc by Mirantis\cite{docker:acquisition} proves that even very popular third party software is not going to be around for all eternity.
-By moving the driver implementation into its own layer, but leaving the interface definition in layer 1 allows the driver implementation to be swapped easily without the inner layer noticing.
-It then also complies to the \enquote{Dependency Inversion Principle}.
+By moving the driver implementation into its own layer, but leaving the interface definition in layer 1, the driver implementation can be replaced easily without modifications to the inner layer.
+It then also complies to the \enquote{Dependency Inversion Principle}\cite[65]{goll2018entwurfsprinzipien}.
 
-While the backend driver does not access any storage itself, the stages need to read and write to the large file storage.
-Docker provides means to mount local directories or remote NFS shares as volumes into the container natively.
-The access from within the executed stage can then be guarded to limit read and write access to only the required working directories.
+While this driver is not supposed to access any storage itself, the stages need to read and write to the large file storage.
+Docker does support mounting local directories or remote NFS shares as volumes into the container natively, access from within the executed stage can then also be guarded to limit read and write access to only the required working directories.
 
 \subsection{Layer 4: Client Communication}
 
 The final layer in this architecture is the client communication layer.
-This service is not crucial for the actual execution and may be disabled on Winslow instances that shall not response to a user request themselves.
-A reason for this could be, that SSL certificate for a sub-domain points to a specific Winslow instances and unsecure access is not desired.
-The REST API shall provide resources that can be called from the statical served Angular Web-Application\footnote{see \autoref{fundamental:angular}} or further tools to upload or download files, to control stage execution and to monitor usage and logs.
+This service is not crucial for the actual execution and may be disabled on Winslow instances that shall not respond to a user requests.
+A reason for this could be, that SSL certificates are bound to sub-domain which might point to specific Winslow instances and any unsecure access is not desired.
+The REST API in this layer shall provide resources that can be accessed from the statically served Angular Web-Application\footnote{see \autoref{fundamental:angular}} or from future tools to upload or download files, to control stage execution and to monitor usage and logs.
 %Removing or disabling this layer is not stopping the Winslow

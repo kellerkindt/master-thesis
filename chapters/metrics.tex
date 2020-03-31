@@ -1,13 +1,13 @@
 \section{Evaluation}
 
 The main focus of Winslow is to improve the efficiency in utilizing available hardware.
-Without it, new stages were seldom started at outside of the work time.
-To estimate whether Winslow is providing any improvements, the actions that are scheduled by Winslow outside of these hours are to be watched.
+Without this automated approach, new stages were seldom started outside of work hours.
+To estimate whether Winslow is providing any improvements, the actions that are scheduled by Winslow outside of these hours are to be assessed.
 
-The following graphs are based on activity metrics, that were logged in the time period from the first usage in mid January 2019 until counter actions for COVID-19 in early March 2019 prevented active use due to the lock-down in Germany.
-For each day of the week and hour of the day an associated cell shows the activity colour encoded.
+The following graphs are based on activity metrics, that were logged in the time period from the first usage in mid January 2020 until counter actions for COVID-19 in early March 2020 prevented active use due to the lock-down in Germany.
+For each day of the week and hour of the day an associated cell shows the activity encoded in colours.
 Furthermore, red lines show the begin and end of a typical work day.
-Interestingly, the actual position of these red lines can also be inferred by the graphs themselves, due to activity spikes.
+Interestingly, the actual position of these red lines could also be inferred by the graphs themselves, due to activity spikes.
 
 
 \begin{figure}[H]
@@ -37,10 +37,10 @@ Interestingly, the actual position of these red lines can also be inferred by th
 	\label{metric:all_running}
 \end{figure}
 
-At first, \autoref{metric:all_running} and \autoref{metric:all_started} show the overall activity.
-In \autoref{metric:all_running} number of running stages per hour is shown and in \autoref{metric:all_started} the number of started stages per hour is shown.
-The increased activity between the read line - within the working hours - is visible.
-But especially in \autoref{metric:all_started} the activity outside these times is visible as well.
+\autoref{metric:all_running} and \autoref{metric:all_started} show the overall activity.
+In \autoref{metric:all_running} the number of running stages per hour is shown and in \autoref{metric:all_started} the number of started stages per hour is shown.
+An increased activity between the read line - within the working hours - is visible.
+But especially in \autoref{metric:all_started} an activity outside these times can be seen as well.
 
 \begin{figure}[H]
 	\centering
@@ -69,7 +69,7 @@ But especially in \autoref{metric:all_started} the activity outside these times 
 	\label{metric:all_started}
 \end{figure}
 
-\autoref{metrics:auto_running} and \autoref{metrics:auto_started} show only stages that were triggered by Winslow, without a direct user input.
+\autoref{metrics:auto_running} and \autoref{metrics:auto_started} show only stages that were automatically triggered by Winslow.
 
 
 
@@ -101,13 +101,13 @@ But especially in \autoref{metric:all_started} the activity outside these times 
 	\label{metrics:auto_running}
 \end{figure}
 
-\autoref{metric:all_running} clearly shows that there is quite a bit of activity event without direct user input.
-This is especially obvious by looking at \autoref{metrics:auto_started}: there are many stages started in the late evening and until midnight as well as a second wave at about one o'clock in the morning and activity on Saturdays.
+\autoref{metric:all_running} clearly shows that there is quite a bit of activity even without direct user input.
+This is especially obvious by looking at \autoref{metrics:auto_started}: there are many stages started in-between the late evening and midnight, a second wave at about one o'clock in the morning and activity on Saturdays.
 Without Winslow these stages would not have been triggered.
 
-That the system was actively used to schedule work to be executed on the weekends.
-This can be seen in \autoref{metrics:auto_started} by highlighted areas late hours on Fridays, early and late hours on Saturdays as well as the continuous but decreasing overall activity from Saturday to Sunday in \autoref{metrics:auto_running}.
-The gap of activity on Mondays at around noon in \autoref{metrics:auto_running} could indicate that the results were evaluated at here.
+The graphs imply that the system was actively used to schedule work to be executed on the weekends.
+This can be seen in \autoref{metrics:auto_started} by the highlighted areas at late hours on Fridays, early and late hours on Saturdays as well as the continuous but decreasing overall activity from Saturday to Sunday in \autoref{metrics:auto_running}.
+The gap of activity on Mondays at around noon in \autoref{metrics:auto_running} could indicate that the results were evaluated here.
 
 \begin{figure}[H]
 	\centering
@@ -142,9 +142,9 @@ The gap of activity on Mondays at around noon in \autoref{metrics:auto_running} 
 %\todo{table of number of stages executed, number of projects, manual trigger, auto trigger, average/min/max time?}
 %\todo{percentage of stages triggered by user vs winslow}
 
-For the graphs above, the table can be used to summarize the results:
+For the graphs above, the following table summarizes the results:
 
-\begin{table}
+\begin{table}[H]
 	\centering
 	\begin{tabular}{l|r|r|r}
 												& absolute 			& relative	& gain \\
@@ -159,22 +159,22 @@ For the graphs above, the table can be used to summarize the results:
 	\caption{Categorization of stage execution hours}
 \end{table}
 
-Overall in the test period 2003 hours were spent computing - this includes overlapping stage executions - of which 78.6\% were executed within regular working hours.
+Overall, in the test period 2003 hours were spent computing - this includes overlapping stage executions - of which 78.6\% were executed within regular working hours.
 To see the benefits of Winslow, the hours spent in stage executions that were automatically issued are of interest.
 Here, Winslow triggered 1575 hours or 78.6\% of all stage executions which did not require staff assistance.
-286 hours were overall gained by automatically triggering and performing stage executions outside of the working hours of the staff.
+286 hours were overall gained by automatically triggering and performing stage executions outside of the working hours.
 This is an increase of +16\% compared to no automated triggers.
 
-To put this into perspective, typically week consists of 40 hours working and 128 hours with the staff being absent from the office.
-So in theory 128 hours (+220\%) per week could additionally be spent executing stages, which raises the question why the numbers of Winslow are so low.
+To put this into perspective, typically week consists of 40 hours of work and 128 hours with the staff being absent.
+So in theory 128 hours (+220\%) per week could additionally be spent executing stages, which raises the question why the numbers of Winslow are so small in comparison.
 
 To answer this, one needs to look again at the heat-maps of \autoref{metric:all_running} and \autoref{metrics:auto_running}.
 Winslow is being used, and as for \autoref{metrics:auto_started} discussed, it is being used for long running stage executions with one or two automatic triggers at nights.
 But it is used even more during working hours, as can be seen in \autoref{metric:all_running}, where all pink cells fall within working hours.
 
-In conclusion, the Winslow is being used - actively, with over 2003 hours worth of compute time\footnote{in the previously mentioned time period}.
-It is supporting the users by automatically triggering over half of all compute time and additionally enabling the staff to let large multi-stage tasks be executed over night or the weekend.
-If the system would not be beneficial to the staff, it would not be used in such an extend so shortly after implementation.
+In conclusion, Winslow is being used - and that actively, with over 2003 hours worth of compute time\footnote{in the previously mentioned time period}.
+It is supporting the users by being the triggering for over half of all compute time spent and additionally enabling the staff to let large multi-stage tasks be executed over night or the weekend.
+If it would not be beneficial to the staff, it would not be used in such an extend so shortly after implementation.
 
 \begin{comment}
 \todo{remove figure below?}

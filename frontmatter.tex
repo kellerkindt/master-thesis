@@ -2,19 +2,18 @@
 
 \chapter*{Abstract} % The asterisk prevents this file from being labelled as a chapter.
 %\addcontentsline{toc}{chapter}{Abstract}
- 
- 
-\todo{.polish}
+
  
 
 %A short summary of what the project is about.
 
-This thesis if about implementing a distributed system to process large work items with specialized hardware requirements in Docker container.
-The system furthermore assists the user by organizing the work items into projects, tracking execution progress and monitoring hardware utilization.
+This thesis if about implementing a distributed system to process large work items with specialized hardware requirements
+Docker containers are used to deploy the system and for job isolation.
+It furthermore assists the user by organizing the work items into projects, tracking execution progress and monitoring hardware utilization.
 All this is reported to the user in an Angular Web-Application which also allows the user to customize the execution pipeline, inspect intermediate results and to actively manage stage executions.
-Decentralized elections select the node which best fits the resources needs.
+The decentralized system detects and recovers from node failures and uses elections to select the target node for job executions.
 %Easy setup and extendability is the focus for dependency and architecture evaluation.
-The system and evaluation process is focused on easy setup and extendability.
+It is focused on easy setup and extendability.
 
 ~\\
 Keywords: Events, Messaging, Synchronization, Software, Architecture, Distributed, Coordination, Docker, SpringBoot, REST, Angular, Typescript

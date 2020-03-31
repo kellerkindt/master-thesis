@@ -142,11 +142,12 @@ The list is in no specific order:
 %	\item \textbf{Ceph}\label{ceph}\todo{...}
 \end{itemize}
 
+\pagebreak
 \section{Docker}
 \label{docker:image}
 
-As describe in \autoref{workflow}, for easy deployment and setup Docker\cite{docker:main} containers shall be used.
-This allows easier isolation of the executed stages and other host programs, as will be explain further on.
+As describe in \autoref{workflow}, for easy deployment and setup Docker\cite{docker:main} images shall be used.
+This allows isolation of the executed work items and other host programs, as will be explain further on.
 
 \begin{wrapfigure}{r}{0.30\textwidth}
 	\centering
@@ -156,7 +157,7 @@ This allows easier isolation of the executed stages and other host programs, as 
 	\vspace{1cm}
 \end{wrapfigure}
 
-Docker is the name of a software that combines various isolation technologies (\autoref{docker:technology}) to provide and execute third party software in virtual environments.
+Docker is the name of a software that combines various isolation technologies to provide and execute third party software in virtual environments.
 Docker aims are to increase security and to simplify installation as well as maintenance of applications.
 Docker Swarm\cite{docker:swarm:key-concepts} and Kubernetes\cite{kubernetes:overview} use these fundamental features to scale applications, services and microservices in the cloud.
 Software is retrieved from a public registry, called Docker Hub\cite{docker:hub} or from local or private registries.
@@ -170,7 +171,7 @@ Instead of spawning a new process for a binary in the host environment, the imag
 Because the image includes all required libraries, it is possible to completely isolate the virtual environment which makes the host system invisible to any process inside the container.
 Changes to files within containers are stored separately as differentials\footnote{for example by using OverlayFS\cite{overlayfs}}, which allows an image to be used by multiple containers at once.
 Privileges, resource limitations and storage configurations can also be specified when creating a new container.
-Processes inside containers are unable to see  other processes or files that are not part of or assigned to the their container\footnote{This is the default behaviour. It is possible to manually lift or modify many boundaries Docker enforces for containers on default.}.
+Processes inside containers are unable to see  other processes or files that are not part of or assigned to their container\footnote{This is the default behaviour. It is possible to manually lift or modify many boundaries Docker enforces for containers per default.}.
 
 In contrary to a hypervisor, docker is archiving this without hardware and operating system virtualization.
 Instead of executing the container inside an additional virtualized operating system, they share the kernel of the host system.
@@ -208,11 +209,11 @@ Instead it uses built-in Linux Kernel containment features like CGroups, Namespa
 
 When distributing workload onto different machines, accessing input and output files becomes another concern which is not present when all computation and storage resides on the same physical machine.
 In theory, one could use portable mediums such as USB-Sticks, CD-ROMs or external HDDs, but in reality, this becomes very tedious really fast.
-More advanced users might be able to take advantage of a common network connection between the computation to copy files and directories to the required places.
+More advanced users might be able to take advantage of a common network connection between the computers to copy files and directories to the required places.
 This strategy - still being tedious - surfaces another issue: dealing with multiple copies requires careful version management and additional storage space.
-One certainly would not want to continue computation on outdated data or have too many copies of the same files.
+One certainly would not want to continue computation on outdated data set or have multiple copies of the same files.
 
-The solution to that can be a network file system.
+The solution to that could be a network file system.
 To programs this solution seems to be just another local directory hierarchy, but in reality, the files might be located on another or multiple other machines.
 
 \begin{comment}
@@ -276,13 +277,14 @@ Remote file systems provide access to data that does not need to be stored on th
 Some file systems are organized centralized, where at a single address and physical location all data is stored and retrieved from.
 This can have advantages in setup time, maintenance and communication complexity, because of their simplicity.
 
-The Network File Systems (NFS) for example, which is primarily used in the Linux and Unix world, is centralized, the clients are connecting to a remote server to read and write files from and to.
-Since NFS 4.1 pNFS\footnote{parallel NFS}\cite[p. 14, section 1.7.2.2]{nfs:pnfs} allows the server to spread load across multiple servers and volumes, but because all metadata is still handled by one server, this approach still has a single point of failure.
+The Network File Systems (NFS) for example, which is primarily used in the Linux and Unix world, is centralized.
+The clients are connecting to a remote server to read and write files from and to.
+Since NFS 4.1 pNFS\footnote{parallel NFS}\cite[p. 14, section 1.7.2.2]{nfs:pnfs} allows the server to spread read and write load across multiple servers and volumes, but because all metadata is still handled by one server, this approach still has a single point of failure.
 The Common Internet File System (SMB/CIFS) is similar to NFS in regards of providing access to a remote file system locally, and it is the approach primarily used by Windows computers.
 Similar to NFS, it has also a centralized approach.
 
 
-More advanced file systems provide additional functionality like replication, which stores the data more than once to recover from data carrier failures, site awareness, which replicates data to geographically distant locations\footnote{to not be affected by a burning data centre for example or to decrease access time for clients from the distant location} and decentralized communication endpoints that provide access to the data from more than a single point of failure.
+More advanced file systems provide additional functionality like replication, which stores the data at more than one location to recover from hardware failures, take advantage of site awareness - which replicates data to geographically distant locations\footnote{to not be affected by a burning data centre for example or to decrease access time for clients from the distant location} - and decentralized communication endpoints that provide access to the data from more than a single point of failure.
 
 
 File systems like GlusterFS (\autoref{glusterfs}), Alluxio (\autoref{alluxio}), SeaweedFS (\autoref{seaweedfs}), OpenIO (\autoref{openio}), dCache (\autoref{dcache}) and HadoopFS (\autoref{hadoopfs}) try to provide these functionality.
@@ -291,16 +293,15 @@ File systems like GlusterFS (\autoref{glusterfs}), Alluxio (\autoref{alluxio}), 
 \label{fundamental:angular}
 
 The user interface is supposed to be implemented by an Angular Web-Application.
-Angular\cite{angular} itself is a framework for mobile and desktop Web-Applications which uses templating to generate the website completely on the client.
+Angular\cite{angular} itself is a framework for mobile and desktop Web-Applications which uses templating to generate the website displayed to the user completely on the client side.
 It uses TypeScript\cite{typescript}, which is, in essence, an enriched subset of JavaScript with type annotations, that compiles back to JavaScript.
-This allows any recent web-browser to execute TypeScript \enquote{code}, without the need to explicitly supporting it.
-The additional type annotation in TypeScript supports developers by giving helpful error messages, instead of runtime errors.
+This allows any recent web-browser to execute \enquote{TypeScript code}.
+The additional type annotation in TypeScript supports developers by giving helpful error messages, instead of more obscure runtime errors.
 
-This thesis uses REST REST (Representation State Transfer) to enable the Angular application to communicate with the web-server.
-REST is, by now, commonly used to transfer state on top of HTTP in the internet.
-It utilizes the HTTP methods\cite{http:methods} to request resources or to push updates using URLs for localization.
+This thesis uses REST (Representation State Transfer) to enable the Angular application to retrieve and push data to web-server.
+REST is by now commonly used to transfer state on top of HTTP in the internet.
+It utilizes the HTTP methods\cite{http:methods} communicate to request type and URLs to localize resources.
 
-\todo{cleanup}
 
 %\section{Java}
 %\todo{?}

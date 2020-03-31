@@ -6,10 +6,8 @@ In this chapter the outcome is measured and evaluated.
 
 \section{What did not work as expected}
 
-\todo{?}
-
 It is impossible to plan a system ahead of time without making some mistakes.
-The biggest issue that surfaced on early implementation of Winslow were caused by too short-termed EXTEND signals (see \autoref{message:extend}).
+The biggest issue that surfaced on an early implementation of Winslow was caused by too short-termed EXTEND signals (see \autoref{message:extend}).
 In combination with short but high network bandwidth usages, the event was published too late, which led the other instances consider the node to have failed.
 This was solved by increasing lock timeouts and issuing the EXTEND signal halfway through the timeout instead of very close to the end.
 %\todo{timeout for events might be reached when in between the bandwidth is used by a copy of a large file and the extend signal is because of that deferred, stages that are fine are then marked as failed}
@@ -20,12 +18,13 @@ This was solved by increasing lock timeouts and issuing the EXTEND signal halfwa
 \label{outcome:ssl}
 
 One aspect that was not yet mentioned at all is user authentication and security.
-Winslow is prepared in this regards because every project has an owner field and a member list and every web access check these.
-An internal user repository also associates user with groups and provides defaults, such as the user and group \enquote{anonymous} and \enquote{root}, for no and full access privileges, respectively.
-But at the moment, there is no user login, instead to the system all requests seem to be issued by \enquote{root}.
-In the future this is planned to be replaced by an Single Sign-On implementation that uses the user accounts of our company.
-Winslow is then associating a from this service given user name to an internal user and groups.
-Unknown users are not allowed to see or alter anything, known users will be able to create and view their own projects and projects they are listed in as members.
+Winslow is prepared in this regards because every project has an owner field and a member list and every web access checks these.
+An internal user repository also associates users with groups and provides defaults, such as the user and group \enquote{anonymous} and \enquote{root} for no and full access privileges, respectively.
+But at the moment, there is no user login.
+Instead, to the system all requests seem to be issued by \enquote{root}.
+In the future it is planned to be replaced this by an Single Sign-On implementation that uses the user accounts of our company.
+Winslow is then given a user name which it will use to identify the corresponding internal user.
+Unknown users are not allowed to see or alter anything, known users will be able to create and view their own projects and projects they are listed as members in.
 %\todo{mostly planned, implemented not tested}
 
 Winslow also supports secure HTTP (HTTPS) whenever a SSL certificate is provided\footnote{This can be seen in \autoref{appendix:winslow_installation}}.
@@ -93,9 +92,7 @@ Web based solutions such as React and Angular shall therefore be investigated fo
 
 \section{High Level System Overview}
 
-\todo{.delete?}
-
-\autoref{architecture:high-level} shows the high level system overview of Winslow as it has been implemented by the end of this thesis in our company.
+\autoref{architecture:high-level} shows the high level system overview of Winslow as it is implemented and in use by the end of this thesis in our company.
 
 \begin{figure}[H]
 	\centering
@@ -104,8 +101,8 @@ Web based solutions such as React and Angular shall therefore be investigated fo
 	\label{architecture:high-level}
 \end{figure}
 
-The user can access the system through the Web-Application, which itself is not indicating from which Winslow instance it is served.
-The three compute nodes supply different hardware, one with 128 GiB RAM, one with 4 NVIDIA Titans, and one with 48 Intel CPU cores.
+The user can access the system through the Web-Application, which has no indicating to tell from which Winslow instance it is served.
+The three compute nodes supply different hardware, one with 128 GiB RAM, one with 4 NVIDIA RTX 2080 Ti, and one with 32 Intel CPU cores.
 All instances access the same NFS share for synchronization and work distribution.
 
 
@@ -113,14 +110,12 @@ All instances access the same NFS share for synchronization and work distributio
 
 \section{Failure resilience}
 
-\todo{.delete? or polish!}
-
-One of the initial requirements is to be resilient against node failures.
+One of the requirements for Winslow is to be resilient against node failures.
 Node failures can be simulated easily by killing the Docker container of a Winslow instance.
 The behaviour that is then displayed depends on whether that killed instance was actually executing a stage.
 If it did not, the only change is that in the Web-Application the node with its utilization reports will vanish.
 
 But if it did execute a stage, it held locks for it.
-These locks will expire, and after the additional grace period (see \autoref{message:grace_period}), the other instances will notice it, lock the affected project themselves and mark the execution as failed.
+These locks will expire, and after the additional grace period (see \autoref{message:grace_period}), the other instances will notice this, lock the affected project themselves and mark the execution as failed.
 Currently, the project is then paused and a user confirmation awaited.
 An alternative to this could be to re-schedule the stage automatically.

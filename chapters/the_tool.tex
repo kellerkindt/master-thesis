@@ -63,7 +63,7 @@ For the ease of installation and binary distribution, Docker Images shall be use
 From the desired workflow, the following requirements can be extracted:
 
 \begin{itemize}
-	\item User interface for interaction between the system and the user
+	\item A user interface for interaction between the system and the user
 	\item Storage management for global resource files as well as stage based workspaces
 	\item Pipeline definition through configuration files
 	\item Handling of multiple projects with independent progress and environment
@@ -72,8 +72,9 @@ From the desired workflow, the following requirements can be extracted:
 	\item Accepting user input to update environment variables, resuming and pausing projects as well as uploading and downloading files into or from the global resource pool or a stages workspace.
 	\item Assigning starting stages to the most fitting server node
 	\item Detecting program errors (in a stage execution)
-	\item Cope with server node failures
-	\item Providing a Docker Image for the implemented program, preferably in an automated fashion.
+	\item Cope with node failures
+	\item Using Docker Images as installation medium
+	%Providing a Docker Image for the implemented program, preferably in an automated fashion.
 %	\item \todo{.} Increase productivity without staff involvement
 %	\item \todo{.} Utilize hardware in absence of staff
 %	\item \todo{.} Decrease need of staff monitoring and organizing stuff
@@ -106,8 +107,7 @@ menbedingungen bei der Umsetzung des Systems auf \cite[155]{goll2012methoden}.
 \subsection{Non-Requirements}
 
 To know the requirements and expectations of a system is essential, but knowing what is not expected by the system is at least as valuable.
-It prevents wasting resources, effort and architectural specialization that will never be required or in the worst case, make further development harder by restricting available choices in the future.
+It prevents wasting resources, efforts and architectural specializations that will never be required or in the worst case, make further development harder by restricting available choices for the future.
  
 The system to implement shall not strive to implement real time scheduling or low latency scheduling.
-The expected work items are big chunks that require hours to compute.
-Whether the assignment of the work item takes sub seconds or several seconds is nearly unnoticeable in the overall compute time.
+The expected work items are big chunks that require hours to compute, whether the assignment of the work item takes sub-seconds or several seconds is nearly unnoticeable in the overall compute time.

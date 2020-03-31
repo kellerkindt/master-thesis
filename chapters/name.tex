@@ -11,8 +11,8 @@
 \end{wrapfigure}
 
 
-The program that shall implement the requested features listed by \autoref{requested-features} is being called Winslow.
-This name refers to Frederick Winslow Taylor who was an American mechanical engineer and one of the first management consultants in the 19th century\cite[wiki:winslow].
+The program that shall implement the requested features is being called Winslow.
+This name refers to Frederick Winslow Taylor who was an American mechanical engineer and one of the first management consultants in the 19th century\cite{wiki:winslow}.
 Both strive to make people's work more efficient.
 
 
@@ -24,26 +24,22 @@ It is crucial that every reader has the same understanding for the words used so
 
 The root of a work item is called project.
 A project will usually refer to one video footage that shall be processed.
-Each project has its exclusive directory for input, output and intermediate files, called workspace.
-Furthermore a project as an author and possibly participants, that can help in steering and monitoring the processing.
+Each project has its exclusive workspace for input, output and intermediate files.
+Furthermore a project has an author and possibly participants, that can help in steering and monitoring the processing.
 To do so, there is always a pipeline assigned to a project.
 
 A pipeline consists of at least one but usually multiple stages that can at least be processed linearly - one after the other.
-Furthermore, a pipeline can define environment variables that valid for all stages within the stage.
+Furthermore, a pipeline can define environment variables that are valid for all stages within the pipeline.
 
 A stage is the smallest work unit that can be executed.
-A docker image\autoref{docker:image} is specified as execution environment as well as further stage specific environment variables, command line arguments and hardware requirements (such as CPU cores, GPUs and minimum available RAM).
-This enables a stage to use a common image as well as to specify very precisely how to process the data.
+A docker image (see \autoref{docker:image}) is specified as execution environment as well as further stage specific environment variables, command line arguments and hardware requirements (such as CPU cores, GPUs and minimum available RAM).
+This allows stages to be based on common images but also to specify very precisely how to process the data in a certain scenario.
 
-In addition, stages and pipelines can be distinguished in a active, running or completed stage or pipeline and a definition.
-A stage definition specifies the above mentioned presets - allowing the user to adjust details just before submission - to create multiple stages from, while a running or complete stage has all information of what is or was executed and allows no further alteration.
-For pipeline definitions this is similar, a pipeline definition can be used to specify a common order of execution.
-Once assigned to a project, the project can freely adjust and change its instance of the pipeline.
+In addition, stages can be categorized in running, succeeded or failed while pipelines can be have active or paused as state.
+A stage definition specifies the above mentioned presets in a template to base multiple stages from, while a running or complete stage has all information of what is or was executed and allows no further alteration.
+For pipeline definitions this is similar, it can be used to specify a common order of execution.
+Once assigned to a project, it can freely adjust and change its copy of the pipeline.
 
-A running process that is executing the binary of Winslow is called Winslow instance.
-
-A computer with a Winslow instance that is accepting or executing stages is called execution node.
-The focus relies here on the computer providing compute resources to Winslow.
-
-\todo{cleanup}
+The container process that is executing the binary of Winslow is called Winslow instance.
+A computer with a Winslow instance that is accepting or executing stages is called execution node with focus on the computer providing compute resources to Winslow.
 
