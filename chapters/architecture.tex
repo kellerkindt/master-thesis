@@ -237,7 +237,7 @@ With this message structure definition, the following commands can be used:
 
 \subsection{Synchronization}
 
-In a file system two files with the same name are now allowed to exist in the same directory, which is ensured by the filesystem.
+In a file system two files with the same name are not allowed to exist in the same directory, which is ensured by the filesystem.
 This can be used when publishing events in a common directory: a by all instances followed sequence number is used as file name.
 Publishing a new event will fail, if there already exists a file for that sequence number.
 Watching the directory will then also result in a stream of ordered events.
@@ -528,7 +528,7 @@ An summary example can be seen in \autoref{appendix:run_nodes}.
 \label{design:springboot}
 
 To display data on the user interface\footnote{Screenshots in \autoref{appendix:screenshots}}, REST requests are sent to the web-backend of Winslow.
-To handle these requests and to serialize the responses SpringBoot\cite{springboot} is used by Winslow.
+To handle these requests and to serialize the responses Spring Boot\cite{springboot} is used by Winslow.
 
 To not stress the event bus with lock requests caused by the user, all data retrieval operation open and read configuration files without locking them.
 This bears the risk of reading incompletely written files, but as the user interface is not crucial to the system and as it must account for failed requests due to network issues anyway, this is considered acceptable.
