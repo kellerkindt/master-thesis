@@ -171,6 +171,8 @@ So in theory 128 hours (+220\%) per week could additionally be spent executing s
 To answer this, one needs to look again at the heat-maps of \autoref{metric:all_running} and \autoref{metrics:auto_running}.
 Winslow is being used, and as for \autoref{metrics:auto_started} discussed, it is being used for long running stage executions with one or two automatic triggers at nights.
 But it is used even more during working hours, as can be seen in \autoref{metric:all_running}, where all pink cells fall within working hours.
+Furthermore, not all executions seem to take an entire night until staff assistance is required again, which can be seen in \autoref{metric:all_running} where the colours start to fade in the late evening and during the night.
+There is also no guarantee that the user is trying to completely exhaust all compute resources in his/hers absence.
 
 In conclusion, Winslow is being used - and that actively, with over 2003 hours worth of compute time\footnote{in the previously mentioned time period}.
 It is supporting the users by being the triggering for over half of all compute time spent and additionally enabling the staff to let large multi-stage tasks be executed over night or the weekend.
