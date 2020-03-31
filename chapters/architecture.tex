@@ -62,7 +62,7 @@ Scoring 0 for commonly used and no concerns, 1 for minor concerns, 2 for major u
 In \autoref{comparision:storage} the results are displayed:
 
 \begin{table}[H]
-	\begin{tabular}{l|c|c|c|c|c|c|c}
+	\begin{tabular}{|l|c|c|c|c|c|c|}\hline
 				& NFS S.& SMB/CIFS S.& GlusterFS & SeaweedFs	& dCache 	& HDFS \\
 		\hline
 		Inst. 	& 0 	& 1 		& 0 		& 2 		& 3			& 1 \\
@@ -70,8 +70,8 @@ In \autoref{comparision:storage} the results are displayed:
 		SPoF 	& 2		& 3			& 0			& 2 		& 0			& 0 \\
 		Docker 	& 0 	& 2 		& 2 		& 3 		& 2 		& 3 \\
 		Fail.	& 0		& 0			& 1			& 2			& 2			& 0 \\
-		\hline
-		Score 	& 3		& 6			& 3			& 9			& 10		& 5 \\
+		\hline \hline
+		Score 	& 3		& 6			& 3			& 9			& 10		& 5 \\ \hline
 	\end{tabular}
 	\caption{Failure concern comparison of storage technologies}
 	\label{comparision:storage}
@@ -433,12 +433,12 @@ Lets consider the following three execution nodes exist:
 
 \begin{table}[H]
 	\centering
-	\begin{tabular}{l|r|r|r}
+	\begin{tabular}{|l|r|r|r|}\hline
 		 & Free CPUs & Free memory & Free GPUs \\
 		 \hline
 		 Node 1 & 4  	& 16 GiB & 0 \\
 		 Node 2 & 12 	& 58 GiB & 0 \\
-		 Node 3 & 4 	& 50 GiB & 1 \\
+		 Node 3 & 4 	& 50 GiB & 1 \\ \hline
 	\end{tabular}
 	\caption{Nodes to consider}
 \end{table}
@@ -447,12 +447,12 @@ The following three stages executions shall be assessed:
 
 \begin{table}[H]
 	\centering
-	\begin{tabular}{l|r|r|r}
+	\begin{tabular}{|l|r|r|r|}\hline
 		& Req. CPUs & Req. memory & Req. GPUs \\
 		\hline
 		Ex1 & 2 & 16 GiB & 0 \\
 		Ex2 & 4 & 48 GiB & 0 \\
-		Ex3 & 4 & 16 GiB & 1 \\
+		Ex3 & 4 & 16 GiB & 1 \\ \hline
 	\end{tabular}
 	\caption{Stage executions to consider}
 \end{table}
@@ -463,12 +463,12 @@ The winning node for is marked by the bold formatting.
 
 \begin{table}[H]
 	\centering
-	\begin{tabular}{l|r|r|r}
+	\begin{tabular}{|l|r|r|r|}\hline
 		& Node 1 & Node 2 & Node 3 \\
 		\hline
 		Ex1 & \textbf{0.5/0.5}	& 		  0.28/0.72	& 		  0.32/1.0 \\
 		Ex2 & - 				& \textbf{0.34/0.67}& 		  0.96/1.0 \\
-		Ex3 & - 				& - 				& \textbf{0.32/0.68} \\
+		Ex3 & - 				& - 				& \textbf{0.32/0.68} \\\hline
 	\end{tabular}
 	\caption{Affinity/Aversion score for every stage definition and node constellation that provides all required resources}
 \end{table}
