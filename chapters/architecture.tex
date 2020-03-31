@@ -401,6 +401,10 @@ To determine a winner, participants must be comparable.
 Winslow uses a two factor scoring mechanism for that, in which it judges how efficient a node is going to be utilized (affinity scoring) and how many unused resources will be wasted (aversion scoring).
 The instance with the highest affinity value out of the instances of the lowest aversion values wins.
 
+This system was developed within this thesis but loosely inspired by Nomad\cite{nomad:main}, which also uses an affinity score\cite{nomad:affinity} but no aversion equivalent.
+Instead of specifying this value in each job definition like in Nomad, Winslow derives it's values from the available resources and resource requirements.
+This requires less user interference, prevents blocking unused hardware and still delivers good results, as will be discussed next.
+
 For determining the affinity scoring only requested resource categories $c_i$ need to be considered.
 Through the resource monitoring (see \autoref{design:monitor_resources}) the total resources $r_{c_{max}}$ as well as the reserved resources $r_{c_{in\_use}}$ are known.
 For every requested resource by the stage definition $c1 .. cx$, the ratio between requested $r_{c_i}$ and available resources is calculated.

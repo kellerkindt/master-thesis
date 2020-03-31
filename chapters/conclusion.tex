@@ -1,25 +1,31 @@
 \chapter{Summary and Conclusion}
 
 Winslow helps to improve the usage of available hardware resources by additionally triggering stage executions in times where the staff is absent or not actively watching.
-It helps in keeping order by separating workspaces and organizing them into projects.
-The user interface provides an interaction method that is easy to understand by users and provides upload and download mechanism without resorting back to console commands.
+It decreases the effort required from the staff to progress projects.
+It helps to keep order by separating workspaces and organizing them into projects.
+The user interface provides an interaction method that is easy to understand provides upload and download mechanism without resorting back to console commands.
 
 In the implementation phase an interesting and minimalistic way to synchronize events based on a commonly shared directory was discovered and implemented.
-Winslow is easy to setup and because of its few dependencies and easy to maintain.
-%Its architecture allows to be extended in further work.
+The coordination is decentralized to cope with node failures.
+It uses an election system to find fitting execution nodes without blocking unused resources.
+Winslow instances are easy to setup and because of its few dependencies easy to maintain.
+
 
 The evaluation shows that Winslow is successfully increasing productivity, hardware utilization and that it is beneficial to the user.
+%All goals of this thesis have been fulfilled.
+
 %\todo{The project is therefore considered a success.}
 %\todo{The measurements showed a successful application with a high efficiency gain.}
 
+\pagebreak
 \section{Further work}
 
 
 In the scope of this thesis a system was implemented to distribute the workload of a computer vision pipeline onto several compute nodes.
 Automatically scheduling stages improves the utilization of available hardware - especially at times where the staff is absent, like at nights or weekends.
+A system like this provides an endless stream of ideas to further improve the user experience or for extensions and capabilities to add.
 
 Adding the support for WebSockets could help to make the Web-Application more responsive to serve side changes.
-Pushing desktop notifications to the client or e-mail messages could reduce the response time of the staff for when a stage failed or a project needs attention otherwise.
-GlusterFs could be investigated for whether the (site) replication feature could reduce the usage of network bandwidth.
+Pushing desktop notifications to the client or sending e-mails could reduce the response time of the staff for when a stage failed or a project needs attention otherwise.
+GlusterFs could be investigated for whether the (site) replication feature could reduce the usage of network bandwidth and availability.
 %\todo{graphs}
-A system like this provides an endless stream of ideas to further improve the user experience or for extensions and capabilities to add.
