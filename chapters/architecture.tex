@@ -1,6 +1,6 @@
 \chapter{System design}
 
-In this chapter the previously collected information are used to design the system in detail.
+In this chapter the previously collected information is used to design the system in detail.
 The decision making process for that is documented here as well.
 
 %\todo{mention? decentralization aspects?}
@@ -8,7 +8,7 @@ The decision making process for that is documented here as well.
 \section{Environment}
 
 All Winslow instances are supposed to run inside a Docker container (as requested in \autoref{workflow:desired:docker}).
-The hosts will be Ubuntu or Debian Linux Servers of which some will have one or multiple Nvidia graphics cards.
+The hosts will be Ubuntu or Debian Linux Servers of which some will have one or multiple GPUs.
 There will be no graphical user interface available on these servers.
 
 The decision to implement Winslow in Java was made early on.
@@ -73,7 +73,7 @@ In \autoref{comparision:storage} the results are displayed:
 		\hline
 		Score 	& 3		& 6			& 3			& 9			& 10		& 5 \\
 	\end{tabular}
-	\caption{Comparison of storage technologies}
+	\caption{Failure concern comparison of storage technologies}
 	\label{comparision:storage}
 \end{table}
 
@@ -250,7 +250,7 @@ The behaviour of publishing an event can therefore be summarized with \autoref{e
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.7\textwidth]{event_publishing.png}
+	\includegraphics[width=0.65\textwidth]{event_publishing.png}
 	\caption{Event publishing process}
 	\label{event:synchronized_publish}
 \end{figure}
@@ -267,7 +267,7 @@ It also allows for multiple locks and elections to happen concurrently, as long 
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.9\textwidth]{events.png}
+	\includegraphics[width=1.0\textwidth]{events.png}
 	\label{winslow:com:events}
 	\caption{Sample event and lock series with lifetimes}
 \end{figure}
@@ -408,7 +408,7 @@ The lowest ratio, and therefore the most pessimistic value, of any category is u
 
 \begin{equation}
 	\label{election:eq:affinity}
-	{affinity} = \min_{c_1 .. c_x} \left( \frac{r_{c_i}}{r_{c_{max}} - r_{c_{in\_use}}} \cdot n_{c_x} \right)
+	\text{affinity} = \min_{c_1 .. c_x} \left( \frac{r_{c_i}}{r_{c_{max}} - r_{c_{in\_use}}} \cdot n_{c_x} \right)
 \end{equation}
 
 As seen above, every node can additionally apply a resource category specific multiplier $n_{c_x}$ for punishment or gratification.
@@ -419,7 +419,7 @@ In contrast to the affinity score, the highest ratio of any unused resource is u
 
 \begin{equation}
 	\label{election:eq:aversion}
-	{aversion} = \max_{c_1 .. c_a} \left( \frac{r_{c_{max}} - r_{c_{in\_use}} - r_{c_a}}{r_{c_{max}}  - r_{c_{in\_use}}} \cdot n_{c_a} \right)
+	\text{aversion} = \max_{c_1 .. c_a} \left( \frac{r_{c_{max}} - r_{c_{in\_use}} - r_{c_a}}{r_{c_{max}}  - r_{c_{in\_use}}} \cdot n_{c_a} \right)
 \end{equation}
 
 The more resources are wasted - especially categories that are untouched at all - the worse the aversion score.

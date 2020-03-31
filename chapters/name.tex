@@ -12,7 +12,8 @@
 
 
 The program that shall implement the requested features is being called Winslow.
-This name refers to Frederick Winslow Taylor who was an American mechanical engineer and one of the first management consultants in the 19th century\cite{wiki:winslow}.
+This name refers to Frederick Winslow Taylor who was an American mechanical engineer and one of the first management consultants in the 19th century\cite{brit:winslow}\cite{wiki:winslow}.
+The term \enquote{taylorism} refers to his work\cite{brit:taylorism}.
 Both strive to make people's work more efficient.
 
 
@@ -22,24 +23,24 @@ Both strive to make people's work more efficient.
 This chapter explains the meaning of words and terminology used later on.
 It is crucial that every reader has the same understanding for the words used so that there are no wrong assumptions, expectations or surprises.
 
-The root of a work item is called project.
+The root of a work item is called \textbf{project}.
 A project will usually refer to one video footage that shall be processed.
 Each project has its exclusive workspace for input, output and intermediate files.
 Furthermore a project has an author and possibly participants, that can help in steering and monitoring the processing.
 To do so, there is always a pipeline assigned to a project.
 
-A pipeline consists of at least one but usually multiple stages that can at least be processed linearly - one after the other.
+A \textbf{pipeline} consists of at least one but usually multiple stages that can at least be processed linearly - one after the other.
 Furthermore, a pipeline can define environment variables that are valid for all stages within the pipeline.
 
-A stage is the smallest work unit that can be executed.
+A \textbf{stage} is the smallest work unit that can be executed.
 A docker image (see \autoref{docker:image}) is specified as execution environment as well as further stage specific environment variables, command line arguments and hardware requirements (such as CPU cores, GPUs and minimum available RAM).
 This allows stages to be based on common images but also to specify very precisely how to process the data in a certain scenario.
 
 In addition, stages can be categorized in running, succeeded or failed while pipelines can be have active or paused as state.
-A stage definition specifies the above mentioned presets in a template to base multiple stages from, while a running or complete stage has all information of what is or was executed and allows no further alteration.
-For pipeline definitions this is similar, it can be used to specify a common order of execution.
+A \textbf{stage definition} specifies the above mentioned presets in a template to base multiple stages from, while a running or complete stage has all information of what is or was executed and allows no further alteration.
+For \textbf{pipeline definitions} this is similar, it can be used to specify a common order of execution.
 Once assigned to a project, it can freely adjust and change its copy of the pipeline.
 
-The container process that is executing the binary of Winslow is called Winslow instance.
-A computer with a Winslow instance that is accepting or executing stages is called execution node with focus on the computer providing compute resources to Winslow.
+The container process that is executing the binary of Winslow is called \textbf{Winslow instance}.
+A computer with a Winslow instance that is accepting or executing stages is called \textbf{execution node} with focus on the computer providing compute resources to Winslow.
 
